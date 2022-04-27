@@ -8,7 +8,7 @@ class Runner:
         self.password = passw
 
     def _call_liquibase(self, project, env, postgrespass, db):
-        print(project)
+        print(project + ' : ' + db)
         cmd = '''docker run --rm -v #base##project#\liquibase\:/liquibase/changelog liquibase/liquibase:4.7 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=#changelog# update'''
         cmd = cmd\
             .replace('#base#', self.base)\
@@ -17,7 +17,6 @@ class Runner:
             .replace('#password#', postgrespass)\
             .replace('#db#', db)\
             .replace('#changelog#', self.get_changelog(db))
-        print(cmd)
         ret_code = os.system(cmd)
         if ret_code != 0:
             exit(ret_code)
