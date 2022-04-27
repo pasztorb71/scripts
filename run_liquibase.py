@@ -21,7 +21,9 @@ def runner(base, project, type, env, postgrespass, db='', file=''):
             .replace('#password#', postgrespass)\
             .replace('#db#', db)
     print(cmd)
-    os.system(cmd)
+    ret_code = os.system(cmd)
+    if ret_code != 0:
+        exit(ret_code)
 
 
 def get_dbs(base, repo):
@@ -41,24 +43,11 @@ if __name__ == '__main__':
     repos = ['mlff-payment-transaction-postgredb']
     run = True
     for ip_address in ip_addresses:
-        a = ''
         for repo in repos:
             repo = repo + '/liquibase' if os.path.isdir(base + repo + '/liquibase') else repo
-            while a != 'y' and a != 'N' :
-                a = 'y'
-                print(repo)
-                schemas = get_dbs(base, repo)
-                runner(base, repo, 'db', ip_address, 'fLXyFS0RpmIX9uxGII4N')
-                # = input('Tovább(y/N)')
-                if a == 'N':
-                    run = False
-                    break
-                dbs = get_dbs(base, repo)
-                for db in dbs:
-                    runner(base, repo, 'schema', ip_address, 'fLXyFS0RpmIX9uxGII4N', db)
-                    #a = input('Tovább(y/N)')
-                    if a == 'N':
-                        run = False
-                        break
-            if not run:
-                break
+            print(repo)
+            schemas = get_dbs(base, repo)
+            runner(base, repo, 'db', ip_address, 'fLXyFS0RpmIX9uxGII4N')
+            dbs = get_dbs(base, repo)
+            for db in dbs:
+                runner(base, repo, 'schema', ip_address, 'fLXyFS0RpmIX9uxGII4N', db)
