@@ -2,7 +2,7 @@ import glob
 import os
 
 
-def runner(base, project, type, env, postgrespass, db='', file=''):
+def _runner(base, project, type, env, postgrespass, db='', file=''):
     install_database = '''docker run --rm -v #base##project#\:/liquibase/changelog liquibase/liquibase:4.7 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/postgres --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=liquibase-install-databases.xml update'''
     install_schema = '''docker run --rm -v #base##project#\:/liquibase/changelog liquibase/liquibase:4.7 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=liquibase-install-#db#.xml update'''
     if type == 'db':
@@ -36,18 +36,20 @@ def get_dbs(base, repo):
     return dblist
 
 
-if __name__ == '__main__':
-    base = 'c:/GIT/MLFF/'
-    ip_addresses = ['gateway.docker.internal:5433', 'gateway.docker.internal:5434']
-    #repos = os.listdir(base)
-    repos = ['mlff-payment-transaction-postgredb']
-    run = True
+def runner(repos, loc):
+    ip_addresses = ['gateway.docker.internal:5433', 'gateway.docker.internal:5434'] if loc == 'remote' else ['gateway.docker.internal']
     for ip_address in ip_addresses:
         for repo in repos:
             repo = repo + '/liquibase' if os.path.isdir(base + repo + '/liquibase') else repo
             print(repo)
-            schemas = get_dbs(base, repo)
-            runner(base, repo, 'db', ip_address, 'fLXyFS0RpmIX9uxGII4N')
+            _runner(base, repo, 'db', ip_address, 'fLXyFS0RpmIX9uxGII4N')
             dbs = get_dbs(base, repo)
             for db in dbs:
-                runner(base, repo, 'schema', ip_address, 'fLXyFS0RpmIX9uxGII4N', db)
+                _runner(base, repo, 'schema', ip_address, 'fLXyFS0RpmIX9uxGII4N', db)
+
+
+if __name__ == '__main__':
+    base = 'c:/GIT/MLFF/'
+    #repos = os.listdir(base)
+    repos = ['mlff-payment-transaction-postgredb']
+    runner(repos, loc='remote')
