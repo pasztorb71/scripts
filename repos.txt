@@ -1,0 +1,4 @@
+mlff-core-notification-common-postgredb
+mlff-core-notification-email-postgredb
+mlff-core-notification-pn-postgredb
+mlff-core-notification-wa-postgredb

@@ -6,6 +6,7 @@ class Runner:
     def __init__(self, base):
         self.base = base
         self.password = ''
+        self.loc = ''
 
     def _call_liquibase(self, project, env, postgrespass, db):
         print(project + ' : ' + db)
@@ -38,13 +39,19 @@ class Runner:
 
     def get_ip_addresses(self, loc):
         if loc == 'remote':
-            return ['gateway.docker.internal:5433','gateway.docker.internal:5434']
+            return ['gateway.docker.internal:5433',
+                    'gateway.docker.internal:5434',
+                    'gateway.docker.internal:5435']
         elif loc == 'local':
             return ['gateway.docker.internal']
         elif loc == 'sandbox':
             return ['gateway.docker.internal:5433']
-        else: #DEV
+        elif loc == 'dev':
             return ['gateway.docker.internal:5434']
+        elif loc == 'fit':
+            return ['gateway.docker.internal:5435']
+        elif loc == 'perf':
+            return ['gateway.docker.internal:5436']
 
     def run_for_repo(self, ip_address, repo):
         self._call_liquibase(repo, ip_address, self.password, 'postgres')
@@ -52,13 +59,17 @@ class Runner:
             self._call_liquibase(repo, ip_address, self.password, db)
 
     def run(self, repos, loc):
-        self.password = 'fLXyFS0RpmIX9uxGII4N' if loc == 'remote' else 'mysecretpassword'
+        self.loc = loc
+        self.password = 'fLXyFS0RpmIX9uxGII4N' if loc != 'local' else 'mysecretpassword'
         for ip_address in self.get_ip_addresses(loc):
             print(ip_address)
             for repo in repos:
                 self.run_for_repo(ip_address, repo)
 
     def kill(self, param):
+        pass
+
+    def run_additional_script(self):
         pass
 
 
