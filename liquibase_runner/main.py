@@ -1,5 +1,3 @@
-import glob
-import os
 
 from Runner import Runner
 
@@ -13,5 +11,4 @@ if __name__ == '__main__':
     #repos = load_from_file('repos.txt')
     repos = ['mlff-enforcement-detection-image-postgredb']
     runner = Runner(base)
-    #runner.kill('mlff-core-customer-postgredb')
     runner.run(repos, loc='local')
