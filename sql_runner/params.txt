@@ -1,0 +1,2 @@
+host      port password
+localhost 5433 fLXyFS0RpmIX9uxGII4N

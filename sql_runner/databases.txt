@@ -1,0 +1,4 @@
+core_notification_common
+core_notification_email
+core_notification_pn
+core_notification_wa
