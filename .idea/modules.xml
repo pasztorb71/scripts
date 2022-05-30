@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/liquibase_runner.iml" filepath="$PROJECT_DIR$/.idea/liquibase_runner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../liquibase/.idea/liquibase.iml" filepath="$PROJECT_DIR$/../liquibase/.idea/liquibase.iml" />
     </modules>
   </component>
 </project>
