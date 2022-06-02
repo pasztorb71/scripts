@@ -2,7 +2,7 @@ import math
 
 import pandas as pd
 
-from Confluence import Confluence
+from liquibase_wrapper.gen_table.Confluence import Confluence
 
 
 

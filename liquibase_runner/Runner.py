@@ -26,11 +26,15 @@ class Runner:
     def get_changelog(self, db, project):
         if project == 'mlff-core-customer-postgredb':
             return 'core_customer\liquibase-install-step-01.xml' if db == 'postgres' else 'core_customer\liquibase-install-step-02.xml'
+        elif project == 'mlff-enforcement-exemption-postgredb':
+            return 'enforcement_exemption\liquibase-install-step-01.xml' if db == 'postgres' else 'enforcement_exemption\liquibase-install-step-02.xml'
         return 'liquibase-install-databases.xml' if db == 'postgres' else 'liquibase-install-' + db + '.xml'
 
     def get_dbs(self, repo):
             if repo == 'mlff-core-customer-postgredb':
                 return ['core_customer']
+            elif repo == 'mlff-enforcement-exemption-postgredb':
+                return ['enforcement_exemption']
             path = self.base + repo + '/liquibase/*.xml'
             files = glob.glob(path)
             files = [f.split('\\')[1] for f in files if 'liquibase-install-databases.xml' not in f]

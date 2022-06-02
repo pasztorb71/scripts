@@ -10,7 +10,16 @@ def create_dest_file(old_name, new_name, replace_matrix):
                 newf.write(newline)
 
 def copy_readme():
-    create_dest_file(src_repo+)
+    pass
+    #create_dest_file(src_repo+)
 
 
-copy_readme()
+def create_repo():
+    print(repo_name)
+
+
+if __name__ == '__main__':
+    base = 'c:/GIT/MLFF/'
+    repo_name = 'new_repo'
+    create_repo()
+    #copy_readme()
