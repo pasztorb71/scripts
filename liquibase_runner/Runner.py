@@ -1,5 +1,11 @@
 import glob
 import os
+import re
+
+
+def get_dbname_from_project(project):
+    db = re.match('.*mlff-(.*)-postgredb', project).group(1)
+    return db.replace('-', '_')
 
 
 class Runner:
@@ -23,14 +29,24 @@ class Runner:
         if ret_code != 0:
             exit(ret_code)
 
-    def get_changelog(self, db, project):
+    def get_changelog_old(self, db, project):
         if project == 'mlff-core-customer-postgredb':
             return 'core_customer\liquibase-install-step-01.xml' if db == 'postgres' else 'core_customer\liquibase-install-step-02.xml'
         elif project == 'mlff-enforcement-exemption-postgredb':
             return 'enforcement_exemption\liquibase-install-step-01.xml' if db == 'postgres' else 'enforcement_exemption\liquibase-install-step-02.xml'
         return 'liquibase-install-databases.xml' if db == 'postgres' else 'liquibase-install-' + db + '.xml'
 
+    def get_changelog(self, db, project):
+        if os.path.isfile(self.base+project+'/liquibase/liquibase-install-databases.xml'):
+            return 'liquibase-install-databases.xml' if db == 'postgres' else 'liquibase-install-' + db + '.xml'
+        db_name = get_dbname_from_project(project)
+        return db_name+'\liquibase-install-step-01.xml' if db == 'postgres' else db_name+'\liquibase-install-step-02.xml'
+
     def get_dbs(self, repo):
+            t = repo.split('-')
+            return ['_'.join(t[1:-1])]
+
+    def get_dbs_old(self, repo):
             if repo == 'mlff-core-customer-postgredb':
                 return ['core_customer']
             elif repo == 'mlff-enforcement-exemption-postgredb':

@@ -46,10 +46,10 @@ if __name__ == '__main__':
     host, port = 'localhost', 5433
     cluster = Cluster(host=host, port=port, passw=utils.password_from_file(host, port))
     #databases = load_from_file('../databases.txt')
-    databases = ['payment_psp_clearing']
+    databases = ['core_vehicle']
     #databases = cluster.databases
     for db in databases:
-        runteszt(get_conn('sandbox',db))
+        runteszt(get_conn('local',db))
     exit(0)
     runteszt(get_conn('sandbox','core_template'))
     runteszt(get_conn('sandbox','core_customer'))
