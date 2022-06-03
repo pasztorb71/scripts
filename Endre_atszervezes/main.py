@@ -113,14 +113,15 @@ def create_old_file(fname):
 
 if __name__ == '__main__':
     repo = 'mlff-core-vehicle-postgredb'
+  #prepare
     copy_dir('c:/GIT/MLFF/'+repo, 'c:/GIT/MLFF/'+repo+' másolata')
-    base = 'c:/GIT/MLFF/mlff-core-vehicle-postgredb másolata/liquibase/'
+    base = 'c:/GIT/MLFF/'+repo+' másolata/liquibase/'
     db = re.match('.*mlff-(.*)-postgredb', base).group(1)
     db_path = db.replace('-', '_')
     copy_dir(base+'_init_dbs', base+'_init_dbs_copy')
     schema = get_schema()
     change_file(move_up(base)+'/README.md')
-    #database
+  #database
     move_dir(base+'_init_dbs', base+db_path+'/_init_dbs')
     move_file(base+'liquibase-install-databases.xml', base+db_path+'/liquibase-install-step-01.xml')
     move_file(base+'liquibase-install-'+db_path+'.xml', base+db_path+'/liquibase-install-step-02.xml')
@@ -133,11 +134,12 @@ if __name__ == '__main__':
     move_file(tmp+'/'+schema+'_service-user.sql', tmp+'/service-user.sql')
     move_file(tmp+'/'+schema+'-schema.sql', base+db_path+'/'+schema+'/create-schema.sql')
     change_file(base+db_path+'/_init_dbs/' + db_path + '-db-install.xml')
-    #schema
+  #schema
     new_schema_path = base+db_path+'/'+schema+'/liquibase-install-schema.xml'
     move_file(base+db_path+'/liquibase-'+schema+'.xml', new_schema_path)
     change_file(new_schema_path)
     move_file(base+db_path+'/'+schema+'/liquibase-versions.xml', base+db_path+'/'+schema+'/schema-versions.xml')
+  # finalize
     shutil.rmtree(base+'_init_dbs_copy')
     move_dir('c:/GIT/MLFF/'+repo, 'c:/GIT/MLFF/'+repo+'_old')
     move_dir('c:/GIT/MLFF/'+repo+' másolata', 'c:/GIT/MLFF/'+repo)
