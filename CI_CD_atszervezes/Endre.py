@@ -6,7 +6,7 @@ from CI_CD_atszervezes.utils import move_upper_dir, move_file, move_dir, copy_di
 
 
 def get_schema():
-    with open(base+'_init_dbs_copy/' + db_path + '-db-install-parameters.xml', 'r', encoding='utf-8') as f:
+    with open(base+'_init_dbs/' + db_path + '-db-install-parameters.xml', 'r', encoding='utf-8') as f:
         text = f.read()
     return re.match('.*property name="schema_name_.*value="(.*)"/>', text, flags=re.DOTALL|re.MULTILINE).group(1)
 
@@ -77,11 +77,9 @@ def change_file(fname):
 if __name__ == '__main__':
     repo = 'mlff-core-vehicle-postgredb'
   #prepare
-    copy_dir('c:/GIT/MLFF/' + repo, 'c:/GIT/MLFF/' + repo + ' másolata')
-    base = 'c:/GIT/MLFF/'+repo+' másolata/liquibase/'
+    base = 'c:/GIT/MLFF/'+repo+'/liquibase/'
     db = re.match('.*mlff-(.*)-postgredb', base).group(1)
     db_path = db.replace('-', '_')
-    copy_dir(base + '_init_dbs', base + '_init_dbs_copy')
     schema = get_schema()
   #database
     change_file(move_upper_dir(base) + '/README.md')
@@ -102,7 +100,3 @@ if __name__ == '__main__':
     move_file(base + db_path + '/liquibase-' + schema + '.xml', new_schema_path)
     change_file(new_schema_path)
     move_file(base + db_path + '/' + schema + '/liquibase-versions.xml', base + db_path + '/' + schema + '/schema-versions.xml')
-  # finalize
-    shutil.rmtree(base+'_init_dbs_copy')
-    move_dir('c:/GIT/MLFF/' + repo, 'c:/GIT/MLFF/' + repo + '_old')
-    move_dir('c:/GIT/MLFF/' + repo + ' másolata', 'c:/GIT/MLFF/' + repo)
