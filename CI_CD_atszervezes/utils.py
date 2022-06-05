@@ -42,3 +42,15 @@ def create_old_file(fname):
         # os.remove(fname)
         # move_file(fname + '_old', fname)
     move_file(fname, fname + '_old')
+
+
+def replace_in_file(fname, from_to):
+    text = ''
+    with open(fname, 'r', encoding='utf-8') as f:
+        text = f.read()
+        for pair in from_to:
+            text = text.replace(pair[0], pair[1])
+            text = text.replace(pair[0].upper(), pair[1].upper())
+    with open(fname, 'w', encoding='utf-8') as f:
+        f.write(text)
+
