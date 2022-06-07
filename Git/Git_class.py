@@ -5,6 +5,7 @@ class Git:
     def __init__(self, base, repo):
         self.base = base
         self.repo = repo
+        self.synced = ''
 
     def print_log(self):
         os.system('git -C ' + self.repo + ' log --oneline')
