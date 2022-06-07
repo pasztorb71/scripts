@@ -49,8 +49,8 @@ def is_all_branches_synchronized(gitlist, branch):
     print_dict(ret_dict)
 
 
-def synchronize_all_master_branch(gitlist):
-    commands = ['checkout master', 'pull origin master']
+def synchronize_branch_in_multiple_repos(gitlist, branch):
+    commands = ['checkout '+branch, 'pull origin '+branch]
     return parallel_run(gitlist, _mproc_multiple_commands, commands)
 
 
@@ -59,6 +59,6 @@ if __name__ == '__main__':
     repos = os.listdir(base)[0:]
     #repos = ['mlff-core-notification-wa-postgredb']
     gitlist = [Git(base, repo) for repo in repos]
-    synchronize_all_master_branch(gitlist)
-    is_all_branches_synchronized(gitlist, 'master')
+    synchronize_branch_in_multiple_repos(gitlist, branch='master')
+    is_all_branches_synchronized(gitlist, branch='master')
 
