@@ -24,7 +24,7 @@ def get_schema():
     return re.match('.*property name="schema_name_.*value="(.*)"/>', text, flags=re.DOTALL|re.MULTILINE).group(1)
 
 if __name__ == '__main__':
-    repo = 'mlff-core-vehicle-postgredb'
+    repo = 'mlff-enforcement-detection-postgredb'
     base = 'c:/GIT/MLFF/'+repo
     db = re.match('.*mlff-(.*)-postgredb', base).group(1)
     db_path = db.replace('-', '_')
@@ -39,8 +39,8 @@ if __name__ == '__main__':
     replace_in_file(base+'/etc/docker-compose/docker-compose.liquibase.install.step-02.yml', to_replace)
     path = base+'/etc/docker-compose/config/'
     os.rename(path+'core_customer', path+db_path)
-    replace_in_file(base+'/etc/docker-compose/config/core_vehicle/step-01/liquibase-localhost.properties', to_replace)
-    replace_in_file(base+'/etc/docker-compose/config/core_vehicle/step-02/liquibase-localhost.properties', to_replace)
+    replace_in_file(base+'/etc/docker-compose/config/'+db_path+'/step-01/liquibase-localhost.properties', to_replace)
+    replace_in_file(base+'/etc/docker-compose/config/'+db_path+'/step-02/liquibase-localhost.properties', to_replace)
     path = base+'/etc/release/'
     replace_in_file(path+'docker-compose.yml', to_replace)
     replace_in_file(path+'release.sh', to_replace)
@@ -53,6 +53,8 @@ if __name__ == '__main__':
     replace_in_file(base+'/.env', to_replace)
     copy_file(path+'.asciidoctorconfig.adoc', base+'/.asciidoctorconfig.adoc')
   #readme file
-    move_file(base+'/README.md', base+'/liquibase/'+db_path+'/OLD-README.md')
+    os.rename(base+'/README.md', base+'/OLD-README.md')
     copy_file(r'c:\GIT\MLFF\mlff-core-customer-postgredb\README.adoc', base+'/README.adoc')
     replace_in_file(base+'/README.adoc', to_replace)
+  #post
+    replace_in_file(base+'/.env', [['VERSION=0.4.0', 'VERSION=0.2.0']])

@@ -5,7 +5,7 @@ from tabulate import tabulate
 
 
 def print_dict(d):
-    for db, records in d.items():
+    for db, records in sorted(d.items()):
         print(db + ': ', end='')
         print(d[db])
 

@@ -75,7 +75,7 @@ def change_file(fname):
 
 
 if __name__ == '__main__':
-    repo = 'mlff-core-vehicle-postgredb'
+    repo = 'mlff-enforcement-detection-postgredb'
   #prepare
     base = 'c:/GIT/MLFF/'+repo+'/liquibase/'
     db = re.match('.*mlff-(.*)-postgredb', base).group(1)

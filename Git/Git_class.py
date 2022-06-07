@@ -2,7 +2,8 @@ import os
 
 
 class Git:
-    def __init__(self, repo):
+    def __init__(self, base, repo):
+        self.base = base
         self.repo = repo
 
     def print_log(self):
