@@ -24,11 +24,13 @@ def get_schema():
     return re.match('.*property name="schema_name_.*value="(.*)"/>', text, flags=re.DOTALL|re.MULTILINE).group(1)
 
 if __name__ == '__main__':
-    repo = 'mlff-enforcement-detection-postgredb'
+  # prepare
+    repo = 'mlff-core-ticket-postgredb'
     base = 'c:/GIT/MLFF/'+repo
     db = re.match('.*mlff-(.*)-postgredb', base).group(1)
     db_path = db.replace('-', '_')
     to_replace = [['core-customer', db],['core_customer', db_path]]
+  #work
     copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\.gitlab\\', base+'/.gitlab')
     copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\docs\\', base+'/docs')
     replace_in_file(base+'/docs/development.adoc', to_replace)

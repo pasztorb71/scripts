@@ -1,25 +1,96 @@
-base_path = 'c:/GIT/MLFF/'
-src_repo = 'core-postgredb'
-dest_repo = 'mlff-payment-retry-postgredb'
+import os
+import re
+import shutil
 
-def create_dest_file(old_name, new_name, replace_matrix):
-    with open(old_name, 'r', encoding='utf-8') as oldf:
-        with open(new_name, 'w', encoding='utf-8') as newf:
-            for line in oldf:
-                newline = line.replace(repl_from, repl_to).replace(repl_from.upper(), repl_to.upper())
-                newf.write(newline)
-
-def copy_readme():
-    pass
-    #create_dest_file(src_repo+)
+from CI_CD_atszervezes.utils import copy_dir, replace_in_file, move_upper_dir, copy_file
 
 
-def create_repo():
-    print(repo_name)
+def git_init(base):
+    os.system('git -C '+base+' restore --staged etc/release/release.sh')
+    os.system('git -C '+base+' restore .')
+    os.system('git -C '+base+' clean -f -d')
+
+
+def create_version_file(fname):
+    with open(fname, 'w', encoding='utf-8') as f:
+        f.write("""<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- ============================================================================== -->
+    <!-- Adott alverzióhoz tartozó, sql tábla változáskat gyűjtő xml leíró file..       -->
+    <!-- ============================================================================== -->
+
+    <!-- ============================================================================== -->
+
+</databaseChangeLog>
+
+    """)
+
+
+def create_tables_file(fname):
+    with open(fname, 'w', encoding='utf-8') as f:
+        f.write("""<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- =================================================================================== -->
+    <!-- A schema-hoz tartozó táblák létrehozása...                                          -->
+    <!-- Részlegesen kötött sorrendben kell futtatni, a Foreign Key hivatkozások miatt!      -->
+    <!-- =================================================================================== -->
+
+
+</databaseChangeLog>
+""")
 
 
 if __name__ == '__main__':
-    base = 'c:/GIT/MLFF/'
-    repo_name = 'new_repo'
-    create_repo()
-    #copy_readme()
+    src_repo = 'mlff-core-customer-postgredb'
+    src_base = 'c:/GIT/MLFF/'+src_repo
+    src_db = re.match('.*mlff-(.*)-postgredb', src_base).group(1)
+    src_db_path = src_db.replace('-', '_')
+    src_schema = 'customer'
+  #prepare
+    repo = 'mlff-core-ticket-postgredb'
+    base = 'c:/GIT/MLFF/'+repo
+    db = re.match('.*mlff-(.*)-postgredb', base).group(1)
+    db_path = db.replace('-', '_')
+    schema = 'ticket'
+    service_user = schema + '_service'
+    to_replace = [[src_db, db],[src_db_path, db_path], [src_schema, schema]]
+  #database
+    #git_init(base)
+    os.makedirs(base+'/liquibase/'+db_path)
+    src_path = src_base+'/liquibase/'+src_db_path+'/_init_dbs'
+    path = base+'/liquibase/'+db_path+'/_init_dbs'
+    copy_file(src_base+'/OLD-README.md', base+'/README.md')
+    replace_in_file(base+'/README.md', to_replace)
+    copy_dir(src_base+'/liquibase/'+src_db_path+'/_init_dbs', path)
+    os.rename(path+'/'+src_db_path, path+'/'+db_path)
+    os.rename(path+'/'+src_db_path+'-db-install.xml', path+'/'+db_path+'-db-install.xml')
+    os.rename(path+'/'+src_db_path+'-db-install-parameters.xml', path+'/'+db_path+'-db-install-parameters.xml')
+    replace_in_file(path+'/'+db_path+'-db-install.xml', to_replace)
+    replace_in_file(path+'/'+db_path+'-db-install-parameters.xml', to_replace)
+    os.rename(path+'/'+db_path+'/'+src_schema, path+'/'+db_path+'/'+schema)
+    replace_in_file(path+'/'+db_path+'/create-database.sql', to_replace)
+    replace_in_file(path+'/'+db_path+'/'+schema+'/schema-roles.sql', to_replace)
+    replace_in_file(path+'/'+db_path+'/'+schema+'/service-user.sql', to_replace)
+    copy_dir(move_upper_dir(src_path)+'/all-modules', move_upper_dir(path)+'/all-modules')
+    path = move_upper_dir(path)+'/all-modules/'
+    replace_in_file(path+'functions/gen_create_table_statement.sql', to_replace)
+    replace_in_file(path+'functions/gen_hist_trigger_function.sql', to_replace)
+    replace_in_file(path+'procedures/hist_table_generator.sql', to_replace)
+    replace_in_file(path+'procedures/hist_trigger_generator.sql', to_replace)
+    copy_file(move_upper_dir(src_path)+'/liquibase-install-step-01.xml', move_upper_dir(path)+'/liquibase-install-step-01.xml')
+    copy_file(move_upper_dir(src_path)+'/liquibase-install-step-02.xml', move_upper_dir(path)+'/liquibase-install-step-02.xml')
+    replace_in_file(move_upper_dir(path)+'/liquibase-install-step-01.xml', to_replace)
+    replace_in_file(move_upper_dir(path)+'/liquibase-install-step-02.xml', to_replace)
+    copy_dir(move_upper_dir(src_path)+'/'+src_schema, move_upper_dir(path)+'/'+schema)
+    path = move_upper_dir(path)+'/'+schema
+    replace_in_file(path+'/create-schema.sql', to_replace)
+    create_version_file(path+'/xml-version-tree/version-0/0.02.0.xml')
+    shutil.rmtree(path+'/tables')
+    os.makedirs(path+'/tables')
+    create_tables_file(path+'/tables/create-tables.xml')

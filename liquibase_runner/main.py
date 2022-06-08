@@ -9,6 +9,6 @@ if __name__ == '__main__':
     base = 'c:/GIT/MLFF/'
     #repos = os.listdir(base)
     #repos = load_from_file('repos.txt')
-    repos = ['mlff-eobu-trip-postgredb']
+    repos = ['mlff-core-ticket-postgredb']
     runner = Runner(base)
     runner.run(repos, loc='local')
