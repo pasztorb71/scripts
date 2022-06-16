@@ -137,8 +137,8 @@ cmdlist = {
     'core_notification_wa': [
         """INSERT INTO notification
         (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, recipient, channel, template_id, "language", 
-        parameters, customer_id, source_service, object_type, object_id, response_status, response_id, attachments)
-        VALUES('tesztid', CURRENT_TIMESTAMP, 'a', NULL, '', 0, 'a', 'WHATSAPP', 'a', 'a', '', 'a', 'a', 'a', 'a', 'READ', 'a', '')""",
+        parameters, customer_id, source_service, object_type, object_id, response_status, response_id, attachments, template_name)
+        VALUES('tesztid', CURRENT_TIMESTAMP, 'a', NULL, '', 0, 'a', 'WHATSAPP', 'a', 'a', '', 'a', 'a', 'a', 'a', 'READ', 'a', '','ddd')""",
         "DELETE FROM notification WHERE x__id = 'tesztid'"
     ],
     'core_notification_email': [],

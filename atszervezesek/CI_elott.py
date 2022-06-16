@@ -1,14 +1,7 @@
 import os
 import re
-import shutil
 
-from CI_CD_atszervezes.utils import move_upper_dir, move_file, move_dir, copy_dir, create_old_file
-
-
-def get_schema():
-    with open(base+'_init_dbs/' + db_path + '-db-install-parameters.xml', 'r', encoding='utf-8') as f:
-        text = f.read()
-    return re.match('.*property name="schema_name_.*value="(.*)"/>', text, flags=re.DOTALL|re.MULTILINE).group(1)
+from utils import move_upper_dir, move_file, move_dir, create_old_file, get_db_name, get_schema
 
 
 def change_file(fname):
@@ -75,12 +68,12 @@ def change_file(fname):
 
 
 if __name__ == '__main__':
-    repo = 'mlff-enforcement-detection-postgredb'
+    repo = 'doc-postgredb'
   #prepare
     base = 'c:/GIT/MLFF/'+repo+'/liquibase/'
-    db = re.match('.*mlff-(.*)-postgredb', base).group(1)
+    db = get_db_name(base)
     db_path = db.replace('-', '_')
-    schema = get_schema()
+    schema = get_schema(base, db_path)
   #database
     change_file(move_upper_dir(base) + '/README.md')
     move_dir(base + '_init_dbs', base + db_path + '/_init_dbs')

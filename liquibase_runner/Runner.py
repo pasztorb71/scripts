@@ -2,9 +2,11 @@ import glob
 import os
 import re
 
+from utils import get_db_name
+
 
 def get_dbname_from_project(project):
-    db = re.match('.*mlff-(.*)-postgredb', project).group(1)
+    db = get_db_name(project)
     return db.replace('-', '_')
 
 
@@ -60,8 +62,7 @@ class Runner:
     def get_ip_addresses(self, loc):
         if loc == 'remote':
             return ['gateway.docker.internal:5433',
-                    'gateway.docker.internal:5434',
-                    'gateway.docker.internal:5435']
+                    'gateway.docker.internal:5434']
         elif loc == 'local':
             return ['gateway.docker.internal']
         elif loc == 'sandbox':

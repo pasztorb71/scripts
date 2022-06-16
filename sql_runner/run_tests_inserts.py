@@ -2,10 +2,9 @@ import re
 
 import psycopg2
 
-import utils
 from Cluster import Cluster
 from cmdlist import cmdlist
-from utils import get_port, get_sema
+from utils import password_from_file, get_sema_from_dbname, get_port
 
 
 def get_conn(env, db):
@@ -14,7 +13,7 @@ def get_conn(env, db):
         host='localhost',
         port=port,
         database=db,
-        user=get_sema(db) + '_service',
+        user=get_sema_from_dbname(db) + '_service',
         password='mlffTitkosPassword123!')
 
 
@@ -44,9 +43,9 @@ def cmddiff(env):
 
 if __name__ == '__main__':
     host, port = 'localhost', 5433
-    cluster = Cluster(host=host, port=port, passw=utils.password_from_file(host, port))
+    cluster = Cluster(host=host, port=port, passw=password_from_file(host, port))
     #databases = load_from_file('../databases.txt')
-    databases = ['core_vehicle']
+    databases = ['core_notification_wa']
     #databases = cluster.databases
     for db in databases:
         runteszt(get_conn('local',db))

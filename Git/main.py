@@ -4,13 +4,13 @@ import os
 import subprocess
 
 from Git.Git_class import Git
-from sql_runner.utils import print_dict
+from sql_runner.utils_old import print_dict
 
 
 def _mproc_ck_branch(git, return_dict, branch):
     os.popen('git -C '+git.base+'/'+git.repo+' fetch --all --prune').read()
     proc=subprocess.Popen('cmd /u /c git -C ' + git.base +'/' + git.repo +' diff '+branch+' origin/'+branch, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    res = proc.stdout.read().decode('utf-8')
+    res = proc.stdout.read()
     git.synced = 'OK' if not res else 'DIFF'
     return_dict[git.repo] = 'OK' if not res else 'DIFF'
 
@@ -43,15 +43,17 @@ def parallel_run(gitlist, proc_to_run, *args):
     return return_dict
 
 
-def is_all_branches_synchronized(gitlist, branch):
+def is_all_branches_synchronized(gitlist, branch, filtered='n'):
     ret_dict =  parallel_run(gitlist, _mproc_ck_branch, branch)
-    #filtered = {repo: status for repo, status in ret_dict.items() if status != 'OK'}
-    print_dict(ret_dict)
-
+    if filtered == 'y':
+        return {repo: status for repo, status in ret_dict.items() if status != 'OK'}
+    return ret_dict
 
 def synchronize_branch_in_multiple_repos(gitlist, branch):
     commands = ['checkout '+branch, 'pull origin '+branch]
-    return parallel_run(gitlist, _mproc_multiple_commands, commands)
+    ret_dict = parallel_run(gitlist, _mproc_multiple_commands, commands)
+    print('Synchronize_branch lefutott')
+    return ret_dict
 
 
 if __name__ == '__main__':
@@ -59,6 +61,7 @@ if __name__ == '__main__':
     repos = os.listdir(base)[0:]
     #repos = ['mlff-core-notification-wa-postgredb']
     gitlist = [Git(base, repo) for repo in repos]
-    synchronize_branch_in_multiple_repos(gitlist, branch='master')
-    is_all_branches_synchronized(gitlist, branch='master')
+    #synchronize_branch_in_multiple_repos(gitlist, branch='master')
+    ret_dict = is_all_branches_synchronized(gitlist, branch='master',filtered='y')
+    print_dict(ret_dict)
 

@@ -1,7 +1,6 @@
 import os
-import re
 
-from CI_CD_atszervezes.utils import copy_dir, replace_in_file, copy_file, move_file
+from utils import copy_dir, replace_in_file, copy_file, get_db_name
 
 
 def _cre_docker_compose_build(fname):
@@ -18,16 +17,11 @@ def create_file(fname):
     if 'docker-compose-build.yml' in fname:
         _cre_docker_compose_build(fname)
 
-def get_schema():
-    with open(base+'/liquibase/'+db_path+'/_init_dbs/' + db_path + '-db-install-parameters.xml', 'r', encoding='utf-8') as f:
-        text = f.read()
-    return re.match('.*property name="schema_name_.*value="(.*)"/>', text, flags=re.DOTALL|re.MULTILINE).group(1)
-
 if __name__ == '__main__':
   # prepare
-    repo = 'mlff-core-ticket-postgredb'
+    repo = 'mlff-settlement-tro-clearing-postgredb'
     base = 'c:/GIT/MLFF/'+repo
-    db = re.match('.*mlff-(.*)-postgredb', base).group(1)
+    db = get_db_name(base)
     db_path = db.replace('-', '_')
     to_replace = [['core-customer', db],['core_customer', db_path]]
   #work

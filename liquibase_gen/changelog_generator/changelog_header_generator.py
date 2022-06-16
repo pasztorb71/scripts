@@ -1,6 +1,8 @@
-import utils
 from header_generator.Column import Column
 from header_generator.Constraint import Constraint
+
+import utils
+from liquibase_gen.changelog_generator.main import get_template
 
 
 class Changelog_header_generator():
@@ -22,12 +24,7 @@ class Changelog_header_generator():
 
 
     def generate_header(self, command):
-        self.command = command
-        self.analyze_command()
-        if self.commandtype == 'COLUMN':
-            return self.gen_column_header(command)
-        if self.commandtype == 'CONSTRAINT':
-            return self.gen_constraint_header(command)
+        return get_template(command)
 
 
     def gen_column_header(self, command):

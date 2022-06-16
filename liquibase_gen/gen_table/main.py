@@ -2,8 +2,8 @@ import math
 
 import pandas as pd
 
-from liquibase_wrapper.gen_table.Confluence import Confluence
-
+from liquibase_gen.gen_table.Confluence import Confluence
+from utils import get_db_name, get_schema
 
 
 def modify_type(col):
@@ -22,6 +22,11 @@ def get_table_from_confluence(table, url):
     a = list(df.columns)
     return table_comment, [list(df.columns)] + df.values.tolist()
 
+def is_col_needed(name):
+    return name.lower().startswith('x__') == False and name.lower() != 'auditable fields'
+
+def is_nan_or_none(name):
+    return name == '' or pd.isnull(name)
 
 def table_columns(tab_name, table):
     header = "CREATE TABLE " + tab_name + " (" + \
@@ -33,13 +38,12 @@ def table_columns(tab_name, table):
              "\n\tx__version int8 NOT NULL DEFAULT 0,"
     print(header)
     colnames = table[0]
-    a = [row for row in table if not row[0].lower().startswith('x__')][1:]
-    for col in [row for row in table if not row[0].lower().startswith('x__')][1:]:
-        if colnames[3] == 'DEFAULT':
-            default = ' DEFAULT ' + str(col[3]).lower() if not math.isnan(col[3]) else ''
+    for col in [row for row in table if is_col_needed(row[0])][1:]:
+        if colnames[3].upper() == 'DEFAULT':
+            default = ' DEFAULT ' + ("'"+str(col[3])+"'") if not is_nan_or_none(col[3]) else ''
             null = ' NULL' if col[2].lower() == 'nullable' else ' NOT NULL'
         else:
-            default = ' DEFAULT ' + str(col[2]).lower() if not math.isnan(col[2]) else ''
+            default = ' DEFAULT ' + str(col[2]) if not math.isnan(col[2]) else ''
             null = ' NULL' if col[3].lower() == 'nullable' else ' NOT NULL'
         type = modify_type(col[1])
         print('\t' + col[0].lower() + ' ' + type + null + default + ',')
@@ -56,7 +60,7 @@ COMMENT ON COLUMN !table!.x__moddate IS 'Date of last modification';
 COMMENT ON COLUMN !table!.x__moduser IS 'Identifier of modifier user, without FK (nonFK -> SECURITY_USER.X__ID)';
 COMMENT ON COLUMN !table!.x__version IS 'Versioning of changes';""".replace('!table!', tab_name)
     print(header)
-    for col in [row for row in table if not row[0].lower().startswith('x__')][1:]:
+    for col in [row for row in table if is_col_needed(row[0])][1:]:
         print('COMMENT ON COLUMN ' + tab_name + "." + col[0].lower() + " IS '" + col[4] + "';")
 
 
@@ -109,9 +113,19 @@ def print_table_script(tab_comment, tab_name, table):
     table_grants(tab_name)
 
 
+def create_tablefile():
+    pass
+
+
 if __name__ == '__main__':
-    tab_name = 'eobu_tariff.SEGMENT_TARIFF'.lower()
-    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/SEGMENT_TARIFF'
+    repo = 'mlff-enforcement-detection-postgredb'
+    base = 'c:/GIT/MLFF/'+repo+'/liquibase/'
+    tab_name = 'tro_clearing.ctsp_service_fee_share'.lower()
+    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/tro_clearing.ctsp_service_fee_share'
+    db = get_db_name(base)
+    db_path = db.replace('-', '_')
+    schema = get_schema(base, db_path)
+    create_tablefile()
     tab_comment, table = get_table_from_confluence(tab_name, url)
     print_table_script(tab_comment, tab_name, table)
 

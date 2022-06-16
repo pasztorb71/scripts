@@ -19,5 +19,5 @@ def prep_enum(p):
 
 
 if __name__ == '__main__':
-    c, p = prep_enum("CHECK(SEGMENT_TYPE IN ('OPEN', 'CLOSED'))")
+    c, p = prep_enum("CHECK(currency IN ('IDR'))")
     print(gen_enum(c, p))
