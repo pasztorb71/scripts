@@ -51,7 +51,7 @@ tmp_update = """----------------------------------------------------------------
 --comment Update column !!colname!!.
 --
 --preconditions onFail:MARK_RAN onError:HALT
---precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = 'language'
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
 ---------------------------------------------------------------------------------------------------
 """
 tmp_set_default = """---------------------------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ tmp_set_default = """-----------------------------------------------------------
 --comment Set default on column !!colname!!.
 --
 --preconditions onFail:MARK_RAN onError:HALT
---precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = 'language'
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
 ---------------------------------------------------------------------------------------------------
 """
 tmp_drop_not_null = """---------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ tmp_drop_not_null = """---------------------------------------------------------
 --comment Set !!colname!! column to NULL.
 --
 --preconditions onFail:MARK_RAN onError:HALT
---precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = 'language'
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
 ---------------------------------------------------------------------------------------------------
 """
 tmp_set_not_null = """---------------------------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ tmp_set_not_null = """----------------------------------------------------------
 --comment Alter column !!colname!!.
 --
 --preconditions onFail:MARK_RAN onError:HALT
---precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = 'language'
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
 ---------------------------------------------------------------------------------------------------
 """
 tmp_column_type = """---------------------------------------------------------------------------------------------------
@@ -83,7 +83,7 @@ tmp_column_type = """-----------------------------------------------------------
 --comment Change type of !!colname!! column.
 --
 --preconditions onFail:MARK_RAN onError:HALT
---precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = 'language'
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
 ---------------------------------------------------------------------------------------------------
 """
 tmp_drop_index = """---------------------------------------------------------------------------------------------------
@@ -107,7 +107,7 @@ tmp_rename_column = """---------------------------------------------------------
 --comment Rename column !!colname!!.
 --
 --preconditions onFail:MARK_RAN onError:HALT
---precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = 'language'
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
 ---------------------------------------------------------------------------------------------------
 """
 tmp_drop_table = """---------------------------------------------------------------------------------------------------
@@ -131,7 +131,7 @@ tmp_drop_column = """-----------------------------------------------------------
 --comment Drop column !!colname!!.
 --
 --preconditions onFail:MARK_RAN onError:HALT
---precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = 'language'
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
 ---------------------------------------------------------------------------------------------------
 """
 tmp_grant = """---------------------------------------------------------------------------------------------------

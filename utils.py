@@ -130,3 +130,77 @@ def password_from_file(phost, pport):
             if host == phost and port == pport:
                 break
     return passw
+
+
+def get_tablename_from_command(command):
+    command = command.replace('IF EXISTS ','').replace('"','')
+    patterns = ["ALTER TABLE (\w+[.])?([a-zA-z0-9_$\"]+)",
+                "COMMENT ON COLUMN (\w+[.])?([a-zA-z0-9_$\"]+)",
+                "CREATE INDEX .* ON (\w+[.])?([a-zA-z0-9_$\"]+)",
+                "UPDATE (\w+[.])?([a-zA-z0-9_\"]+)",
+                ".* TABLE (\w+[.])?([a-zA-z0-9_$\"]+)"]
+    outs = [re.match(pattern, command) for pattern in patterns]
+    try:
+        m = next(item for item in outs if item is not None)
+    except:
+        m = None
+    return m.group(2).replace('"','') if m else ''
+
+
+def get_columnname_from_command(command):
+    command = command.replace('IF EXISTS ','').replace('"','')
+    m = None
+    if ' COLUMN ' in command:
+        m = re.match(".* COLUMN ([a-zA-z0-9._\"$]+) ", command)
+    elif ' ADD ' in command and 'CONSTRAINT' not in command:
+        m = re.match(".* ADD ([a-zA-z0-9._\"]+) ", command)
+    elif ' ADD CONSTRAINT' in command:
+        m = re.match(".* CHECK \(\(\((\w+)", command)
+    elif 'UPDATE ' in command:
+        m = re.match("UPDATE .* SET (\w+)", command)
+    return m.group(1).split('.')[-1].replace('"','') if m else ''
+
+def get_schema_from_command(command):
+    command = command.replace('IF EXISTS ','').replace('"','')
+    patterns = ["ALTER TABLE ([a-zA-z0-9_\"]+)",
+                "COMMENT ON COLUMN ([a-zA-z0-9_\"]+)",
+                ".* INDEX .* ON ([a-zA-z0-9_\"]+)",
+                "UPDATE ([a-zA-z0-9_\"]+)",
+                "DROP INDEX (.*)\.",
+                ".* TABLE ([a-zA-z0-9_\"]+)"]
+    outs = [re.match(pattern, command) for pattern in patterns]
+    try:
+        m = next(item for item in outs if item is not None)
+    except:
+        m = None
+    return m.group(1).replace('"','') if m else ''
+
+
+def get_consname_from_command(command):
+    m = re.match(".*CONSTRAINT (\w+)[;]?", command)
+    return m.group(1) if m else ''
+
+
+def get_indexname_from_command(command):
+    patterns = ["DROP INDEX .*\.(\w+)",
+                ".*INDEX (\w+)[;]?",               ]
+    outs = [re.match(pattern, command) for pattern in patterns]
+    try:
+        m = next(item for item in outs if item is not None)
+    except:
+        m = None
+    return m.group(1)  if m else ''
+
+
+def get_triggername_from_command(command):
+    m = re.match(".*TRIGGER (\w+)[;]?", command)
+    return m.group(1)  if m else ''
+
+
+def get_files_from_path_ext_filtered(path, ext, cont):
+    out = []
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if file.endswith(ext) and cont in file:
+                out.append(os.path.join(root, file))
+    return out
