@@ -14,7 +14,7 @@ def get_commands():
 if __name__ == '__main__':
     commands = get_commands()
     g = Changelog_header_generator(author='bertalan.pasztor',jira='MLFFDEV-2355', version='0.3.0' )
-    #commands = ['DROP TABLE IF EXISTS "template"."template$hist";']
+    #commands = ['ALTER TABLE account_info.payment_method DROP COLUMN payment_method;']
     try:
         for stmt in commands[0:]:
             header = g.generate_header(stmt)

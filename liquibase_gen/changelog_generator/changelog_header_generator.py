@@ -10,7 +10,7 @@ class Changelog_header_generator():
         self.jira = jira
         self.comment = ''
         self.version = version
-        self.changesetid = 1
+        self.changesetid = 0
 
     def analyze_command(self):
         self.table_name = utils.get_tablename_from_command(self.command)
