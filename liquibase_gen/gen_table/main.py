@@ -10,7 +10,8 @@ def modify_type(col):
     return col.lower().replace('varchar2', 'varchar')\
         .replace('timestamp_with_timezone', 'timestamptz(6)')\
         .replace('decimal', 'numeric')\
-        .replace('smallint', 'int2').replace('blob', 'bytea')
+        .replace('smallint', 'int2')\
+        .replace('blob', 'bytea').replace('number', 'numeric')
 
 
 def get_table_from_confluence(table, url):
@@ -28,6 +29,11 @@ def is_col_needed(name):
 def is_nan_or_none(name):
     return name == '' or pd.isnull(name)
 
+
+def get_default_colval(defval, coltype):
+    return "'" + defval + "'" if 'varchar' in coltype.lower() else defval
+
+
 def table_columns(tab_name, table):
     header = "CREATE TABLE " + tab_name + " (" + \
              "\n\tx__id varchar(30) NOT NULL," \
@@ -43,7 +49,7 @@ def table_columns(tab_name, table):
             default = ' DEFAULT ' + ("'"+str(col[3])+"'") if not is_nan_or_none(col[3]) else ''
             null = ' NULL' if col[2].lower() == 'nullable' else ' NOT NULL'
         else:
-            default = ' DEFAULT ' + str(col[2]) if not math.isnan(col[2]) else ''
+            default = ' DEFAULT ' + get_default_colval(str(col[2]), col[1]) if not is_nan_or_none(col[2]) else ''
             null = ' NULL' if col[3].lower() == 'nullable' else ' NOT NULL'
         type = modify_type(col[1])
         print('\t' + col[0].lower() + ' ' + type + null + default + ',')
@@ -103,14 +109,59 @@ def table_header(tab_name):
 """.replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema))
 
 
-def print_table_script(tab_comment, tab_name, table):
+def table_history(tab_name):
+    t = tab_name.split('.')
+    sema = t[0]
+    table = t[1]
+    print("""--===============================================================================================--
+-- HISTORY ==
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:!TABLE!$HIST runOnChange:true
+--comment A !table!$hist history tábla létrehozása..
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:0 SELECT count(*) FROM pg_tables WHERE schemaname = '!sema!' AND tablename = '!table!$hist';
+---------------------------------------------------------------------------------------------------
+
+call ${schema_name_!sema!}.HIST_TABLE_GENERATOR('${schema_name_!sema!}', '!table!');
+
+
+--===============================================================================================--
+-- GRANT$HIST ==
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:!TABLE!$HIST_GRANT runOnChange:true
+--comment A !table!$hist táblára Select jog kiosztása..
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_tables WHERE schemaname = '!sema!' AND tablename = '!table!$hist';
+---------------------------------------------------------------------------------------------------
+
+GRANT SELECT ON TABLE !sema!.!table!$hist TO ${schema_name_!sema!}_sel;
+
+
+--===============================================================================================--
+-- TRIGGER ==
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:TR_!TABLE!$HIST runOnChange:true
+--comment A tr_!table!$hist trigger létrehozása..
+---------------------------------------------------------------------------------------------------
+
+call ${schema_name_!sema!}.HIST_TRIGGER_GENERATOR('${schema_name_!sema!}', '!table!');
+
+""".replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema))
+
+
+def print_table_script(tab_comment, tab_name, table, history):
     print('--liquibase formatted sql\n')
     table_header(tab_name)
     table_columns(tab_name, table)
     print()
     table_comments(tab_comment, tab_name, table)
+    #TODO Index generation on _id columns
     print()
     table_grants(tab_name)
+    if history == 'y':
+        table_history(tab_name)
 
 
 def create_tablefile():
@@ -118,14 +169,15 @@ def create_tablefile():
 
 
 if __name__ == '__main__':
-    repo = 'mlff-enforcement-detection-postgredb'
+    repo = 'mlff-core-notification-wa-postgredb'
     base = 'c:/GIT/MLFF/'+repo+'/liquibase/'
-    tab_name = 'tro_clearing.ctsp_service_fee_share'.lower()
-    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/tro_clearing.ctsp_service_fee_share'
+    tab_name = 'notification_wa.providertoken'.lower()
+    history = 'n'
+    url = 'https://confluence.icellmobilsoft.hu/pages/viewpage.action?spaceKey=MLFF&title=KOM+Notification+service+ProviderToken+database'
     db = get_db_name(base)
     db_path = db.replace('-', '_')
     schema = get_schema(base, db_path)
     create_tablefile()
     tab_comment, table = get_table_from_confluence(tab_name, url)
-    print_table_script(tab_comment, tab_name, table)
+    print_table_script(tab_comment, tab_name, table, history)
 

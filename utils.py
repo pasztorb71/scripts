@@ -74,7 +74,7 @@ def get_db_name(base):
 
 
 def get_schema(base, db_path):
-    with open(base+db_path+'/_init_dbs/' + db_path + '-db-install.xml', 'r', encoding='utf-8') as f:
+    with open(base+db_path+'/' + get_sema_from_dbname(db_path) + '/liquibase-install-schema.xml', 'r', encoding='utf-8') as f:
         text = f.read()
     return re.match('.*property name="schema_name_.*value="(.*)"/>', text, flags=re.DOTALL|re.MULTILINE).group(1)
 
@@ -214,3 +214,23 @@ def get_files_from_path_ext_filtered(path, ext, cont):
             if file.endswith(ext) and cont in file:
                 out.append(os.path.join(root, file))
     return out
+
+
+def get_repo_from_schema(schema):
+    r = ''
+    base = 'c:/GIT/MLFF/'
+    for repo in os.listdir(base):
+        path = base + repo + '/liquibase/'
+        dbname = os.listdir(path)
+        path += dbname[0]
+        schem = filter(lambda file: os.path.isdir(path+'/'+file), os.listdir(path))
+        s = [dir for dir in list(schem) if dir not in ('_init_dbs', 'all-modules')]
+        if s[0] == schema:
+            r = repo
+            break
+    return r
+
+
+def load_from_file(fname):
+    with open(fname, 'r') as f:
+        return f.read().split('\n')

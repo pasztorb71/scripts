@@ -5,12 +5,12 @@ from liquibase_gen.changelog_generator.command_templates import *
 
 
 class Changelog_header_generator():
-    def __init__(self, author, jira, version='0.1.0'):
+    def __init__(self, author, jira, version='0.1.0', serial=1):
         self.author = author
         self.jira = jira
         self.comment = ''
         self.version = version
-        self.changesetid = 0
+        self.serial = serial
 
     def analyze_command(self):
         self.table_name = utils.get_tablename_from_command(self.command)
@@ -41,7 +41,8 @@ class Changelog_header_generator():
     def get_template(self, command):
         template = None
         if re.match('.*ADD COLUMN.*',command): template = tmp_add_column
-        elif re.match('COMMENT ON COLUMN.*',command): template = tmp_comment
+        elif re.match('COMMENT ON COLUMN.*',command): template = tmp_comment_column
+        elif re.match('COMMENT ON TABLE.*',command): template = tmp_comment_table
         elif re.match('.*ADD CONSTRAINT .* CHECK ',command): template = tmp_add_ck_constraint
         elif re.match('.*ADD CONSTRAINT .* FOREIGN KEY ',command): template = tmp_add_fk_constraint
         elif re.match('.*DROP CONSTRAINT.*',command): template = tmp_drop_constraint
@@ -62,7 +63,8 @@ class Changelog_header_generator():
         return template
 
     def get_next_serial(self):
-        self.changesetid += 1
-        return str(self.changesetid).rjust(2,'0')
+        out = str(self.serial).rjust(2,'0')
+        self.serial += 1
+        return out
 
 

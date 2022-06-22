@@ -4,10 +4,10 @@ import os
 import psycopg2
 
 from sql_runner.Cluster import Cluster
-from utils import print_dict_queried, print_dict, password_from_file
+from utils import print_dict_queried, print_dict, password_from_file, load_from_file
 
 
-def mproc(host, port, db, return_dict):
+def mproc_single_command(host, port, db, return_dict):
     conn = psycopg2.connect(
         host=host,
         port=port,
@@ -23,6 +23,58 @@ def mproc(host, port, db, return_dict):
     conn.close()
 
 def mproc_multiple_commands(host, port, db, return_dict):
+    conn = psycopg2.connect(
+        host=host,
+        port=port,
+        database=db,
+        user="postgres",
+        password='fLXyFS0RpmIX9uxGII4N')
+    cur = conn.cursor()
+    recout = []
+    cur.execute("SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
+    record = cur.fetchall()
+    for rec in record:
+        cur.execute("select '" + rec[0] + '.' + rec[1] + "' table_name, count(*) from " + rec[0] + '.' + rec[1])
+        header = [[desc[0].upper() for desc in cur.description]]
+        record1 = cur.fetchall()
+        recout = recout + record1
+    return_dict[db] = header + recout if record else []
+
+    cur.close()
+    conn.commit()
+    conn.close()
+
+def mproc_get_tables(host, port, db, return_dict):
+    conn = psycopg2.connect(
+        host=host,
+        port=port,
+        database=db,
+        user="postgres",
+        password='fLXyFS0RpmIX9uxGII4N')
+    cur = conn.cursor()
+    cur.execute("SELECT schemaname, tablename, tableowner FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public') and tablename not like '%$hist'")
+    record = cur.fetchall()
+    return_dict[db] = [[desc[0].upper() for desc in cur.description]] + record
+    cur.close()
+    conn.commit()
+    conn.close()
+
+def mproc_count_tables(host, port, db, return_dict):
+    conn = psycopg2.connect(
+        host=host,
+        port=port,
+        database=db,
+        user="postgres",
+        password='fLXyFS0RpmIX9uxGII4N')
+    cur = conn.cursor()
+    cur.execute("SELECT count(*) cnt FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
+    record = cur.fetchall()
+    return_dict[db] = [[desc[0].upper() for desc in cur.description]] + record
+    cur.close()
+    conn.commit()
+    conn.close()
+
+def mproc_count_records(host, port, db, return_dict):
     conn = psycopg2.connect(
         host=host,
         port=port,
@@ -104,17 +156,24 @@ def get_return_dict():
     return manager.dict()
 
 
+def sum_counts(d):
+    sum = 0
+    for db, records in d.items():
+        sum += records[1][0]
+    return sum
+
 if __name__ == '__main__':
     host, port = 'localhost', 5433
     cluster = Cluster(host=host, port=port, passw=password_from_file(host, port))
-    #databases = load_from_file('databases.txt')
+    databases = load_from_file('../databases.txt')
     databases = cluster.databases[0:]
     #databases = ['core_customer']
     return_dict = get_return_dict()
     jobs = []
     for db in databases[0:]:
-        start_process(mproc_grant_dwh_read, host, port, db, return_dict)
+        start_process(mproc_count_tables, host, port, db, return_dict)
     wait_until_end(jobs)
-    print_dict(return_dict)
-    #print_dict_queried(return_dict)
+    #print_dict(return_dict)
+    print(sum_counts(return_dict))
+    #rint_dict_queried(return_dict)
 

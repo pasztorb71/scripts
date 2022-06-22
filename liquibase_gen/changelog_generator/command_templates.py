@@ -6,12 +6,20 @@ tmp_add_column = """------------------------------------------------------------
 --precondition-sql-check expectedResult:0 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
 ---------------------------------------------------------------------------------------------------
 """
-tmp_comment = """---------------------------------------------------------------------------------------------------
+tmp_comment_column = """---------------------------------------------------------------------------------------------------
 --changeset !!author!!:!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
 --comment Comment on column !!colname!!.
 --
 --preconditions onFail:MARK_RAN onError:HALT
 --precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
+---------------------------------------------------------------------------------------------------
+"""
+tmp_comment_table = """---------------------------------------------------------------------------------------------------
+--changeset !!author!!:!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
+--comment Comment on table !!table_lower!!.
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_catalog.pg_tables WHERE schemaname = '!!schema!!' AND tablename = '!!table_lower!!'
 ---------------------------------------------------------------------------------------------------
 """
 tmp_add_ck_constraint = """---------------------------------------------------------------------------------------------------
