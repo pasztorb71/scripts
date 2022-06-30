@@ -151,13 +151,20 @@ call ${schema_name_!sema!}.HIST_TRIGGER_GENERATOR('${schema_name_!sema!}', '!tab
 """.replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema))
 
 
+def table_indexes(tab_name, table):
+    for col in [row for row in table if is_col_needed(row[0])][1:]:
+        if col[0].lower().endswith('_id'):
+            print('CREATE INDEX ix__'+col[0].lower()+' ON '+tab_name+' USING btree ('+col[0].lower()+');')
+
+
 def print_table_script(tab_comment, tab_name, table, history):
     print('--liquibase formatted sql\n')
     table_header(tab_name)
     table_columns(tab_name, table)
     print()
+    table_indexes(tab_name, table)
+    print()
     table_comments(tab_comment, tab_name, table)
-    #TODO Index generation on _id columns
     print()
     table_grants(tab_name)
     if history == 'y':
@@ -173,7 +180,7 @@ if __name__ == '__main__':
     base = 'c:/GIT/MLFF/'+repo+'/liquibase/'
     tab_name = 'notification_wa.providertoken'.lower()
     history = 'n'
-    url = 'https://confluence.icellmobilsoft.hu/pages/viewpage.action?spaceKey=MLFF&title=KOM+Notification+service+ProviderToken+database'
+    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/KOM+Notification+WAservice+database'
     db = get_db_name(base)
     db_path = db.replace('-', '_')
     schema = get_schema(base, db_path)
