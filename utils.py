@@ -132,6 +132,11 @@ def password_from_file(phost, pport):
     return passw
 
 
+def get_login_from_file():
+    with open(getfile(get_login_from_file).rsplit('\\',1)[0] + '/passw.txt', 'r') as f:
+        return f.read().split()
+
+
 def get_tablename_from_command(command):
     command = command.replace('IF EXISTS ','').replace('"','')
     patterns = ["ALTER TABLE (\w+[.])?([a-zA-z0-9_$\"]+)",
