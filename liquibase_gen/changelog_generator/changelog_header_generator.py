@@ -11,6 +11,7 @@ class Changelog_header_generator():
         self.comment = ''
         self.version = version
         self.serial = serial
+        self.table_name = ''
 
     def analyze_command(self):
         self.table_name = utils.get_tablename_from_command(self.command)
@@ -30,10 +31,10 @@ class Changelog_header_generator():
             .replace('!!table_upper!!',utils.get_tablename_from_command(self.command).upper())\
             .replace('!!version!!', self.version)\
             .replace('!!ticket!!', self.jira)\
-            .replace('!!serial!!', self.get_next_serial())\
+            .replace('!!serial!!', self.get_next_serial(utils.get_tablename_from_command(self.command).lower()))\
             .replace('!!colname!!', utils.get_columnname_from_command(self.command)) \
             .replace('!!schema!!', utils.get_schema_from_command(self.command))\
-            .replace('!!table_lower!!', utils.get_tablename_from_command(self.command)) \
+            .replace('!!table_lower!!', utils.get_tablename_from_command(self.command).lower()) \
             .replace('!!consname!!', utils.get_consname_from_command(self.command))\
             .replace('!!indexname!!', utils.get_indexname_from_command(self.command)) \
             .replace('!!trigger!!', utils.get_triggername_from_command(self.command))
@@ -62,9 +63,14 @@ class Changelog_header_generator():
         elif re.match('.*ALTER INDEX .* RENAME .*',command): template = tmp_rename_index
         return template
 
-    def get_next_serial(self):
-        out = str(self.serial).rjust(2,'0')
-        self.serial += 1
+    def get_next_serial(self, table_name):
+        if table_name == self.table_name:
+            self.serial += 1
+            out = str(self.serial).rjust(2, '0')
+        else:
+            self.serial = 1
+            out = str(self.serial).rjust(2,'0')
+            self.table_name = table_name
         return out
 
 

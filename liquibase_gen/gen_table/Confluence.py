@@ -21,4 +21,4 @@ class Confluence:
         a = re.match('.*<p( style="")?>(.*)</p>.*<table.*(?:<table).*',f)
         #g1 = a.group(1)
         #g2 = a.group(2)
-        return a.group(2)
+        return a.group(2) if a else ''

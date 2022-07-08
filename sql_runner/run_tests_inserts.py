@@ -30,7 +30,7 @@ def runteszt(conn):
             cur.execute(cmd)
             print(': OK')
         except Exception as e:
-            print(': ' + str(e).split('\n')[0], end='')
+            print(': ' + str(e).split('\n')[0])
             conn.rollback()
     conn.commit()
 
@@ -45,10 +45,10 @@ if __name__ == '__main__':
     host, port = 'localhost', 5433
     cluster = Cluster(host=host, port=port, passw=password_from_file(host, port))
     #databases = load_from_file('../databases.txt')
-    databases = ['eobu_trip']
+    databases = ['payment_account_info']
     #databases = cluster.databases
     for db in databases:
-        runteszt(get_conn('sandbox',db))
+        runteszt(get_conn('local',db))
     exit(0)
     runteszt(get_conn('sandbox','core_template'))
     runteszt(get_conn('sandbox','core_customer'))

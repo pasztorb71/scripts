@@ -15,7 +15,10 @@ class Ticket:
         self.content = json.loads(str(page.content, 'utf-8'))
 
     def get_version(self):
-        raw = self.content['fields']['fixVersions'][0]['name']
+        try:
+            raw = self.content['fields']['fixVersions'][0]['name']
+        except:
+            return '0.04.0'
         ver = raw.split()[1]
         tmp = ver.split('.')
         tmp[1] = tmp[1].rjust(2, '0')

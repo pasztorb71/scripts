@@ -1,9 +1,13 @@
+import os
+
 from Runner import Runner
 
 if __name__ == '__main__':
     base = 'c:/GIT/MLFF/'
-    #repos = os.listdir(base)
+    repos = os.listdir(base)
+    repos = [x for x in repos if 'enforcement' in x]
     #repos = load_from_file('repos.txt')
-    repos = ['mlff-enforcement-detection-postgredb']
+    repos = ['mlff-settlement-psp-clearing-postgredb']
     runner = Runner(base)
+    #TODO beletenni maga előtt teljes törlés opciót
     runner.run(repos, loc='sandbox') #local ,sandbox, remote, dev, fit

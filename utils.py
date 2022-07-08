@@ -2,6 +2,8 @@ import os
 import re
 import shutil
 from inspect import getfile
+from os.path import exists
+
 from tabulate import tabulate
 
 from setuptools._distutils.dir_util import copy_tree
@@ -26,6 +28,8 @@ def copy_file(src, dst):
 
 
 def copy_file_and_replace(src, dst, from_to):
+    if exists(dst):
+        return
     copy_file(src, dst)
     replace_in_file(dst, from_to)
 
@@ -74,9 +78,16 @@ def get_db_name(base):
 
 
 def get_schema(base, db_path):
+    line = ''
+    pattern = '.*property name="schema_name.*value="(.*)"/>'
+    p = base+db_path+'/' + get_sema_from_dbname(db_path)
     with open(base+db_path+'/' + get_sema_from_dbname(db_path) + '/liquibase-install-schema.xml', 'r', encoding='utf-8') as f:
-        text = f.read()
-    return re.match('.*property name="schema_name_.*value="(.*)"/>', text, flags=re.DOTALL|re.MULTILINE).group(1)
+        text = f.read().splitlines()
+        for l in text:
+            m = re.match(pattern, l)
+            if m:
+                return m.group(1)
+    return ''
 
 
 def git_init(base):
@@ -220,6 +231,16 @@ def get_files_from_path_ext_filtered(path, ext, cont):
                 out.append(os.path.join(root, file))
     return out
 
+def get_files_from_path_ext_find_content(path, ext, cont):
+    out = []
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if file.endswith(ext):
+                with open(os.path.join(root, file), 'r', encoding='utf-8') as f:
+                    if cont in f.read():
+                        out.append(os.path.join(root, file))
+    return out
+
 
 def get_repo_from_schema(schema):
     r = ''
@@ -237,5 +258,6 @@ def get_repo_from_schema(schema):
 
 
 def load_from_file(fname):
-    with open(fname, 'r') as f:
-        return f.read().split('\n')
+    project_root = os.path.dirname(os.path.dirname(__file__))
+    with open('/'.join([project_root,'liquibase',fname]), 'r') as f:
+        return [x for x in f.read().split('\n') if not x.startswith('#')]

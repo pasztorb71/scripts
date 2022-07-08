@@ -19,5 +19,5 @@ def prep_enum(p):
 
 
 if __name__ == '__main__':
-    c, p = prep_enum("CHECK(channel IN ('WHATSAPP', 'PUSH_NOTIFICATION','EMAIL'))")
+    c, p = prep_enum("CHECK(ticket_payment_status IN ('PREPARED_FOR_PAYMENT,WAITING_FOR_PAYMENT,PAID,UNPAID,WAITING_FOR_CONFIRMATION,REFUNDED,CAPTURED'))")
     print(gen_enum(c, p))

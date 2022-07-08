@@ -84,5 +84,5 @@ if __name__ == '__main__':
     repos = os.listdir(base)
     #repos = [x for x in os.listdir(base) if x.startswith('mlff-enforcement')]
     #repos = ['doc-postgredb']
-    #docker_image_hely_modositas(repos)
+    docker_image_hely_modositas(repos)
     sema_atszervezes(repos)

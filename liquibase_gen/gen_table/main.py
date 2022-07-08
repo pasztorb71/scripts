@@ -10,6 +10,7 @@ def modify_type(col):
     return col.lower().replace('varchar2', 'varchar')\
         .replace('timestamp_with_timezone', 'timestamptz(6)')\
         .replace('decimal', 'numeric')\
+        .replace('double', 'numeric')\
         .replace('smallint', 'int2')\
         .replace('blob', 'bytea').replace('number', 'numeric')
 
@@ -34,7 +35,13 @@ def get_default_colval(defval, coltype):
     return "'" + defval + "'" if 'varchar' in coltype.lower() else defval
 
 
-def table_columns(tab_name, table):
+def check_type(colname, coltype):
+    type = coltype.lower()
+    if not all(x in type for x in ['varchar', '(']):
+        raise Exception("Varchar without length!, column: "+colname)
+
+
+def table_columns(tab_name, table, tab_short_name):
     header = "CREATE TABLE " + tab_name + " (" + \
              "\n\tx__id varchar(30) NOT NULL," \
              "\n\tx__insdate timestamptz(6) NOT NULL DEFAULT CURRENT_TIMESTAMP," \
@@ -44,6 +51,7 @@ def table_columns(tab_name, table):
              "\n\tx__version int8 NOT NULL DEFAULT 0,"
     print(header)
     colnames = table[0]
+    fk =[]
     for col in [row for row in table if is_col_needed(row[0])][1:]:
         if colnames[3].upper() == 'DEFAULT':
             default = ' DEFAULT ' + ("'"+str(col[3])+"'") if not is_nan_or_none(col[3]) else ''
@@ -51,9 +59,15 @@ def table_columns(tab_name, table):
         else:
             default = ' DEFAULT ' + get_default_colval(str(col[2]), col[1]) if not is_nan_or_none(col[2]) else ''
             null = ' NULL' if col[3].lower() == 'nullable' else ' NOT NULL'
+        check_type(col[0], col[1])
         type = modify_type(col[1])
         print('\t' + col[0].lower() + ' ' + type + null + default + ',')
-    print('\t' + 'CONSTRAINT pk_' + tab_name.split('.')[1] + ' PRIMARY KEY (x__id)\n);')
+        if col[0].lower().endswith('_id'):
+            fk.append('CONSTRAINT fk_'+tab_short_name+'_'+col[0].lower()+' FOREIGN KEY ('+col[0].lower()+') REFERENCES '+tab_name.split('.')[0]+'.'+col[0].lower().split('_')[0]+'(x__id) DEFERRABLE')
+    print('\t' + 'CONSTRAINT pk_' + tab_name.split('.')[1] + ' PRIMARY KEY (x__id)', end='')
+    if fk:
+        print(',\n\t' + ',\n\t'.join(fk))
+    print(');')
 
 def table_comments(tab_comment, tab_name, table):
     print("COMMENT ON TABLE " + tab_name + " IS '" + tab_comment + "';\n")
@@ -151,18 +165,18 @@ call ${schema_name_!sema!}.HIST_TRIGGER_GENERATOR('${schema_name_!sema!}', '!tab
 """.replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema))
 
 
-def table_indexes(tab_name, table):
+def table_indexes(tab_name, table, tab_short_name):
     for col in [row for row in table if is_col_needed(row[0])][1:]:
         if col[0].lower().endswith('_id'):
-            print('CREATE INDEX ix__'+col[0].lower()+' ON '+tab_name+' USING btree ('+col[0].lower()+');')
+            print('CREATE INDEX ix_'+tab_short_name+'_'+col[0].lower()+' ON '+tab_name+' USING btree ('+col[0].lower()+');')
 
 
 def print_table_script(tab_comment, tab_name, table, history):
     print('--liquibase formatted sql\n')
     table_header(tab_name)
-    table_columns(tab_name, table)
+    table_columns(tab_name, table, tab_short_name)
     print()
-    table_indexes(tab_name, table)
+    table_indexes(tab_name, table, tab_short_name)
     print()
     table_comments(tab_comment, tab_name, table)
     print()
@@ -176,11 +190,12 @@ def create_tablefile():
 
 
 if __name__ == '__main__':
-    repo = 'mlff-core-notification-wa-postgredb'
+    repo = 'mlff-core-ticket-postgredb'
     base = 'c:/GIT/MLFF/'+repo+'/liquibase/'
-    tab_name = 'notification_wa.providertoken'.lower()
+    tab_name = 'trip.trip_outbox'.lower()
+    tab_short_name = 'tripout'
     history = 'n'
-    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/KOM+Notification+WAservice+database'
+    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/TRIP_OUTBOX'
     db = get_db_name(base)
     db_path = db.replace('-', '_')
     schema = get_schema(base, db_path)
