@@ -25,3 +25,21 @@ class Git:
         else:
             self.synced = False
         return self.synced
+
+    def get_current_branch(self):
+        return os.popen('cmd /u /c git -C ' + self.base + '/' + self.repo + ' branch --show-current ').read().replace('\n','')
+
+    def checkout_branch(self, branch):
+        self._run_command('checkout ' + branch, ['Already on', 'Switched to branch'])
+
+    def new_branch(self, branch):
+        self._run_command('checkout -b ' + branch, ['Switched to a new branch'])
+
+    def _run_command(self, cmd, acceptable_err):
+        proc = subprocess.Popen('cmd /u /c git -C ' + self.base + '/' + self.repo + ' ' + cmd,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        stdout, stderr = proc.communicate()
+        if stderr and not any([x in stderr for x in acceptable_err]):
+            raise Exception(stderr)
+
+

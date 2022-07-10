@@ -9,7 +9,7 @@ from utils import print_dict, get_files_from_path_ext_filtered, get_files_from_p
 
 
 def _mproc_ck_branch(git, return_dict, branch):
-    os.popen('git -C '+git.base+'/'+git.repo+' fetch --all --prune').read()
+    os.popen('git -C '+git.base+'/'+git.repo+' fetch --all --prune')
     proc=subprocess.Popen('cmd /u /c git -C ' + git.base +'/' + git.repo +' diff '+branch+' origin/'+branch, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     res = proc.stdout.read()
     git.synced = 'OK' if not res else 'DIFF'
@@ -59,7 +59,12 @@ def synchronize_branch_in_multiple_repos(gitlist, branch):
 
 def create_branch(git, ticket):
     is_synced = git.is_master_synced()
-    print(is_synced)
+    if not is_synced:
+        print('A lokális master ág le van maradva')
+        exit(1)
+    else:
+        git.checkout_branch('master')
+        git.new_branch('feature/'+ticket.name+'_'+ticket.get_title())
 
 
 if __name__ == '__main__':
@@ -69,11 +74,11 @@ if __name__ == '__main__':
     gitlist = [Git(base, repo) for repo in repos]
     #create_branch(gitlist[0], Ticket('MLFFDEV-4353'))
     create_branch(Git('c:/GIT/', 'teszt'), Ticket('MLFFDEV-4353'))
+    print('end')
     exit(0)
     #synchronize_branch_in_multiple_repos(gitlist, branch='master')
     ret_dict = is_all_branches_synchronized(gitlist, branch='master',filtered='y')
     print('Differencia:')
     print_dict(ret_dict)
-    #TODO create branch eljárás írása, ami jira ticket-ből dolgozik
 
 

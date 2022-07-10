@@ -23,3 +23,6 @@ class Ticket:
         tmp = ver.split('.')
         tmp[1] = tmp[1].rjust(2, '0')
         return '.'.join(tmp)+'.0'
+
+    def get_title(self):
+        return((self.content['fields']['summary']).replace(' ','_').replace('[','').replace(']',''))
