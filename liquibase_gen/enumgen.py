@@ -19,5 +19,5 @@ def prep_enum(p):
 
 
 if __name__ == '__main__':
-    c, p = prep_enum("CHECK(ticket_payment_status IN ('PREPARED_FOR_PAYMENT,WAITING_FOR_PAYMENT,PAID,UNPAID,WAITING_FOR_CONFIRMATION,REFUNDED,CAPTURED'))")
+    c, p = prep_enum("CHECK(response_status IN ('READ', 'DELIVERED', 'SENT', 'FAILED', 'DELETED'))")
     print(gen_enum(c, p))

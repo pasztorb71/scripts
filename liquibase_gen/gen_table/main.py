@@ -37,7 +37,7 @@ def get_default_colval(defval, coltype):
 
 def check_type(colname, coltype):
     type = coltype.lower()
-    if not all(x in type for x in ['varchar', '(']):
+    if 'varchar' in type and not all(x in type for x in ['varchar', '(']):
         raise Exception("Varchar without length!, column: "+colname)
 
 
@@ -58,7 +58,7 @@ def table_columns(tab_name, table, tab_short_name):
             null = ' NULL' if col[2].lower() == 'nullable' else ' NOT NULL'
         else:
             default = ' DEFAULT ' + get_default_colval(str(col[2]), col[1]) if not is_nan_or_none(col[2]) else ''
-            null = ' NULL' if col[3].lower() == 'nullable' else ' NOT NULL'
+            null = ' NULL' if is_nan_or_none(col[3]) or col[3].lower() == 'nullable' else ' NOT NULL'
         check_type(col[0], col[1])
         type = modify_type(col[1])
         print('\t' + col[0].lower() + ' ' + type + null + default + ',')
@@ -81,7 +81,8 @@ COMMENT ON COLUMN !table!.x__moduser IS 'Identifier of modifier user, without FK
 COMMENT ON COLUMN !table!.x__version IS 'Versioning of changes';""".replace('!table!', tab_name)
     print(header)
     for col in [row for row in table if is_col_needed(row[0])][1:]:
-        print('COMMENT ON COLUMN ' + tab_name + "." + col[0].lower() + " IS '" + col[4] + "';")
+        modified_comment = col[4].replace("'", "''")
+        print('COMMENT ON COLUMN ' + tab_name + "." + col[0].lower() + " IS '" + modified_comment + "';")
 
 
 def table_grants(tab_name):
@@ -190,12 +191,13 @@ def create_tablefile():
 
 
 if __name__ == '__main__':
-    repo = 'mlff-core-ticket-postgredb'
+    #TODO könyvtár és fájl létrehozása, esetleg beírás a create_table.sql-be is
+    repo = 'mlff-core-notification-wa-postgredb'
     base = 'c:/GIT/MLFF/'+repo+'/liquibase/'
-    tab_name = 'trip.trip_outbox'.lower()
-    tab_short_name = 'tripout'
+    tab_name = 'notification_wa.event'.lower()
+    tab_short_name = 'event'
     history = 'n'
-    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/TRIP_OUTBOX'
+    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/KOM+Notification+WAservice+database+providertoken++table'
     db = get_db_name(base)
     db_path = db.replace('-', '_')
     schema = get_schema(base, db_path)

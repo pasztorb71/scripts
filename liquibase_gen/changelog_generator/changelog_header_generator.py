@@ -50,6 +50,7 @@ class Changelog_header_generator():
         elif re.match('.*CREATE.*INDEX.*',command): template = tmp_cre_index
         elif re.match('.*DROP INDEX.*',command): template = tmp_drop_index
         elif re.match('UPDATE.*',command): template = tmp_update
+        elif re.match('DELETE.*',command): template = tmp_delete
         elif re.match('.*ALTER COLUMN.* SET DEFAULT ',command): template = tmp_set_default
         elif re.match('.*ALTER COLUMN.* DROP NOT NULL',command): template = tmp_drop_not_null
         elif re.match('.*ALTER COLUMN.* SET NOT NULL',command): template = tmp_set_not_null

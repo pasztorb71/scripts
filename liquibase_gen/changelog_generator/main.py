@@ -20,29 +20,28 @@ def get_commands():
 
 def p_print(stmt):
     print(stmt)
-    if re.match('UPDATE.*', stmt):
+    if re.match('UPDATE.*', stmt) or re.match('DELETE FROM.*', stmt):
         print('COMMIT;')
+
+
+def check_version_file(ticket, repo):
+    pass
 
 
 if __name__ == '__main__':
     #commands = get_commands()
-    ticket = Ticket('MLFFDEV-4353')
+    ticket = Ticket('MLFFDEV-4498')
     #TODO létregozni DDL fájlt, ha kell és nem létezik
+    check_version_file(ticket.get_version(),'mlff-payment-psp-proxy-postgredb')
+    #DDL fájl vége
     g = Changelog_header_generator(author='bertalan.pasztor',jira=ticket.name, version=ticket.get_version(), serial=1 )
     #commands = list(filter(None, load_from_file('C:/Users/bertalan.pasztor/Documents/MLFF/trip_segment.txt')))
+    #TODO új enum hozzáadását komplett feladatként felvenni
     commands = [
-        "ALTER TABLE payment_transaction.payment_transaction DROP CONSTRAINT ck_paytran_psp_type;",
-        "UPDATE payment_transaction.payment_transaction SET psp_type = 'FELLO' WHERE psp_type = 'FINNET';",
-        "ALTER TABLE payment_transaction.payment_transaction ADD CONSTRAINT ck_paytran_psp_type CHECK (((psp_type)::text = ANY (ARRAY[('GOPAY'::character varying)::text, ('FELLO'::character varying)::text])));",
-        "ALTER TABLE psp_clearing.psp_clearing DROP CONSTRAINT ck_pspcle_psp_type;",
-        "UPDATE psp_clearing.psp_clearing SET psp_type = 'FELLO' WHERE psp_type = 'FINNET';",
-        "ALTER TABLE psp_clearing.psp_clearing ADD CONSTRAINT ck_pspcle_psp_type CHECK (((psp_type)::text = ANY (ARRAY[('GOPAY'::character varying)::text, ('FELLO'::character varying)::text])));",
-        "ALTER TABLE psp_clearing.psp_settlement_batch DROP CONSTRAINT ck_pspsettbat_psp_type;",
-        "UPDATE psp_clearing.psp_settlement_batch SET psp_type = 'FELLO' WHERE psp_type = 'FINNET';",
-        "ALTER TABLE psp_clearing.psp_settlement_batch ADD CONSTRAINT ck_pspsettbat_psp_type CHECK (((psp_type)::text = ANY (ARRAY[('GOPAY'::character varying)::text, ('FELLO'::character varying)::text])));",
-        "ALTER TABLE psp_clearing.psp_settlement_package DROP CONSTRAINT ck_pspsettpac_psp_type;",
-        "UPDATE psp_clearing.psp_settlement_package SET psp_type = 'FELLO' WHERE psp_type = 'FINNET';",
-        "ALTER TABLE psp_clearing.psp_settlement_package ADD CONSTRAINT ck_pspsettpac_psp_type CHECK (((psp_type)::text = ANY (ARRAY[('GOPAY'::character varying)::text, ('FELLO'::character varying)::text])));",
+        "ALTER TABLE psp_proxy.psp_data_assignment ALTER COLUMN psp_transaction_id DROP NOT NULL;",
+        "UPDATE psp_proxy.psp_data_assignment SET psp_type = 'GOPAY';",
+        "ALTER TABLE psp_proxy.psp_data_assignment ADD CONSTRAINT ck_pspdatass_psp_type CHECK (((psp_type)::text = ANY (ARRAY[('GOPAY'::character varying)::text, ('FELLO'::character varying)::text])));",
+        "COMMENT ON COLUMN psp_proxy.psp_data_assignment.psp_type IS 'Identifier of the Payment Service Provider. Possible values: ''GOPAY'', ''FELLO''';"
     ]
     try:
         for stmt in commands[0:]:

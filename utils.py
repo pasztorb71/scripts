@@ -154,6 +154,7 @@ def get_tablename_from_command(command):
                 "COMMENT ON COLUMN (\w+[.])?([a-zA-z0-9_$\"]+)",
                 "CREATE INDEX .* ON (\w+[.])?([a-zA-z0-9_$\"]+)",
                 "UPDATE (\w+[.])?([a-zA-z0-9_\"]+)",
+                "DELETE FROM (\w+[.])?([a-zA-z0-9_\"]+)",
                 "GRANT .* ON TABLE (\${.*}).(.*) TO ",
                 ".* TABLE (\w+[.])?([a-zA-z0-9_$\"]+)",
                 ]
@@ -186,6 +187,7 @@ def get_schema_from_command(command):
                 "COMMENT ON COLUMN ([a-zA-z0-9_\"]+)",
                 ".* INDEX .* (?:ON )([a-zA-z0-9_\"]+)",
                 "UPDATE ([a-zA-z0-9_\"]+)",
+                "DELETE FROM ([a-zA-z0-9_\"]+)",
                 "DROP INDEX (.*)\.",
                 "GRANT .* ON TABLE \${schema_name_(\w+)",
                 ".* TABLE ([a-zA-z0-9_\"]+)",
@@ -261,3 +263,8 @@ def load_from_file(fname):
     project_root = os.path.dirname(os.path.dirname(__file__))
     with open('/'.join([project_root,'liquibase',fname]), 'r') as f:
         return [x for x in f.read().split('\n') if not x.startswith('#')]
+
+
+def get_dbname_from_project(project):
+    db = get_db_name(project)
+    return db.replace('-', '_')

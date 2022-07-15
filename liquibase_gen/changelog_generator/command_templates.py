@@ -62,6 +62,14 @@ tmp_update = """----------------------------------------------------------------
 --precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
 ---------------------------------------------------------------------------------------------------
 """
+tmp_delete = """---------------------------------------------------------------------------------------------------
+--changeset !!author!!:!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
+--comment Delete from !!table_lower!! table.
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_catalog.pg_tables WHERE schemaname = '!!schema!!' AND tablename = '!!table_lower!!'
+---------------------------------------------------------------------------------------------------
+"""
 tmp_set_default = """---------------------------------------------------------------------------------------------------
 --changeset !!author!!:!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
 --comment Set default on column !!colname!!.

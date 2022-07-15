@@ -52,5 +52,5 @@ if __name__ == '__main__':
     #repos = os.listdir(base)
     repos = load_from_file('repos.txt')
     #repos = [x for x in os.listdir(base) if x.startswith('mlff-enforcement')]
-    repos = ['mlff-settlement-tro-clearing-postgredb']
+    repos = ['mlff-core-notification-wa-postgredb']
     sema_atszervezes(repos)

@@ -2,9 +2,8 @@ import logging
 
 import psycopg2
 
-import utils_old
 from Cluster import Cluster
-from utils_old import get_port, get_password, get_sema_from_dbname
+from utils import get_port, password_from_file, get_sema_from_dbname, get_password
 
 
 def get_conn(env, db, user):
@@ -129,10 +128,10 @@ def init_logging(level):
 if __name__ == '__main__':
     logger, sh = init_logging(logging.INFO)
     host, port = 'localhost', 5435
-    cluster = Cluster(host=host, port=port, passw=utils.password_from_file(host, port))
+    cluster = Cluster(host=host, port=port, passw=password_from_file(host, port))
     #databases = load_from_file('databases.txt')
     databases = cluster.databases[0:]
-    #databases = ['core_customer']
+    databases = ['core_notification_wa']
     for db in databases:
-        tabla_letrehozas_teszt('fit', db)
-        tabla_modositas_teszt('fit', db)
+        tabla_letrehozas_teszt('sandbox', db)
+        tabla_modositas_teszt('sandbox', db)

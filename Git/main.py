@@ -70,12 +70,9 @@ def create_branch(git, ticket):
 if __name__ == '__main__':
     base = 'c:/GIT/MLFF/'
     repos = os.listdir(base)[0:]
-    repos = ['mlff-core-notification-wa-postgredb']
+    #repos = ['mlff-payment-psp-proxy-postgredb']
     gitlist = [Git(base, repo) for repo in repos]
-    #create_branch(gitlist[0], Ticket('MLFFDEV-4353'))
-    create_branch(Git('c:/GIT/', 'teszt'), Ticket('MLFFDEV-4353'))
-    print('end')
-    exit(0)
+    #create_branch(gitlist[0], Ticket('MLFFDEV-4498'))
     #synchronize_branch_in_multiple_repos(gitlist, branch='master')
     ret_dict = is_all_branches_synchronized(gitlist, branch='master',filtered='y')
     print('Differencia:')

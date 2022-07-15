@@ -1,20 +1,14 @@
 import glob
 import os
-import re
 
-from utils import get_db_name
-
-
-def get_dbname_from_project(project):
-    db = get_db_name(project)
-    return db.replace('-', '_')
-
+from utils import get_dbname_from_project
 
 class Runner:
     def __init__(self, base):
         self.base = base
         self.password = ''
         self.loc = ''
+        self.full = False
 
     def _call_liquibase(self, project, env, postgrespass, db):
         print(project + ' : ' + db)
@@ -75,11 +69,14 @@ class Runner:
             return ['gateway.docker.internal:5436']
 
     def run_for_repo(self, ip_address, repo):
+        if self.full:
+            self.clear_repo()
         self._call_liquibase(repo, ip_address, self.password, 'postgres')
         for db in self.get_dbs(repo):
             self._call_liquibase(repo, ip_address, self.password, db)
 
-    def run(self, repos, loc):
+    def run(self, repos, loc, full):
+        self.full = full
         self.loc = loc
         self.password = 'fLXyFS0RpmIX9uxGII4N' if loc != 'local' else 'mysecretpassword'
         for ip_address in self.get_ip_addresses(loc):
@@ -91,6 +88,9 @@ class Runner:
         pass
 
     def run_additional_script(self):
+        pass
+
+    def clear_repo(self):
         pass
 
 
