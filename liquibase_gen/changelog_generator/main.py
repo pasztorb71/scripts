@@ -1,5 +1,3 @@
-import json
-import os
 import re
 
 from liquibase_gen.changelog_generator.Ticket import Ticket
@@ -30,18 +28,18 @@ def check_version_file(ticket, repo):
 
 if __name__ == '__main__':
     #commands = get_commands()
-    ticket = Ticket('MLFFDEV-4498')
+    ticket = Ticket('MLFFDEV-4603')
     #TODO létregozni DDL fájlt, ha kell és nem létezik
-    check_version_file(ticket.get_version(),'mlff-payment-psp-proxy-postgredb')
+    #check_version_file(ticket.get_version(),Repository('psp-proxy'))
     #DDL fájl vége
     g = Changelog_header_generator(author='bertalan.pasztor',jira=ticket.name, version=ticket.get_version(), serial=1 )
     #commands = list(filter(None, load_from_file('C:/Users/bertalan.pasztor/Documents/MLFF/trip_segment.txt')))
     #TODO új enum hozzáadását komplett feladatként felvenni
     commands = [
-        "ALTER TABLE psp_proxy.psp_data_assignment ALTER COLUMN psp_transaction_id DROP NOT NULL;",
-        "UPDATE psp_proxy.psp_data_assignment SET psp_type = 'GOPAY';",
-        "ALTER TABLE psp_proxy.psp_data_assignment ADD CONSTRAINT ck_pspdatass_psp_type CHECK (((psp_type)::text = ANY (ARRAY[('GOPAY'::character varying)::text, ('FELLO'::character varying)::text])));",
-        "COMMENT ON COLUMN psp_proxy.psp_data_assignment.psp_type IS 'Identifier of the Payment Service Provider. Possible values: ''GOPAY'', ''FELLO''';"
+        "ALTER TABLE notification_wa.event DROP CONSTRAINT ck_event_event;",
+        "DELETE FROM notification_wa.event WHERE event NOT IN('REGISTRATION', 'PHONE_NUMBER_MODIFICATION', 'AD_HOC_TICKET_PAYMENT_SUCCESS', 'AD_HOC_TICKET_PAYMENT_FAILED', 'TICKET_PAYMENT_SUCCES', 'TICKET_PAYMENT_FAILED', 'TRIP_PAYMENT_FAILED', 'TRIP_PAYMENT_SUCCESS', 'APPROACH_TOLL_ROAD_SEG', 'ENTER_CLOSED_SEG', 'EXIT_CLOSED_SEG', 'ENTER_OPEN_SEG');",
+        "ALTER TABLE notification_wa.event ADD CONSTRAINT ck_event_event CHECK (((event)::text = ANY ((ARRAY['REGISTRATION'::character varying, 'PHONE_NUMBER_MODIFICATION'::character varying, 'AD_HOC_TICKET_PAYMENT_SUCCESS'::character varying, 'AD_HOC_TICKET_PAYMENT_FAILED'::character varying, 'TICKET_PAYMENT_SUCCES'::character varying, 'TICKET_PAYMENT_FAILED'::character varying, 'TRIP_PAYMENT_FAILED'::character varying, 'TRIP_PAYMENT_SUCCESS'::character varying, 'APPROACH_TOLL_ROAD_SEG'::character varying, 'ENTER_CLOSED_SEG'::character varying, 'EXIT_CLOSED_SEG'::character varying, 'ENTER_OPEN_SEG'::character varying])::text[])));",
+        "COMMENT ON COLUMN notification_wa.event.event IS 'event name for notification ENUM:''REGISTRATION'',''PHONE_NUMBER_MODIFICATION'',''AD_HOC_TICKET_PAYMENT_SUCCESS'',''AD_HOC_TICKET_PAYMENT_FAILED'',''TICKET_PAYMENT_SUCCES'',''TICKET_PAYMENT_FAILED'',''TRIP_PAYMENT_FAILED'',''TRIP_PAYMENT_SUCCESS'',''APPROACH_TOLL_ROAD_SEG'',''ENTER_CLOSED_SEG'',''EXIT_CLOSED_SEG'',''ENTER_OPEN_SEG''';"
     ]
     try:
         for stmt in commands[0:]:

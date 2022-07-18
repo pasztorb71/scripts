@@ -9,7 +9,8 @@ def gen_enum(colname, values):
         l.append("'" + v + "'::character varying")
     f2 = ', '.join(l)
     f3 = '])::text[])))'
-    return f1 + f2 + f3
+    del_command = 'DELETE FROM _ WHERE ' + colname + " NOT IN('" + "', '".join(valuelist) + "');"
+    return del_command+'\n' + f1 + f2 + f3
 
 
 def prep_enum(p):
@@ -19,5 +20,5 @@ def prep_enum(p):
 
 
 if __name__ == '__main__':
-    c, p = prep_enum("CHECK(response_status IN ('READ', 'DELIVERED', 'SENT', 'FAILED', 'DELETED'))")
+    c, p = prep_enum("CHECK(event_name IN ('REGISTRATION','PHONE_NUMBER_MODIFICATION','AD_HOC_TICKET_PAYMENT_SUCCESS','AD_HOC_TICKET_PAYMENT_FAILED','TICKET_PAYMENT_SUCCES','TICKET_PAYMENT_FAILED','TRIP_PAYMENT_FAILED','TRIP_PAYMENT_SUCCESS','APPROACH_TOLL_ROAD_SEG','ENTER_CLOSED_SEG','EXIT_CLOSED_SEG','EXIT_OPEN_SEG))")
     print(gen_enum(c, p))
