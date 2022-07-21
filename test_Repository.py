@@ -14,3 +14,9 @@ class TestRepository(TestCase):
         with self.assertRaises(Exception) as e:
             repo = r.get_name('enforcement')
         self.assertEqual("Nem egyértelmű a repository név!", str(e.exception))
+
+
+class TestRepository(TestCase):
+    def test_get_db_name(self):
+        r = Repository('mlff-payment-psp-proxy-postgredb')
+        self.assertEqual('payment_psp_proxy', r.get_db_name())

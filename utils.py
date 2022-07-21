@@ -9,6 +9,7 @@ from tabulate import tabulate
 from setuptools._distutils.dir_util import copy_tree
 
 
+
 def move_upper_dir(path):
     return path.rsplit('/',1)[0] if path[-1] != '/' else path.rsplit('/',2)[0]
 
@@ -124,14 +125,6 @@ def get_password(env, user):
     if user != 'postgres':
         return 'mlffTitkosPassword123!'
     return 'fLXyFS0RpmIX9uxGII4N' if env != 'local' else 'mysecretpassword'
-
-
-def get_sema_from_dbname(db):
-    if db == 'document':
-        return 'document_meta'
-    if db == 'payment_transaction':
-        return 'payment_transaction'
-    return db.split('_', 1)[1]
 
 
 def password_from_file(phost, pport):
@@ -264,6 +257,18 @@ def load_from_file(fname):
     with open('/'.join([project_root,'liquibase',fname]), 'r') as f:
         return [x for x in f.read().split('\n') if not x.startswith('#')]
 
+def append_to_file_after_line(fname, after, what):
+  with open(fname, 'r', encoding='utf-8') as f:
+    text = f.readlines()
+  already_exists = [idx for idx, s in enumerate(text) if what in s]
+  if already_exists:
+    return
+  index_after = [idx for idx, s in enumerate(text) if after in s]
+  if not index_after:
+    return
+  text.insert(index_after[-1] + 1, what + '\n')
+  with open(fname, 'w', encoding='utf-8') as out:
+    out.write(''.join(text))
 
 def get_dbname_from_project(project):
     db = get_db_name(project)

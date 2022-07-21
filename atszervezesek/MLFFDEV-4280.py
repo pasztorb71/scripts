@@ -1,23 +1,5 @@
-import os
+from utils import copy_file_and_replace, replace_in_file, load_from_file, append_to_file_after_line
 
-from utils import get_db_name, git_init, move_upper_dir, get_schema, copy_file_and_replace, create_old_file, \
-  replace_in_file, get_files_from_path_ext_filtered, load_from_file
-
-
-def append_to_file_after_line(fname, after, what):
-  with open(fname, 'r', encoding='utf-8') as f:
-    text = f.readlines()
-  already_exists = [idx for idx, s in enumerate(text) if what in s]
-  if already_exists:
-    return
-  index_after = [idx for idx, s in enumerate(text) if after in s]
-  if not index_after:
-    return
-  text.insert(index_after[0] + 1, what + '\n')
-  create_old_file(fname)
-  with open(fname, 'w', encoding='utf-8') as out:
-    out.write(''.join(text))
-  os.remove(fname+'_old')
 
 def sema_atszervezes(repos):
   def is_needed(repo):

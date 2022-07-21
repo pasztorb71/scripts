@@ -12,32 +12,32 @@ class Changelog_header_generator():
         self.version = version
         self.serial = serial
         self.table_name = ''
-
-    def analyze_command(self):
-        self.table_name = utils.get_tablename_from_command(self.command)
-        self.schema_name = utils.get_schema_from_command(self.command)
-        if ' column ' in self.command.lower():
-            self.column_name = utils.get_columnname_from_command(self.command)
-            self.commandtype = 'COLUMN'
-        else:
-            self.commandtype = ''
-
+        self.prev_table = ''
+        self.prev_column = ''
 
     def generate_header(self, command):
         tmp = self.get_template(command)
         self.command = command
-        return tmp\
-            .replace('!!author!!', self.author)\
-            .replace('!!table_upper!!',utils.get_tablename_from_command(self.command).upper())\
-            .replace('!!version!!', self.version)\
-            .replace('!!ticket!!', self.jira)\
-            .replace('!!serial!!', self.get_next_serial(utils.get_tablename_from_command(self.command).lower()))\
-            .replace('!!colname!!', utils.get_columnname_from_command(self.command)) \
-            .replace('!!schema!!', utils.get_schema_from_command(self.command))\
-            .replace('!!table_lower!!', utils.get_tablename_from_command(self.command).lower()) \
-            .replace('!!consname!!', utils.get_consname_from_command(self.command))\
-            .replace('!!indexname!!', utils.get_indexname_from_command(self.command)) \
-            .replace('!!trigger!!', utils.get_triggername_from_command(self.command))
+        table_name = utils.get_tablename_from_command(self.command)
+        column_name = utils.get_columnname_from_command(self.command)
+        if table_name == self.prev_table and column_name == self.prev_column and command.startswith('COMMENT ON COLUMN'):
+            return '',''
+        else:
+            self.prev_table = table_name
+            self.prev_column = column_name
+            return tmp\
+                .replace('!!author!!', self.author)\
+                .replace('!!table_upper!!',table_name.upper())\
+                .replace('!!version!!', self.version)\
+                .replace('!!ticket!!', self.jira)\
+                .replace('!!serial!!', self.get_next_serial(table_name.lower()))\
+                .replace('!!colname!!', utils.get_columnname_from_command(self.command)) \
+                .replace('!!schema!!', utils.get_schema_from_command(self.command))\
+                .replace('!!table_lower!!', table_name.lower()) \
+                .replace('!!consname!!', utils.get_consname_from_command(self.command))\
+                .replace('!!indexname!!', utils.get_indexname_from_command(self.command)) \
+                .replace('!!trigger!!', utils.get_triggername_from_command(self.command)), \
+                table_name
 
     def get_template(self, command):
         template = None
@@ -45,12 +45,14 @@ class Changelog_header_generator():
         elif re.match('COMMENT ON COLUMN.*',command): template = tmp_comment_column
         elif re.match('COMMENT ON TABLE.*',command): template = tmp_comment_table
         elif re.match('.*ADD CONSTRAINT .* CHECK ',command): template = tmp_add_ck_constraint
+        elif re.match('.*RENAME CONSTRAINT .*',command): template = tmp_rename_constraint
         elif re.match('.*ADD CONSTRAINT .* FOREIGN KEY ',command): template = tmp_add_fk_constraint
         elif re.match('.*DROP CONSTRAINT.*',command): template = tmp_drop_constraint
         elif re.match('.*CREATE.*INDEX.*',command): template = tmp_cre_index
         elif re.match('.*DROP INDEX.*',command): template = tmp_drop_index
         elif re.match('UPDATE.*',command): template = tmp_update
         elif re.match('DELETE.*',command): template = tmp_delete
+        elif re.match('TRUNCATE TABLE.*',command): template = tmp_delete
         elif re.match('.*ALTER COLUMN.* SET DEFAULT ',command): template = tmp_set_default
         elif re.match('.*ALTER COLUMN.* DROP NOT NULL',command): template = tmp_drop_not_null
         elif re.match('.*ALTER COLUMN.* SET NOT NULL',command): template = tmp_set_not_null

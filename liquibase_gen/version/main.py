@@ -1,6 +1,7 @@
+import Repository
 import utils
 from liquibase_gen.changelog_generator.Ticket import Ticket
-from utils import get_db_name, get_schema
+from Repository import get_schema, get_db_name
 
 
 def create_schema_version(repo, version):
@@ -8,7 +9,7 @@ def create_schema_version(repo, version):
     base = 'c:/GIT/MLFF/' + repo + '/liquibase/'
     db = get_db_name(base)
     db_path = db.replace('-', '_')
-    schema = utils.get_sema_from_dbname(db_path)
+    schema = Repository.get_sema_from_dbname(db_path)
     #with open('/'.join[base,db_path,schema])
     schema_version_path = '/'.join([base+db_path,schema,'xml-version-tree/schema-version-0.xml'])
     with open(schema_version_path, 'r+', encoding='utf-8') as f:

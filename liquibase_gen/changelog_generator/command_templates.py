@@ -30,6 +30,14 @@ tmp_add_ck_constraint = """-----------------------------------------------------
 --precondition-sql-check expectedResult:0 SELECT count(*) FROM information_schema.table_constraints WHERE constraint_type = 'CHECK' AND constraint_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND constraint_name = '!!consname!!'
 ---------------------------------------------------------------------------------------------------
 """
+tmp_rename_constraint = """---------------------------------------------------------------------------------------------------
+--changeset !!author!!:!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
+--comment Rename constraint !!consname!!.
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema.table_constraints WHERE constraint_type = 'CHECK' AND constraint_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND constraint_name = '!!consname!!'
+---------------------------------------------------------------------------------------------------
+"""
 tmp_add_fk_constraint = """---------------------------------------------------------------------------------------------------
 --changeset !!author!!:!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
 --comment Add constraint !!consname!!.

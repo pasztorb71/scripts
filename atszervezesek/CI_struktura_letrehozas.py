@@ -1,6 +1,7 @@
 import os
 
-from utils import copy_dir, replace_in_file, copy_file, get_db_name
+from utils import copy_dir, replace_in_file, copy_file
+from Repository import get_db_name
 
 
 def _cre_docker_compose_build(fname):

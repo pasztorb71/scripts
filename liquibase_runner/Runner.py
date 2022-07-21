@@ -3,6 +3,7 @@ import os
 
 from utils import get_dbname_from_project
 
+
 class Runner:
     def __init__(self, base):
         self.base = base

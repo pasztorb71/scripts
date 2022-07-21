@@ -1,11 +1,10 @@
-import collections
 import multiprocessing
 import os
 import subprocess
 
 from Git.Git_class import Git
-from liquibase_gen.changelog_generator.Ticket import Ticket
-from utils import print_dict, get_files_from_path_ext_filtered, get_files_from_path_ext_find_content
+from Repository import Repository
+from utils import print_dict
 
 
 def _mproc_ck_branch(git, return_dict, branch):
@@ -68,10 +67,11 @@ def create_branch(git, ticket):
 
 
 if __name__ == '__main__':
-    base = 'c:/GIT/MLFF/'
-    repos = os.listdir(base)[0:]
+    repo = Repository()
+    base = repo.get_base()
+    repo_names = repo.get_repo_names()
     #repos = ['mlff-payment-psp-proxy-postgredb']
-    gitlist = [Git(base, repo) for repo in repos]
+    gitlist = [Git(base, name) for name in repo_names]
     #create_branch(gitlist[0], Ticket('MLFFDEV-4498'))
     #synchronize_branch_in_multiple_repos(gitlist, branch='master')
     ret_dict = is_all_branches_synchronized(gitlist, branch='master',filtered='y')

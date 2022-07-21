@@ -1,7 +1,8 @@
 import os
 import re
 
-from utils import move_upper_dir, move_file, move_dir, create_old_file, get_db_name, get_schema
+from utils import move_upper_dir, move_file, move_dir, create_old_file
+from Repository import get_schema, get_db_name
 
 
 def change_file(fname):

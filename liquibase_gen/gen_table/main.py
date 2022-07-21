@@ -2,8 +2,8 @@ import math
 
 import pandas as pd
 
+from Repository import Repository, get_schema, get_db_name
 from liquibase_gen.gen_table.Confluence import Confluence
-from utils import get_db_name, get_schema
 
 
 def modify_type(col):
@@ -192,8 +192,9 @@ def create_tablefile():
 
 if __name__ == '__main__':
     #TODO könyvtár és fájl létrehozása, esetleg beírás a create_table.sql-be is
-    repo = 'mlff-core-notification-wa-postgredb'
-    base = 'c:/GIT/MLFF/'+repo+'/liquibase/'
+    repo = Repository()
+    reponame = repo.get_name('wa')
+    base = repo.get_base_path()
     tab_name = 'notification_wa.event'.lower()
     tab_short_name = 'event'
     history = 'n'

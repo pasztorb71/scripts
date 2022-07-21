@@ -1,7 +1,8 @@
 import os
 
-from utils import get_db_name, git_init, move_upper_dir, get_schema, copy_file_and_replace, create_old_file, \
+from utils import git_init, move_upper_dir, copy_file_and_replace, create_old_file, \
   replace_in_file, get_files_from_path_ext_filtered, load_from_file
+from Repository import get_schema, get_db_name
 
 
 def change_file(fname):

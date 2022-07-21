@@ -1,8 +1,11 @@
 import re
 
+import utils
+import version
+from Repository import Repository
 from liquibase_gen.changelog_generator.Ticket import Ticket
 from liquibase_gen.changelog_generator.changelog_header_generator import Changelog_header_generator
-from utils import get_files_from_path_ext_filtered,load_from_file,get_schema_from_command
+from utils import get_files_from_path_ext_filtered
 
 
 def get_commands():
@@ -22,31 +25,45 @@ def p_print(stmt):
         print('COMMIT;')
 
 
-def check_version_file(ticket, repo):
-    pass
-
-
 if __name__ == '__main__':
-    #commands = get_commands()
-    ticket = Ticket('MLFFDEV-4603')
-    #TODO létregozni DDL fájlt, ha kell és nem létezik
-    #check_version_file(ticket.get_version(),Repository('psp-proxy'))
-    #DDL fájl vége
+    ticket = Ticket('MLFFDEV-4668')
+    repo = Repository('psp-clearing')
+    version.check_schema_version_file(ticket.get_version(), repo)
     g = Changelog_header_generator(author='bertalan.pasztor',jira=ticket.name, version=ticket.get_version(), serial=1 )
     #commands = list(filter(None, load_from_file('C:/Users/bertalan.pasztor/Documents/MLFF/trip_segment.txt')))
-    #TODO új enum hozzáadását komplett feladatként felvenni
+    #TODO history táblára is megcsinálni
     commands = [
-        "ALTER TABLE notification_wa.event DROP CONSTRAINT ck_event_event;",
-        "DELETE FROM notification_wa.event WHERE event NOT IN('REGISTRATION', 'PHONE_NUMBER_MODIFICATION', 'AD_HOC_TICKET_PAYMENT_SUCCESS', 'AD_HOC_TICKET_PAYMENT_FAILED', 'TICKET_PAYMENT_SUCCES', 'TICKET_PAYMENT_FAILED', 'TRIP_PAYMENT_FAILED', 'TRIP_PAYMENT_SUCCESS', 'APPROACH_TOLL_ROAD_SEG', 'ENTER_CLOSED_SEG', 'EXIT_CLOSED_SEG', 'ENTER_OPEN_SEG');",
-        "ALTER TABLE notification_wa.event ADD CONSTRAINT ck_event_event CHECK (((event)::text = ANY ((ARRAY['REGISTRATION'::character varying, 'PHONE_NUMBER_MODIFICATION'::character varying, 'AD_HOC_TICKET_PAYMENT_SUCCESS'::character varying, 'AD_HOC_TICKET_PAYMENT_FAILED'::character varying, 'TICKET_PAYMENT_SUCCES'::character varying, 'TICKET_PAYMENT_FAILED'::character varying, 'TRIP_PAYMENT_FAILED'::character varying, 'TRIP_PAYMENT_SUCCESS'::character varying, 'APPROACH_TOLL_ROAD_SEG'::character varying, 'ENTER_CLOSED_SEG'::character varying, 'EXIT_CLOSED_SEG'::character varying, 'ENTER_OPEN_SEG'::character varying])::text[])));",
-        "COMMENT ON COLUMN notification_wa.event.event IS 'event name for notification ENUM:''REGISTRATION'',''PHONE_NUMBER_MODIFICATION'',''AD_HOC_TICKET_PAYMENT_SUCCESS'',''AD_HOC_TICKET_PAYMENT_FAILED'',''TICKET_PAYMENT_SUCCES'',''TICKET_PAYMENT_FAILED'',''TRIP_PAYMENT_FAILED'',''TRIP_PAYMENT_SUCCESS'',''APPROACH_TOLL_ROAD_SEG'',''ENTER_CLOSED_SEG'',''EXIT_CLOSED_SEG'',''ENTER_OPEN_SEG''';"
+        "ALTER TABLE psp_clearing.psp_clearing ADD correction_state varchar(30) NULL;",
+        "COMMENT ON COLUMN psp_clearing.psp_clearing.correction_state IS 'State of the correction';",
+        "ALTER TABLE psp_clearing.psp_clearing ADD CONSTRAINT ck_pspcle_corr_state CHECK (((correction_state)::text = ANY ((ARRAY['EDITABLE'::character varying, 'LOCKED'::character varying, 'DELETED'::character varying])::text[])));",
+        "ALTER TABLE psp_clearing.psp_clearing ADD correction_psp_settlement_package_id varchar(30) NULL;",
+        "COMMENT ON COLUMN psp_clearing.psp_clearing.correction_psp_settlement_package_id IS 'Copy of correctable psp_clearing.psp_settlement_package id';",
+        "ALTER TABLE psp_clearing.psp_clearing ADD correction_resend_clearing_package bool NULL;",
+        "COMMENT ON COLUMN psp_clearing.psp_clearing.correction_resend_clearing_package IS 'True if the correction is needed to resend';",
+        "CREATE INDEX ix_pspcle_corrpspsett_package_id ON psp_clearing.psp_clearing USING btree (correction_psp_settlement_package_id);",
+        "ALTER TABLE psp_clearing.psp_settlement_package ADD sent_at timestamptz(6) NULL;",
+        "COMMENT ON COLUMN psp_clearing.psp_settlement_package.sent_at IS 'The time when a package is sent to the psp and the ACK arrived';",
     ]
+    #TODO tasks = [new_enum('notification_wa.event.event', '')]
     try:
         for stmt in commands[0:]:
-            header = g.generate_header(stmt)
-            print(header[:-1])
+            header, tablename = g.generate_header(stmt)
+            if tablename:
+                version.check_table_version_file(ticket.get_version(), repo, tablename)
+            if header:
+                print()
+                print(header[:-1])
             p_print(stmt)
-            print()
+            """
+            if re.match('.*ADD CONSTRAINT .* CHECK ',stmt):
+                table_name = utils.get_tablename_from_command(stmt)
+                column_name = utils.get_columnname_from_command(stmt)
+                stmt = "COMMENT ON COLUMN " + table_name + '.' + column_name + " IS 'komment';"
+                header, tablename = g.generate_header(stmt)
+                print()
+                print(header[:-1])
+                p_print(stmt)
+            """
     except Exception as e:
         print(stmt)
         raise e

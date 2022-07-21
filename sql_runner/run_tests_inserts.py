@@ -4,7 +4,8 @@ import psycopg2
 
 from Cluster import Cluster
 from cmdlist import cmdlist
-from utils import password_from_file, get_sema_from_dbname, get_port
+from utils import password_from_file, get_port
+from Repository import get_sema_from_dbname
 
 
 def get_conn(env, db):

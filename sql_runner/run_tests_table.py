@@ -3,7 +3,8 @@ import logging
 import psycopg2
 
 from Cluster import Cluster
-from utils import get_port, password_from_file, get_sema_from_dbname, get_password
+from utils import get_port, password_from_file, get_password
+from Repository import get_sema_from_dbname
 
 
 def get_conn(env, db, user):
