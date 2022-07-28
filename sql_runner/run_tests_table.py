@@ -1,20 +1,8 @@
 import logging
 
-import psycopg2
-
 from Cluster import Cluster
-from utils import get_port, password_from_file, get_password
-from Repository import get_sema_from_dbname
-
-
-def get_conn(env, db, user):
-    port = get_port(env)
-    return psycopg2.connect(
-        host='localhost',
-        port=port,
-        database=db,
-        user=user,
-        password=get_password(env, user))
+from Repository import Repository
+from utils import password_from_file, get_conn
 
 
 def runteszt(env, db, user, cmd_list):
@@ -81,18 +69,18 @@ def get_cre_table(sema, table):
 def tabla_modositas_teszt(env, db):
     expected_result = 'ERR' if env in ['dev', 'fit'] else 'OK'
     print(db)
-    sema = get_sema_from_dbname(db)
+    sema = Repository().get_sema_from_dbname(db)
     table = '.ttt_proba'
     cre_table = get_cre_table(sema, table)
     runteszt(env=env, db=db, user='postgres', cmd_list=cre_table)
-    runteszt(env=env, db=db, user=get_sema_from_dbname(db) + '_service',
-             cmd_list=[["alter table " + get_sema_from_dbname(db) + table + " add column y numeric", expected_result]])
-    runteszt(env=env, db=db, user='postgres', cmd_list=[["drop table if exists " + get_sema_from_dbname(db) + table, 'OK']])
+    runteszt(env=env, db=db, user=sema + '_service',
+             cmd_list=[["alter table " + sema + table + " add column y numeric", expected_result]])
+    runteszt(env=env, db=db, user='postgres', cmd_list=[["drop table if exists " + sema + table, 'OK']])
 
 
 def tabla_letrehozas_teszt(env, db):
     logger.info(db)
-    sema = get_sema_from_dbname(db)
+    sema = Repository().get_sema_from_dbname(db)
     table = '.ttt_proba_create'
     _cmd_list = [
                 ["create table " + sema + table + " (x numeric)",'ERR'],

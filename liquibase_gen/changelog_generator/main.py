@@ -10,12 +10,13 @@ from utils import get_files_from_path_ext_filtered
 
 def get_commands():
     files = get_files_from_path_ext_filtered("c:/GIT/MLFF", '.sql', 'DDL')
+    # noinspection PyShadowingNames
     commands = []
     for file in files:
         with open(file, 'r', encoding='utf-8') as f:
-            for l in f.read().split('/n'):
-                if l and not any(l.startswith(x) for x in ['--', 'COMMIT', 'call']):
-                    commands.append(l)
+            for line in f.read().split('/n'):
+                if line and not any(line.startswith(x) for x in ['--', 'COMMIT', 'call']):
+                    commands.append(line)
     return commands
 
 
@@ -25,24 +26,18 @@ def p_print(stmt):
         print('COMMIT;')
 
 
-if __name__ == '__main__':
-    ticket = Ticket('MLFFDEV-4877')
-    repo = Repository('psp-clearing')
-    print('Repository name: ' + repo.get_name())
-    version.check_schema_version_file(ticket.get_version(), repo)
-    g = Changelog_header_generator(author='bertalan.pasztor',jira=ticket.name, version=ticket.get_version(), serial=1 )
-    #commands = list(filter(None, load_from_file('C:/Users/bertalan.pasztor/Documents/MLFF/trip_segment.txt')))
-    #TODO history táblára is megcsinálni
-    commands = [
-        "ALTER TABLE psp_clearing.psp_settlement_package ADD sent_at timestamptz(6) NULL;",
-        "COMMENT ON COLUMN psp_clearing.psp_settlement_package.sent_at IS 'The time when a package is sent to the psp and the ACK arrived';",
-        "ALTER TABLE psp_clearing.psp_settlement_package$hist ADD sent_at timestamptz(6) NULL;",
-        "COMMENT ON COLUMN psp_clearing.psp_settlement_package$hist.sent_at IS 'Logged field: The time when a package is sent to the psp and the ACK arrived';",
-    ]
-    #TODO tasks = [new_enum('notification_wa.event.event', '')]
+def process_commands():
     try:
+        history_changesets = []
         for stmt in commands[0:]:
             header, tablename = g.generate_header(stmt)
+            # TODO MMAke history handling
+            """
+            if utils.is_history_table(repo.get_db_name(), repo.get_schema(), tablename):
+                header, hist_tablename = g.generate_header(stmt, hist=True)
+                history_changesets.append(header[:-1])
+                history_changesets.append(stmt)
+            """
             if tablename:
                 version.check_table_version_file(ticket.get_version(), repo, tablename)
             if header:
@@ -62,3 +57,18 @@ if __name__ == '__main__':
     except Exception as e:
         print(stmt)
         raise e
+
+
+if __name__ == '__main__':
+    ticket = Ticket('MLFFDEV-4097')
+    repo = Repository('tro-clearing')
+    print('Repository name: ' + repo.get_name())
+    version.check_schema_version_file(ticket.get_version(), repo)
+    g = Changelog_header_generator(author='bertalan.pasztor', jira=ticket.name, version=ticket.get_version(), serial=1)
+    # commands = list(filter(None, load_from_file('C:/Users/bertalan.pasztor/Documents/MLFF/trip_segment.txt')))
+    # TODO history táblára is megcsinálni
+    commands = [
+        "ALTER TABLE tro_clearing.ctsp_service_fee_share ADD CONSTRAINT fk_ctspserfeesh_segment_fee_id FOREIGN KEY (ctsp_service_fee_id) REFERENCES tro_clearing.ctsp_service_fee(x__id) DEFERRABLE;",
+    ]
+    # TODO tasks = [new_enum('notification_wa.event.event', '')]
+    process_commands()

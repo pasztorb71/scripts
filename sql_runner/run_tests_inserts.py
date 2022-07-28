@@ -1,21 +1,8 @@
 import re
 
-import psycopg2
-
 from Cluster import Cluster
 from cmdlist import cmdlist
-from utils import password_from_file, get_port
-from Repository import get_sema_from_dbname
-
-
-def get_conn(env, db):
-    port = get_port(env)
-    return psycopg2.connect(
-        host='localhost',
-        port=port,
-        database=db,
-        user=get_sema_from_dbname(db) + '_service',
-        password='mlffTitkosPassword123!')
+from utils import password_from_file, get_conn_service_user
 
 
 def runteszt(conn):
@@ -49,8 +36,8 @@ if __name__ == '__main__':
     databases = ['payment_account_info']
     #databases = cluster.databases
     for db in databases:
-        runteszt(get_conn('local',db))
+        runteszt(get_conn_service_user('local', db))
     exit(0)
-    runteszt(get_conn('sandbox','core_template'))
-    runteszt(get_conn('sandbox','core_customer'))
-    runteszt(get_conn('sandbox','enforcement_visual_check'))
+    runteszt(get_conn_service_user('sandbox', 'core_template'))
+    runteszt(get_conn_service_user('sandbox', 'core_customer'))
+    runteszt(get_conn_service_user('sandbox', 'enforcement_visual_check'))

@@ -15,7 +15,7 @@ class Changelog_header_generator():
         self.prev_table = ''
         self.prev_column = ''
 
-    def generate_header(self, command):
+    def generate_header(self, command, hist=False):
         tmp = self.get_template(command)
         self.command = command
         table_name = utils.get_tablename_from_command(self.command)

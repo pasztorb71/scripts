@@ -4,10 +4,12 @@ import shutil
 from inspect import getfile
 from os.path import exists
 
+import psycopg2
 from tabulate import tabulate
 
 from setuptools._distutils.dir_util import copy_tree
 
+from Repository import Repository
 
 
 def move_upper_dir(path):
@@ -273,3 +275,34 @@ def append_to_file_after_line(fname, after, what):
 def get_dbname_from_project(project):
     db = get_db_name(project)
     return db.replace('-', '_')
+
+
+def is_history_table(db, schema, table):
+    conn = get_conn('local', db, 'postgres')
+    cur = conn.cursor()
+    cur.execute("select count(*) from pg_tables where schemaname = '" + schema + "' and tablename = '" + table + "$hist'")
+    res = cur.fetchone()[0]
+    return res == 1
+
+
+def get_conn_service_user(env, db):
+    port = get_port(env)
+    try:
+        return psycopg2.connect(
+            host='localhost',
+            port=port,
+            database=db,
+            user=Repository().get_sema_from_dbname(db) + '_service',
+            password='mlffTitkosPassword123!')
+    except:
+        return None
+
+
+def get_conn(env, db, user):
+    port = get_port(env)
+    return psycopg2.connect(
+        host='localhost',
+        port=port,
+        database=db,
+        user=user,
+        password=get_password(env, user))
