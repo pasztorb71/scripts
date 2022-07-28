@@ -26,23 +26,18 @@ def p_print(stmt):
 
 
 if __name__ == '__main__':
-    ticket = Ticket('MLFFDEV-4668')
+    ticket = Ticket('MLFFDEV-4877')
     repo = Repository('psp-clearing')
+    print('Repository name: ' + repo.get_name())
     version.check_schema_version_file(ticket.get_version(), repo)
     g = Changelog_header_generator(author='bertalan.pasztor',jira=ticket.name, version=ticket.get_version(), serial=1 )
     #commands = list(filter(None, load_from_file('C:/Users/bertalan.pasztor/Documents/MLFF/trip_segment.txt')))
     #TODO history táblára is megcsinálni
     commands = [
-        "ALTER TABLE psp_clearing.psp_clearing ADD correction_state varchar(30) NULL;",
-        "COMMENT ON COLUMN psp_clearing.psp_clearing.correction_state IS 'State of the correction';",
-        "ALTER TABLE psp_clearing.psp_clearing ADD CONSTRAINT ck_pspcle_corr_state CHECK (((correction_state)::text = ANY ((ARRAY['EDITABLE'::character varying, 'LOCKED'::character varying, 'DELETED'::character varying])::text[])));",
-        "ALTER TABLE psp_clearing.psp_clearing ADD correction_psp_settlement_package_id varchar(30) NULL;",
-        "COMMENT ON COLUMN psp_clearing.psp_clearing.correction_psp_settlement_package_id IS 'Copy of correctable psp_clearing.psp_settlement_package id';",
-        "ALTER TABLE psp_clearing.psp_clearing ADD correction_resend_clearing_package bool NULL;",
-        "COMMENT ON COLUMN psp_clearing.psp_clearing.correction_resend_clearing_package IS 'True if the correction is needed to resend';",
-        "CREATE INDEX ix_pspcle_corrpspsett_package_id ON psp_clearing.psp_clearing USING btree (correction_psp_settlement_package_id);",
         "ALTER TABLE psp_clearing.psp_settlement_package ADD sent_at timestamptz(6) NULL;",
         "COMMENT ON COLUMN psp_clearing.psp_settlement_package.sent_at IS 'The time when a package is sent to the psp and the ACK arrived';",
+        "ALTER TABLE psp_clearing.psp_settlement_package$hist ADD sent_at timestamptz(6) NULL;",
+        "COMMENT ON COLUMN psp_clearing.psp_settlement_package$hist.sent_at IS 'Logged field: The time when a package is sent to the psp and the ACK arrived';",
     ]
     #TODO tasks = [new_enum('notification_wa.event.event', '')]
     try:

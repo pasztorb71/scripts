@@ -21,6 +21,6 @@ def prep_enum( p):
 
 
 if __name__ == '__main__':
-    table = 'psp_clearing.psp_clearing'
-    c, p = prep_enum("CHECK(correction_state IN ('EDITABLE,LOCKED,DELETED'))")
+    table = 'psp_clearing.psp_correction'
+    c, p = prep_enum("CHECK(correction_state IN ('CREATED,EXECUTED,DELETED'))")
     print(gen_enum(table, c, p))

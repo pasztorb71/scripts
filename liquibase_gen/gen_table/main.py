@@ -2,7 +2,7 @@ import math
 
 import pandas as pd
 
-from Repository import Repository, get_schema, get_db_name
+from Repository import Repository
 from liquibase_gen.gen_table.Confluence import Confluence
 
 
@@ -138,7 +138,7 @@ def table_history(tab_name):
 --precondition-sql-check expectedResult:0 SELECT count(*) FROM pg_tables WHERE schemaname = '!sema!' AND tablename = '!table!$hist';
 ---------------------------------------------------------------------------------------------------
 
-call ${schema_name_!sema!}.HIST_TABLE_GENERATOR('${schema_name_!sema!}', '!table!');
+call ${schema_name}.HIST_TABLE_GENERATOR('${schema_name}', '!table!');
 
 
 --===============================================================================================--
@@ -151,7 +151,7 @@ call ${schema_name_!sema!}.HIST_TABLE_GENERATOR('${schema_name_!sema!}', '!table
 --precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_tables WHERE schemaname = '!sema!' AND tablename = '!table!$hist';
 ---------------------------------------------------------------------------------------------------
 
-GRANT SELECT ON TABLE !sema!.!table!$hist TO ${schema_name_!sema!}_sel;
+GRANT SELECT ON TABLE !sema!.!table!$hist TO ${schema_name}_sel;
 
 
 --===============================================================================================--
@@ -161,7 +161,7 @@ GRANT SELECT ON TABLE !sema!.!table!$hist TO ${schema_name_!sema!}_sel;
 --comment A tr_!table!$hist trigger létrehozása..
 ---------------------------------------------------------------------------------------------------
 
-call ${schema_name_!sema!}.HIST_TRIGGER_GENERATOR('${schema_name_!sema!}', '!table!');
+call ${schema_name}.HIST_TRIGGER_GENERATOR('${schema_name}', '!table!');
 
 """.replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema))
 
@@ -192,16 +192,15 @@ def create_tablefile():
 
 if __name__ == '__main__':
     #TODO könyvtár és fájl létrehozása, esetleg beírás a create_table.sql-be is
-    repo = Repository()
-    reponame = repo.get_name('wa')
+    repo = Repository('psp-clearing')
     base = repo.get_base_path()
-    tab_name = 'notification_wa.event'.lower()
-    tab_short_name = 'event'
-    history = 'n'
-    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/KOM+Notification+WAservice+database+providertoken++table'
-    db = get_db_name(base)
+    tab_name = 'psp_clearing.psp_correction'.lower()
+    tab_short_name = 'pspcorr'
+    history = 'y'
+    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/psp_clearing.psp_correction'
+    db = repo.get_db_name()
     db_path = db.replace('-', '_')
-    schema = get_schema(base, db_path)
+    schema = repo.get_schema
     create_tablefile()
     tab_comment, table = get_table_from_confluence(tab_name, url)
     print_table_script(tab_comment, tab_name, table, history)

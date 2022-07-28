@@ -6,11 +6,14 @@ class Repository():
 
     def __init__(self, name=''):
         if name:
-            self.name = self.get_name(name)
+            self.name = self.find_name(name)
             self.base_path = 'c:/GIT/MLFF/' + self.name + '/liquibase/'
             self.dbname = self.get_db_name()
             self.db_path = self.dbname.replace('-', '_')
             self.schema = self.get_schema()
+
+    def get_name(self):
+        return self.name
 
     def get_base(self):
         return self.__class__.base
@@ -18,7 +21,7 @@ class Repository():
     def get_base_path(self):
         return self.base_path
 
-    def get_name(self, name):
+    def find_name(self, name):
         repos = os.listdir(self.__class__.base)
         a = [repo for repo in repos if name in repo]
         if len(a) > 1:

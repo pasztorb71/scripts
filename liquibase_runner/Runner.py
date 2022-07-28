@@ -5,11 +5,12 @@ from utils import get_dbname_from_project
 
 
 class Runner:
-    def __init__(self, base):
+    def __init__(self, base, repos=[]):
         self.base = base
         self.password = ''
         self.loc = ''
         self.full = False
+        self.repos = repos
 
     def _call_liquibase(self, project, env, postgrespass, db):
         print(project + ' : ' + db)
@@ -76,13 +77,13 @@ class Runner:
         for db in self.get_dbs(repo):
             self._call_liquibase(repo, ip_address, self.password, db)
 
-    def run(self, repos, loc, full):
+    def run(self, loc, full):
         self.full = full
         self.loc = loc
         self.password = 'fLXyFS0RpmIX9uxGII4N' if loc != 'local' else 'mysecretpassword'
         for ip_address in self.get_ip_addresses(loc):
             print(ip_address)
-            for repo in repos:
+            for repo in [repo.get_name() for repo in self.repos]:
                 self.run_for_repo(ip_address, repo)
 
     def kill(self, param):

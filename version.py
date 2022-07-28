@@ -53,6 +53,8 @@ def check_schema_version_file(version, repo):
 
 
 def check_table_version_file(version, repo, tablename):
+    if '$hist' in tablename:
+        return
     table_dir = '/'.join([repo.get_tables_dir(), tablename])
     ddlfile_path = '/'.join([table_dir, tablename+'-DDL-'+version+'.sql'])
     if not os.path.isfile(ddlfile_path):
