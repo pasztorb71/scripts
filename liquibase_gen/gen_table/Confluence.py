@@ -18,4 +18,7 @@ class Confluence:
     def get_table_comment(self):
         _dict = json.loads(self.page.text)
         f = _dict['body']['storage']['value']
-        return re.match('<p>(.*)&nbsp;&nbsp;</p><table',f).group(1)
+        a = re.match('.*<p( style="")?>(.*)</p>.*<table.*(?:<table).*',f)
+        #g1 = a.group(1)
+        #g2 = a.group(2)
+        return a.group(2) if a else ''

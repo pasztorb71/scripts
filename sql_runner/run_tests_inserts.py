@@ -1,21 +1,8 @@
 import re
 
-import psycopg2
-
-import utils
 from Cluster import Cluster
 from cmdlist import cmdlist
-from utils import get_port, get_sema
-
-
-def get_conn(env, db):
-    port = get_port(env)
-    return psycopg2.connect(
-        host='localhost',
-        port=port,
-        database=db,
-        user=get_sema(db) + '_service',
-        password='mlffTitkosPassword123!')
+from utils import password_from_file, get_conn_service_user
 
 
 def runteszt(conn):
@@ -31,7 +18,7 @@ def runteszt(conn):
             cur.execute(cmd)
             print(': OK')
         except Exception as e:
-            print(': ' + str(e).split('\n')[0], end='')
+            print(': ' + str(e).split('\n')[0])
             conn.rollback()
     conn.commit()
 
@@ -44,13 +31,13 @@ def cmddiff(env):
 
 if __name__ == '__main__':
     host, port = 'localhost', 5433
-    cluster = Cluster(host=host, port=port, passw=utils.password_from_file(host, port))
+    cluster = Cluster(host=host, port=port, passw=password_from_file(host, port))
     #databases = load_from_file('../databases.txt')
-    databases = ['payment_psp_clearing']
+    databases = ['payment_account_info']
     #databases = cluster.databases
     for db in databases:
-        runteszt(get_conn('sandbox',db))
+        runteszt(get_conn_service_user('local', db))
     exit(0)
-    runteszt(get_conn('sandbox','core_template'))
-    runteszt(get_conn('sandbox','core_customer'))
-    runteszt(get_conn('sandbox','enforcement_visual_check'))
+    runteszt(get_conn_service_user('sandbox', 'core_template'))
+    runteszt(get_conn_service_user('sandbox', 'core_customer'))
+    runteszt(get_conn_service_user('sandbox', 'enforcement_visual_check'))

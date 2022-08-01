@@ -1,14 +1,16 @@
+import os
 
+from Repository import Repository
 from Runner import Runner
 
-def load_from_file(fname):
-    with open(fname, 'r') as f:
-        return f.read().split()
-
 if __name__ == '__main__':
-    base = 'c:/GIT/MLFF/'
-    #repos = os.listdir(base)
+    repo = Repository()
+    base = repo.get_base()
+    repos = [Repository(name) for name in os.listdir(Repository.base)]
+    a = os.listdir('c:/GIT/MLFF/')
+    repos = [Repository(x) for x in os.listdir('c:/GIT/MLFF/') if 'mlff-payment' in x]
     #repos = load_from_file('repos.txt')
-    repos = ['mlff-enforcement-detection-image-postgredb']
-    runner = Runner(base)
-    runner.run(repos, loc='local')
+    repos = [Repository('mlff-enforcement-detection-postgredb')]
+    runner = Runner(base, repos)
+    #TODO beletenni maga előtt teljes törlés opciót
+    runner.run(loc='fit', full=False) #local ,sandbox, remote, dev, fit

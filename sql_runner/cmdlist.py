@@ -137,8 +137,8 @@ cmdlist = {
     'core_notification_wa': [
         """INSERT INTO notification
         (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, recipient, channel, template_id, "language", 
-        parameters, customer_id, source_service, object_type, object_id, response_status, response_id, attachments)
-        VALUES('tesztid', CURRENT_TIMESTAMP, 'a', NULL, '', 0, 'a', 'WHATSAPP', 'a', 'a', '', 'a', 'a', 'a', 'a', 'READ', 'a', '')""",
+        parameters, customer_id, source_service, object_type, object_id, response_status, response_id, attachments, template_name)
+        VALUES('tesztid', CURRENT_TIMESTAMP, 'a', NULL, '', 0, 'a', 'WHATSAPP', 'a', 'a', '', 'a', 'a', 'a', 'a', 'READ', 'a', '','ddd')""",
         "DELETE FROM notification WHERE x__id = 'tesztid'"
     ],
     'core_notification_email': [],
@@ -151,11 +151,11 @@ cmdlist = {
     'eobu_tariff': [],
     'eobu_trip': [
         """INSERT INTO trip
-        (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, matching_session_id, customer_id, driver_id, 
-        payer_id, vdu_id, plate_number, toll_category, status, start_time, end_time)
+        (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, matching_session_refid, customer_id, driver_id, 
+        payer_id, vdu_id, plate_number, toll_category, status, start_time, end_time, start_location_latitude, start_location_longitude, start_location_time, end_location_latitude, end_location_longitude, end_location_time, end_location_name, sum_amount, start_location_name)
         VALUES('tesztid', '2022-05-13 12:50:06.925', '3QHR3Z608HM0K502', NULL, NULL, 0, 
         'tesztid', 'driverId', 'driverId', '3QHR3Z40FKB48A01', 'vduId', 'plateNumber', 1, 
-        'MATCHED', '2022-05-13 11:50:06.811', NULL)""",
+        'MATCHED', '2022-05-13 11:50:06.811', NULL, 47, 19, '2022-06-10 13:06:21.000', NULL, NULL, NULL, NULL, NULL, NULL)""",
         "DELETE FROM trip WHERE x__id = 'tesztid'"
     ],
     'payment_retry': [
