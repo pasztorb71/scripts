@@ -1,20 +1,8 @@
 import logging
 
-import psycopg2
-
-import utils
 from Cluster import Cluster
-from utils import get_port, get_password, get_sema
-
-
-def get_conn(env, db, user):
-    port = get_port(env)
-    return psycopg2.connect(
-        host='localhost',
-        port=port,
-        database=db,
-        user=user,
-        password=get_password(env, user))
+from Repository import Repository
+from utils import password_from_file, get_conn
 
 
 def runteszt(env, db, user, cmd_list):
@@ -81,18 +69,18 @@ def get_cre_table(sema, table):
 def tabla_modositas_teszt(env, db):
     expected_result = 'ERR' if env in ['dev', 'fit'] else 'OK'
     print(db)
-    sema = get_sema(db)
+    sema = Repository().get_sema_from_dbname(db)
     table = '.ttt_proba'
     cre_table = get_cre_table(sema, table)
     runteszt(env=env, db=db, user='postgres', cmd_list=cre_table)
-    runteszt(env=env, db=db, user=get_sema(db) + '_service',
-             cmd_list=[["alter table " + get_sema(db) + table + " add column y numeric", expected_result]])
-    runteszt(env=env, db=db, user='postgres', cmd_list=[["drop table if exists " + get_sema(db) + table, 'OK']])
+    runteszt(env=env, db=db, user=sema + '_service',
+             cmd_list=[["alter table " + sema + table + " add column y numeric", expected_result]])
+    runteszt(env=env, db=db, user='postgres', cmd_list=[["drop table if exists " + sema + table, 'OK']])
 
 
 def tabla_letrehozas_teszt(env, db):
     logger.info(db)
-    sema = get_sema(db)
+    sema = Repository().get_sema_from_dbname(db)
     table = '.ttt_proba_create'
     _cmd_list = [
                 ["create table " + sema + table + " (x numeric)",'ERR'],
@@ -129,10 +117,10 @@ def init_logging(level):
 if __name__ == '__main__':
     logger, sh = init_logging(logging.INFO)
     host, port = 'localhost', 5435
-    cluster = Cluster(host=host, port=port, passw=utils.password_from_file(host, port))
+    cluster = Cluster(host=host, port=port, passw=password_from_file(host, port))
     #databases = load_from_file('databases.txt')
     databases = cluster.databases[0:]
-    #databases = ['core_customer']
+    databases = ['core_notification_wa']
     for db in databases:
-        tabla_letrehozas_teszt('fit', db)
-        tabla_modositas_teszt('fit', db)
+        tabla_letrehozas_teszt('sandbox', db)
+        tabla_modositas_teszt('sandbox', db)
