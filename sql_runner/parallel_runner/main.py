@@ -7,7 +7,7 @@ from sql_runner.Cluster import Cluster
 from utils import print_dict_queried, print_dict, password_from_file, load_from_file
 
 
-def mproc_single_command(host, port, db, return_dict):
+def mproc_single_command_tmpl(host, port, db, return_dict):
     conn = psycopg2.connect(
         host=host,
         port=port,
@@ -22,7 +22,7 @@ def mproc_single_command(host, port, db, return_dict):
     conn.commit()
     conn.close()
 
-def mproc_multiple_commands(host, port, db, return_dict):
+def mproc_multiple_commands_tmpl(host, port, db, return_dict):
     conn = psycopg2.connect(
         host=host,
         port=port,
@@ -162,18 +162,24 @@ def sum_counts(d):
         sum += records[1][0]
     return sum
 
-if __name__ == '__main__':
-    host, port = 'localhost', 5433
-    cluster = Cluster(host=host, port=port, passw=password_from_file(host, port))
-    databases = load_from_file('../databases.txt')
-    databases = cluster.databases[0:]
-    #databases = ['core_customer']
+
+def parallel_run(databases, func):
+    global jobs
     return_dict = get_return_dict()
     jobs = []
     for db in databases[0:]:
-        start_process(mproc_count_tables, host, port, db, return_dict)
+        start_process(func, host, port, db, return_dict)
     wait_until_end(jobs)
-    #print_dict(return_dict)
-    print(sum_counts(return_dict))
-    #rint_dict_queried(return_dict)
+    return return_dict
 
+
+if __name__ == '__main__':
+    host, port = 'localhost', 5433
+    cluster = Cluster(host=host, port=port, passw=password_from_file(host, port))
+    #databases = load_from_file('../databases.txt')
+    databases = cluster.databases[0:]
+    #databases = ['core_customer']
+    return_dict = parallel_run(databases, mproc_count_tables)
+    # print_dict(return_dict)
+    print(sum_counts(return_dict))
+    # print_dict_queried(return_dict)

@@ -60,15 +60,15 @@ def process_commands():
 
 
 if __name__ == '__main__':
-    ticket = Ticket('MLFFDEV-4097')
-    repo = Repository('tro-clearing')
+    ticket = Ticket('MLFFDEV-5013')
+    repo = Repository('eobu-trip')
     print('Repository name: ' + repo.get_name())
     version.check_schema_version_file(ticket.get_version(), repo)
     g = Changelog_header_generator(author='bertalan.pasztor', jira=ticket.name, version=ticket.get_version(), serial=1)
-    # commands = list(filter(None, load_from_file('C:/Users/bertalan.pasztor/Documents/MLFF/trip_segment.txt')))
     # TODO history táblára is megcsinálni
     commands = [
-        "ALTER TABLE tro_clearing.ctsp_service_fee_share ADD CONSTRAINT fk_ctspserfeesh_segment_fee_id FOREIGN KEY (ctsp_service_fee_id) REFERENCES tro_clearing.ctsp_service_fee(x__id) DEFERRABLE;",
+        "UPDATE trip.trip_segment SET payment_status = NOT_YET_CREATED WHERE payment_status IS NULL;",
+        "ALTER TABLE trip.trip_segment ALTER COLUMN payment_status SET NOT NULL;",
     ]
     # TODO tasks = [new_enum('notification_wa.event.event', '')]
     process_commands()

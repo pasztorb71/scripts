@@ -43,8 +43,8 @@ def parallel_run(gitlist, proc_to_run, *args):
     return return_dict
 
 
-def is_all_branches_synchronized(gitlist, branch, filtered='n'):
-    ret_dict =  parallel_run(gitlist, _mproc_ck_branch, branch)
+def is_branch_synchronized_in_multiple_repos(gitlist, branch, filtered='n'):
+    ret_dict = parallel_run(gitlist, _mproc_ck_branch, branch)
     if filtered == 'y':
         return {repo: status for repo, status in ret_dict.items() if status != 'OK'}
     return ret_dict
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     gitlist = [Git(base, name) for name in repo_names]
     #create_branch(gitlist[0], Ticket('MLFFDEV-4498'))
     #synchronize_branch_in_multiple_repos(gitlist, branch='master')
-    ret_dict = is_all_branches_synchronized(gitlist, branch='master',filtered='y')
+    ret_dict = is_branch_synchronized_in_multiple_repos(gitlist, branch='master', filtered='y')
     print('Differencia:')
     print_dict(ret_dict)
 
