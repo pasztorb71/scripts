@@ -33,11 +33,7 @@ if __name__ == '__main__':
     host, port = 'localhost', 5433
     cluster = Cluster(host=host, port=port, passw=password_from_file(host, port))
     #databases = load_from_file('../databases.txt')
-    databases = ['payment_account_info']
+    databases = ['core_notification_wa']
     #databases = cluster.databases
     for db in databases:
-        runteszt(get_conn_service_user('local', db))
-    exit(0)
-    runteszt(get_conn_service_user('sandbox', 'core_template'))
-    runteszt(get_conn_service_user('sandbox', 'core_customer'))
-    runteszt(get_conn_service_user('sandbox', 'enforcement_visual_check'))
+        runteszt(get_conn_service_user('fit', db))

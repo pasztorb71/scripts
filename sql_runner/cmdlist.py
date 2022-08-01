@@ -15,7 +15,14 @@ cmdlist = {
         '11a8760f-1535-4470-bf85-1441ba4dfb663QBZJIQSQLJG', '2022-07-07 12:00:58.276', '2022-04-08 12:00:58.284', '0', NULL, 
         NULL, 0)""",
         "DELETE FROM user_session WHERE x__id = 'tesztid'",
-        "DELETE FROM security_user WHERE x__id = 'tesztid'"
+        "DELETE FROM security_user WHERE x__id = 'tesztid'",
+        """INSERT INTO customer
+        (x__id, customer_name, date_of_birth, phone_number, email, customer_status, x__insdate, x__insuser, x__moddate, 
+        x__moduser, x__version, "language", nik_number)
+        VALUES('tesztid', 'PT d00ed8e22baa484da4eb0f0e473df0e8', '1973-04-02', '+6261389449', NULL, 'ACTIVE', 
+        '2022-05-12 16:03:19.572', '0', '2022-05-12 16:03:19.723', '0', 2, 'EN', NULL);
+        """,
+        "DELETE FROM customer WHERE x__id = 'tesztid'",
     ],
     'enforcement_visual_check':[
         """INSERT INTO check_package 
@@ -136,9 +143,12 @@ cmdlist = {
     'core_notification_pn': [],
     'core_notification_wa': [
         """INSERT INTO notification
-        (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, recipient, channel, template_id, "language", 
-        parameters, customer_id, source_service, object_type, object_id, response_status, response_id, attachments, template_name)
-        VALUES('tesztid', CURRENT_TIMESTAMP, 'a', NULL, '', 0, 'a', 'WHATSAPP', 'a', 'a', '', 'a', 'a', 'a', 'a', 'READ', 'a', '','ddd')""",
+        (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, request_id, recipient, channel, "language", 
+        template_name, parameters, customer_id, event_status, status_change, error_code, event_name, is_sync, timing)
+        VALUES('tesztid', '2022-07-18 10:59:19.923', 'Service User', '2022-07-18 10:59:19.924', 'Service User', 1, 
+        'string23', '36207715517', 'WHATSAPP', 'id', 'registration', '[{"key":"1","value":"Péter"}]', NULL, 
+        'MLFF_SERVICE_ERROR', NULL, 'I_AM_A_TEAPOT', 'REGISTRATION', false, NULL);
+""",
         "DELETE FROM notification WHERE x__id = 'tesztid'"
     ],
     'core_notification_email': [],
@@ -152,7 +162,9 @@ cmdlist = {
     'eobu_trip': [
         """INSERT INTO trip
         (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, matching_session_refid, customer_id, driver_id, 
-        payer_id, vdu_id, plate_number, toll_category, status, start_time, end_time, start_location_latitude, start_location_longitude, start_location_time, end_location_latitude, end_location_longitude, end_location_time, end_location_name, sum_amount, start_location_name)
+        payer_id, vdu_id, plate_number, toll_category, status, start_time, end_time, start_location_latitude, 
+        start_location_longitude, start_location_time, end_location_latitude, end_location_longitude, end_location_time, 
+        end_location_name, sum_amount, start_location_name)
         VALUES('tesztid', '2022-05-13 12:50:06.925', '3QHR3Z608HM0K502', NULL, NULL, 0, 
         'tesztid', 'driverId', 'driverId', '3QHR3Z40FKB48A01', 'vduId', 'plateNumber', 1, 
         'MATCHED', '2022-05-13 11:50:06.811', NULL, 47, 19, '2022-06-10 13:06:21.000', NULL, NULL, NULL, NULL, NULL, NULL)""",
@@ -164,5 +176,18 @@ cmdlist = {
         VALUES('tesztid', 'auto_charge', 'transaction_id_01', 0, NULL, '2022-04-14 12:55:15.970', 'dummy', 
         '2022-04-14 12:59:09.449', 'dummy', 4)""",
         "DELETE FROM task WHERE x__id = 'tesztid'"
+    ],
+    'settlement_psp_clearing': [
+        """INSERT INTO psp_settlement_package
+        (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, psp_type, amount, currency)
+        VALUES('tesztid', '2022-07-28 14:00:42.266', 'Service User', NULL, NULL, 0, 'FELLO', 827, 'IDR');""",
+        """INSERT INTO psp_settlement_batch
+        (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, state, psp_type, psp_settlement_type, 
+        psp_settlement_package_id, period_start, period_end, amount, currency, generated_filename, generated_document_id)
+        VALUES('tesztid', '2022-07-25 23:19:29.345', 'Service User', '2022-07-28 14:00:43.776', 'Service User', 
+        3, 'FAILED', 'FELLO', 'TOLL', 'tesztid', '2022-07-15 13:59:19.026', '2022-07-15 16:06:54.780', 95, 'IDR', 
+        'MLFF-FELLO_tolls_25072022_212923.csv', '3UMZOTSTYYLA6H81');""",
+        "DELETE FROM psp_settlement_batch WHERE x__id = 'tesztid'",
+        "DELETE FROM psp_settlement_package WHERE x__id = 'tesztid'",
     ],
 }

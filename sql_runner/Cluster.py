@@ -39,4 +39,7 @@ class Cluster:
         cur.close()
         conn.close()
         return [rec[0] for rec in record]
+
+    def db_command_all_db(self, stmt):
+        pass
     
