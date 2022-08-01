@@ -1,0 +1,24 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- =================================================================================== -->
+    <!-- A telepítést végző DB user beállítása..                                             -->
+    <!-- =================================================================================== -->
+    <property name="dba_user_name"     value="#dba_user_name#"/>
+
+    <!-- =================================================================================== -->
+    <!-- A default fejlesztői környezet jelszó beállítása:                                   -->
+    <!-- =================================================================================== -->
+    <property name="schema_password"   value="#schema_password#"/>
+
+    <!-- =================================================================================== -->
+    <!-- Itt állítjuk be az összes Service elnevezését, property-ken keresztül..             -->
+    <!-- =================================================================================== -->
+    <property name="service_name_#service_name#"   value="#service_name#"/>
+
+
+    <!-- =================================================================================== -->
+
+</databaseChangeLog>

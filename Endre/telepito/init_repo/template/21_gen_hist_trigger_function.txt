@@ -1,0 +1,66 @@
+--liquibase formatted sql
+
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:GEN_HIST_TRIGGER_FUNCTION runOnChange:true endDelimiter:/
+--comment GEN_HIST_TRIGGER_FUNCTION procedure létrehozása..
+---------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION ${schema_name}.gen_hist_trigger_function(p_table_schema text, p_table_name text)
+ RETURNS text
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+  v_sql text;
+  v_sql_new text := '';
+  v_sql_old text := '';
+  c1 record;
+BEGIN
+  
+  v_sql := 'create or replace function '||p_table_schema||'.tr_'||p_table_name||'_func() returns trigger AS $body$
+DECLARE
+  l_operation  char(1) := CASE WHEN (TG_OP = ''UPDATE'') THEN ''U''
+                                   WHEN (TG_OP = ''DELETE'') THEN ''D''
+                                   ELSE ''I''  END;
+BEGIN
+  if (TG_OP = ''UPDATE'' OR TG_OP = ''INSERT'') THEN
+    INSERT INTO '||p_table_schema||'.'||p_table_name||'$hist values(default, l_operation';
+  
+   FOR c1 IN SELECT column_name
+    FROM information_schema.columns
+    WHERE table_schema = p_table_schema
+      AND table_name   = p_table_name
+    ORDER BY ordinal_position  
+  LOOP 
+    v_sql_new := v_sql_new||', NEW.'||c1.column_name;
+    v_sql_old := v_sql_old||', OLD.'||c1.column_name;
+  END LOOP; 
+
+  v_sql := v_sql||v_sql_new||');';
+
+  v_sql := v_sql||'
+ELSE
+  INSERT INTO '||p_table_schema||'.'||p_table_name||'$hist values(default, l_operation'||v_sql_old||');
+
+END IF;
+
+RETURN NEW;
+
+END;
+$body$
+LANGUAGE plpgsql
+SECURITY DEFINER';
+
+RETURN v_sql;
+
+
+END;
+$function$
+;
+/
+
+-- Permissions
+
+ALTER FUNCTION ${schema_name}.gen_hist_trigger_function(text, text) OWNER TO ${dba_user_name};
+
+GRANT EXECUTE ON FUNCTION ${schema_name}.gen_hist_trigger_function(text, text) TO ${schema_name}_exec;
+

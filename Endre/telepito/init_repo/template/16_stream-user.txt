@@ -1,0 +1,14 @@
+--liquibase formatted sql
+
+--===============================================================================================--
+-- USER ==
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:#SERVICE_NAME#_STREAM_USER runOnChange:true
+--comment A #service_name#_stream user létrehozása..
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:0 SELECT count(*) FROM pg_catalog.pg_user WHERE usename = '#service_name#_stream'
+---------------------------------------------------------------------------------------------------
+
+CREATE USER ${service_name_#service_name#}_stream WITH REPLICATION PASSWORD '${schema_password}';
+

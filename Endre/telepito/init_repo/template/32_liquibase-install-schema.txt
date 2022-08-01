@@ -1,0 +1,40 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- =================================================================================== -->
+    <!-- Itt állítjuk be a Schema elnevezését, property-n keresztül..                        -->
+    <!-- =================================================================================== -->
+    <property name="schema_name"   value="#schema_name#"/>
+
+    <!-- ============================================================================== -->
+    <!-- A schema létrehozása..                                                         -->
+    <!-- ============================================================================== -->
+    <include file="schema/install-schema.xml" relativeToChangelogFile="true"/>
+
+	<!-- ============================================================================== -->
+    <!-- A közös, azonos szerkezetű objektumok becsatolása..                            -->
+    <!-- ============================================================================== -->
+    <include file="install-modules.xml" relativeToChangelogFile="true"/>
+
+    <!-- ============================================================================== -->
+    <!-- A schema tábláinak létrehozása..                                               -->
+    <!-- ============================================================================== -->
+    <include file="tables/create-tables.xml" relativeToChangelogFile="true"/>
+
+    <!-- ============================================================================== -->
+    <!-- A Schema-hoz tartozó összes változást leíró XML file becsatolása               -->
+    <include file="schema-versions.xml" relativeToChangelogFile="true"/>
+    <!-- ============================================================================== -->
+
+    <!-- A view-k létrehozása..                                                         -->
+    <!--<include file="views/create-views.xml" relativeToChangelogFile="true"/>-->
+
+    <!-- A Schema kezdeti adatai, ősfeltöltések becsatolása..                           -->
+    <!--<include file="install-dmls.xml" relativeToChangelogFile="true"/>-->
+
+
+    <!-- ============================================================================== -->
+
+</databaseChangeLog>

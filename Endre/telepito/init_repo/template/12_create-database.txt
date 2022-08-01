@@ -1,0 +1,18 @@
+--liquibase formatted sql
+
+--===============================================================================================--
+-- DATABASE ==
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:#DB_NAME#_DATABASE runInTransaction:false runOnChange:true
+--comment A #db_name# adatbázis létrehozása..
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:0 SELECT count(*) FROM pg_catalog.pg_database WHERE datname = '#db_name#'
+---------------------------------------------------------------------------------------------------
+
+CREATE DATABASE #db_name# WITH 
+  OWNER = ${dba_user_name}
+  ENCODING = 'UTF8'
+  CONNECTION LIMIT = -1;
+	
+	

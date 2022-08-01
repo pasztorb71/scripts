@@ -1,0 +1,16 @@
+--liquibase formatted sql
+
+--===============================================================================================--
+-- TABLE ==
+---------------------------------------------------------------------------------------------------
+--changeset endre.balazs:DATABASECHANGELOG-DDL-0.00.1 runOnChange:true
+--comment Egyedi oszlop hozzáadása a Liquibase telepítő rendszertáblájához, replikációs hibák kivédése miatt.
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:0 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = 'public' AND table_name = 'databasechangelog' AND column_name = 'pk_id'
+---------------------------------------------------------------------------------------------------
+
+ALTER TABLE public.databasechangelog ADD COLUMN pk_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY;
+COMMENT ON COLUMN public.databasechangelog.pk_id IS 'Automatic generated primary key column.';
+
+

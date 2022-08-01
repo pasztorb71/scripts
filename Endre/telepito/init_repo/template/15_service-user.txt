@@ -1,0 +1,15 @@
+--liquibase formatted sql
+
+--===============================================================================================--
+-- USER ==
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:#SERVICE_NAME#_SERVICE_USER runOnChange:true
+--comment A #service_name#_service user létrehozása..
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:0 SELECT count(*) FROM pg_catalog.pg_user WHERE usename = '#service_name#_service'
+---------------------------------------------------------------------------------------------------
+
+CREATE USER ${service_name_#service_name#}_service WITH PASSWORD '${schema_password}';
+
+
