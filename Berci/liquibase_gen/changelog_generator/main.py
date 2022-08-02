@@ -60,15 +60,25 @@ def process_commands():
 
 
 if __name__ == '__main__':
-    ticket = Ticket('MLFFDEV-5013')
-    repo = Repository('eobu-trip')
+    ticket = Ticket('MLFFDEV-5045')
+    repo = Repository('-wa')
     print('Repository name: ' + repo.get_name())
     version.check_schema_version_file(ticket.get_version(), repo)
     g = Changelog_header_generator(author='bertalan.pasztor', jira=ticket.name, version=ticket.get_version(), serial=1)
     # TODO history táblára is megcsinálni
     commands = [
-        "UPDATE trip.trip_segment SET payment_status = NOT_YET_CREATED WHERE payment_status IS NULL;",
-        "ALTER TABLE trip.trip_segment ALTER COLUMN payment_status SET NOT NULL;",
+        "ALTER TABLE notification_wa.notification ALTER COLUMN error_code TYPE varchar(255) USING error_code::varchar;",
+        "ALTER TABLE notification_wa.notification ADD error_message varchar(2048) NULL;",
+        "COMMENT ON COLUMN notification_wa.notification.error_message IS 'Processing error error message';",
+        "ALTER TABLE notification_wa.notification$hist ALTER COLUMN error_code TYPE varchar(255) USING error_code::varchar;",
+        "ALTER TABLE notification_wa.notification$hist ADD error_message varchar(2048) NULL;",
+        "COMMENT ON COLUMN notification_wa.notification$hist.error_message IS 'Logged field: Processing error error message';",
+        "ALTER TABLE notification_wa.notification_wa ALTER COLUMN error_code TYPE varchar(255) USING error_code::varchar;",
+        "ALTER TABLE notification_wa.notification_wa ADD error_message varchar(2048) NULL;",
+        "COMMENT ON COLUMN notification_wa.notification_wa.error_message IS 'Processing error error message';",
+        "ALTER TABLE notification_wa.notification_wa$hist ALTER COLUMN error_code TYPE varchar(255) USING error_code::varchar;",
+        "ALTER TABLE notification_wa.notification_wa$hist ADD error_message varchar(2048) NULL;",
+        "COMMENT ON COLUMN notification_wa.notification_wa$hist.error_message IS 'Logged field: Processing error error message';",
     ]
     # TODO tasks = [new_enum('notification_wa.event.event', '')]
     process_commands()

@@ -59,6 +59,11 @@ class Runner:
         if loc == 'remote':
             return ['gateway.docker.internal:5433',
                     'gateway.docker.internal:5434']
+        elif loc == 'all':
+                return ['gateway.docker.internal:5433',
+                        'gateway.docker.internal:5434',
+                        'gateway.docker.internal:5435',
+                        ]
         elif loc == 'local':
             return ['gateway.docker.internal']
         elif loc == 'sandbox':
