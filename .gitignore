@@ -1,0 +1,4 @@
+passw.txt
+params.txt
+**/*.log
+**/__pycache__

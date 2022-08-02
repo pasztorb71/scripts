@@ -1,0 +1,14 @@
+--liquibase formatted sql
+
+--===============================================================================================--
+-- SCHEMA ==
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:#SCHEMA_NAME#_SCHEMA runOnChange:true
+--comment A #schema_name# schema létrehozása..
+---------------------------------------------------------------------------------------------------
+
+CREATE SCHEMA IF NOT EXISTS ${schema_name} AUTHORIZATION ${dba_user_name};
+
+GRANT USAGE ON SCHEMA ${schema_name} TO  ${schema_name}_sel;
+
+GRANT USAGE ON SCHEMA ${schema_name} TO ${schema_name}_tbl_own;

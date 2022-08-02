@@ -1,0 +1,36 @@
+--liquibase formatted sql
+
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:HIST_TRIGGER_GENERATOR runOnChange:true endDelimiter:/
+--comment HIST_TRIGGER_GENERATOR procedure létrehozása..
+---------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE ${schema_name}.hist_trigger_generator(IN p_table_schema text, IN p_table_name text)
+ LANGUAGE plpgsql
+AS $procedure$
+DECLARE
+  v_trigger_sql text;
+  v_trigfunction_sql text;
+BEGIN
+
+  v_trigfunction_sql := ${schema_name}.gen_hist_trigger_function(p_table_schema, p_table_name);
+  
+  EXECUTE v_trigfunction_sql; 
+
+  v_trigger_sql := 'CREATE OR REPLACE TRIGGER tr_'||p_table_name||'$hist'
+        ||' AFTER INSERT OR UPDATE OR DELETE ON '||p_table_schema||'.'||p_table_name
+        ||' FOR EACH ROW EXECUTE PROCEDURE '||p_table_schema||'.tr_'||p_table_name||'_func()';
+  EXECUTE v_trigger_sql;
+
+END;
+$procedure$
+;
+
+/
+
+-- Permissions
+
+ALTER PROCEDURE ${schema_name}.hist_trigger_generator(text, text) OWNER TO ${dba_user_name};
+
+GRANT EXECUTE ON PROCEDURE ${schema_name}.hist_trigger_generator(text, text) TO ${schema_name}_exec;
+

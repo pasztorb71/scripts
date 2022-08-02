@@ -1,0 +1,24 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- =================================================================================== -->
+    <!-- A telepítés alap paramétereinek beállítása..                                        -->
+    <!-- =================================================================================== -->
+    <include file="install-parameters.xml" relativeToChangelogFile="true"/>
+
+    <!-- =================================================================================== -->
+    <!-- A replikáció működéséhez, a rendszer tábla kiegészítése pk_id-val. (bugfix)         -->
+    <!-- =================================================================================== -->
+    <include file="all-modules/tables/databasechangelog/databasechangelog-DDL-0.00.1.sql" relativeToChangelogFile="true"/>
+
+    <!-- =================================================================================== -->
+    <!-- Az adatbázisok telepítése, egyenként behivatkozva..                                 -->
+    <!-- =================================================================================== -->
+    <include file="_init_dbs/#db_name#-db-install.xml" relativeToChangelogFile="true"/>
+
+    
+	<!-- =================================================================================== -->
+  
+</databaseChangeLog>

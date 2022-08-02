@@ -1,0 +1,14 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- =================================================================================== -->
+    <!-- A schema-hoz tartozó táblák létrehozása...                                          -->
+    <!-- Részlegesen kötött sorrendben kell futtatni, a Foreign Key hivatkozások miatt!      -->
+    <!-- =================================================================================== -->
+
+	<!--<include file="example_table/example_table.sql" relativeToChangelogFile="true"/>-->
+
+
+</databaseChangeLog>

@@ -1,0 +1,18 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- ============================================================================== -->
+    <!-- A schema létrehozása..                                                         -->
+    <!-- ============================================================================== -->
+    <include file="create-roles.sql" relativeToChangelogFile="true"/>
+    <include file="create-schema.sql" relativeToChangelogFile="true"/>
+    <include file="alter-service-user.sql" relativeToChangelogFile="true"/>
+    <include file="alter-stream-user.sql" relativeToChangelogFile="true"/>
+    <include file="alter-read-user.sql" relativeToChangelogFile="true"/>
+    <include file="alter-dwh_read-user.sql" relativeToChangelogFile="true"/>
+
+    <!-- =================================================================================== -->
+  
+</databaseChangeLog>

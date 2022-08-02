@@ -1,0 +1,28 @@
+--liquibase formatted sql
+
+--===============================================================================================--
+-- ALTER USER ==
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:#SERVICE_NAME#_STREAM_USER_SEARCH_PATH runOnChange:true
+--comment A #service_name#_stream user search_path beállítása létrehozása..
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_catalog.pg_user WHERE usename = '#service_name#_stream'
+---------------------------------------------------------------------------------------------------
+
+ALTER ROLE ${service_name_#service_name#}_stream SET search_path = ${schema_name};
+
+
+--===============================================================================================--
+-- GRANT ==
+---------------------------------------------------------------------------------------------------
+--changeset endre.balazs:#SERVICE_NAME#_STREAM_USER_GRANT runOnChange:true
+--comment A #service_name#_stream user hozzáférési jogának kiosztása..
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_catalog.pg_roles where rolname = '#schema_name#_full'
+---------------------------------------------------------------------------------------------------
+
+GRANT ${schema_name}_full TO ${service_name_#service_name#}_stream;
+
+
