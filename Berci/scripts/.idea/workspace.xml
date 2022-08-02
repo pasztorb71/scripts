@@ -4,15 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="889c292f-eaef-4f5a-bd5b-74a1e2f22a8d" name="Changes" comment="Fix gitignore">
+    <list default="true" id="889c292f-eaef-4f5a-bd5b-74a1e2f22a8d" name="Changes" comment="Átszervezés Feature branch-re, Readme">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atszervezesek/CI_struktura_letrehozas.py" beforeDir="false" afterPath="$PROJECT_DIR$/atszervezesek/CI_struktura_letrehozas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquibase_gen/create_repo/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/create_repo/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquibase_runner/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_runner/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../README.md" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -224,13 +218,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1651066216396</updated>
-    </task>
-    <task id="LOCAL-00001" summary="First commit">
-      <created>1651066475624</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1651066475624</updated>
     </task>
     <task id="LOCAL-00002" summary="Remove interactions, stop at first error">
       <created>1651066761548</created>
@@ -568,7 +555,14 @@
       <option name="project" value="LOCAL" />
       <updated>1659421711082</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="Átszervezés Feature branch-re">
+      <created>1659449110230</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1659449110230</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -595,8 +589,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Imi átalakítás kész" />
-    <MESSAGE value="Add Git to project" />
     <MESSAGE value="Endre, Imi lefutott mindenhol" />
     <MESSAGE value="Synchronize all master branches" />
     <MESSAGE value="Generalize" />
@@ -620,7 +612,9 @@
     <MESSAGE value="Add all option to liquibase runner" />
     <MESSAGE value="Move to Berci" />
     <MESSAGE value="Fix gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix gitignore" />
+    <MESSAGE value="Átszervezés Feature branch-re" />
+    <MESSAGE value="Átszervezés Feature branch-re, Readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="Átszervezés Feature branch-re, Readme" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
