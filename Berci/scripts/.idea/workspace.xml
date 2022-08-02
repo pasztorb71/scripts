@@ -5,60 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="889c292f-eaef-4f5a-bd5b-74a1e2f22a8d" name="Changes" comment="Fix gitignore">
-      <change beforePath="$PROJECT_DIR$/../../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../../.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../.idea/liquibase.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/liquibase.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Git/Git_class.py" beforeDir="false" afterPath="$PROJECT_DIR$/Git/Git_class.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Git/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Git/find_file.py" beforeDir="false" afterPath="$PROJECT_DIR$/Git/find_file.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Git/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Git/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/Repository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../atszervezesek/CI_elott.py" beforeDir="false" afterPath="$PROJECT_DIR$/atszervezesek/CI_elott.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../atszervezesek/CI_struktura_letrehozas.py" beforeDir="false" afterPath="$PROJECT_DIR$/atszervezesek/CI_struktura_letrehozas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../atszervezesek/MLFFDEV-2513.py" beforeDir="false" afterPath="$PROJECT_DIR$/atszervezesek/MLFFDEV-2513.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../atszervezesek/MLFFDEV-4280.py" beforeDir="false" afterPath="$PROJECT_DIR$/atszervezesek/MLFFDEV-4280.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../atszervezesek/MLFFDEV-4333.py" beforeDir="false" afterPath="$PROJECT_DIR$/atszervezesek/MLFFDEV-4333.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../atszervezesek/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/changelog_generator/Column.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/changelog_generator/Constraint.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/changelog_generator/Ticket.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/Ticket.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/changelog_generator/changelog_header_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/changelog_generator/command_templates.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/command_templates.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/changelog_generator/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/changelog_generator/test_changelog_header_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/test_changelog_header_generator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/create_repo/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/create_repo/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/create_repo/test_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/create_repo/test_main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/dml/inserts.txt" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/dml/inserts.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/dml/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/dml/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/engines.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/engines.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/enumgen.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/enumgen.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/gen_table/Confluence.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/gen_table/Confluence.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/gen_table/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/gen_table/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/test_utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_gen/version/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/version/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_runner/Runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_runner/Runner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_runner/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_runner/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../liquibase_runner/test_Runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_runner/test_Runner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../repos.txt" beforeDir="false" afterPath="$PROJECT_DIR$/repos.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sql_runner/Cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/Cluster.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sql_runner/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sql_runner/cmdlist.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/cmdlist.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sql_runner/databases.txt" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/databases.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sql_runner/parallel_runner/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/parallel_runner/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sql_runner/run_tests_inserts.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/run_tests_inserts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sql_runner/run_tests_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/run_tests_table.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sql_runner/test_run_tests_inserts.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/test_run_tests_inserts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sql_runner/test_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/test_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sql_runner/ver.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/ver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../test_Repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_Repository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../test_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../version.py" beforeDir="false" afterPath="$PROJECT_DIR$/version.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/atszervezesek/CI_struktura_letrehozas.py" beforeDir="false" afterPath="$PROJECT_DIR$/atszervezesek/CI_struktura_letrehozas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/create_repo/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/create_repo/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_runner/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_runner/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -112,7 +65,28 @@
       <recent name="C:\Users\bertalan.pasztor\PycharmProjects\liquibase\liquibase_wrapper\create_repo" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main (1)">
+  <component name="RunManager" selected="Python.main (2)">
+    <configuration name="CI_struktura_letrehozas" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="scripts" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/atszervezesek" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/atszervezesek/CI_struktura_letrehozas.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="scripts" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -135,7 +109,7 @@
       <method v="2" />
     </configuration>
     <configuration name="main (2)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="liquibase" />
+      <module name="scripts" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -156,27 +130,6 @@
       <method v="2" />
     </configuration>
     <configuration name="main (3)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="liquibase" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Berci/Git" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Berci/Git/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="main (4)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="scripts" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -184,32 +137,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Git" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/liquibase_gen/create_repo" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Git/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="main (5)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="liquibase" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Berci/liquibase_runner" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Berci/liquibase_runner/main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/liquibase_gen/create_repo/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -260,13 +192,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests for test_utils.Test.test_get_login_from_file" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="scripts" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_utils.Test.test_get_login_from_file&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main (1)" />
-        <item itemvalue="Python.main (4)" />
-        <item itemvalue="Python.main (5)" />
-        <item itemvalue="Python.main (3)" />
         <item itemvalue="Python.main (2)" />
+        <item itemvalue="Python.main (1)" />
+        <item itemvalue="Python.CI_struktura_letrehozas" />
+        <item itemvalue="Python.main (3)" />
+        <item itemvalue="Python tests.Python tests for test_utils.Test.test_get_login_from_file" />
       </list>
     </recent_temporary>
   </component>
@@ -696,8 +642,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py</url>
-          <line>67</line>
-          <option name="timeStamp" value="74" />
+          <line>39</line>
+          <option name="timeStamp" value="80" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -46,12 +46,12 @@ if __name__ == '__main__':
     src_db_path = src_db.replace('-', '_')
     src_schema = 'customer'
   #prepare
-    repo = 'mlff-settlement-tro-clearing-postgredb'
+    repo = 'mlff-enforcement-eligibilty-declaration1-postgredb'
     base = 'c:/GIT/MLFF/'+repo
     db = re.match('.*mlff-(.*)-postgredb', base).group(1)
     db_path = db.replace('-', '_')
-    schema = 'tro_clearing'
-    version = '0.04.0'
+    schema = 'eligibilty_declaration1'
+    version = '0.05.0'
     service_user = schema + '_service'
     to_replace = [[src_db, db],[src_db_path, db_path], [src_schema, schema]]
   #database
@@ -59,12 +59,12 @@ if __name__ == '__main__':
     os.makedirs(base+'/liquibase/'+db_path)
     src_path = src_base+'/liquibase/'+src_db_path
     path = base+'/liquibase/'+db_path+'/_init_dbs'
-    copy_file_and_replace(src_base+'/OLD-README.md', base+'/README.md', to_replace)
+    copy_file_and_replace(src_base+'/README.adoc', base+'/README.adoc', to_replace)
     copy_dir(src_base+'/liquibase/'+src_db_path+'/_init_dbs', path)
     os.rename(path+'/'+src_db_path, path+'/'+db_path)
     os.rename(path+'/'+src_db_path+'-db-install.xml', path+'/'+db_path+'-db-install.xml')
-    copy_file_and_replace(src_path+'/install-parameters.xml', move_upper_dir(path)+'/install-parameters.xml', to_replace)
     replace_in_file(path+'/'+db_path+'-db-install.xml', to_replace)
+    copy_file_and_replace(src_path+'/install-parameters.xml', move_upper_dir(path)+'/install-parameters.xml', to_replace)
     os.rename(path+'/'+db_path+'/'+src_schema, path+'/'+db_path+'/'+schema)
     replace_in_file(path+'/'+db_path+'/create-database.sql', to_replace)
     replace_in_file(path+'/'+db_path+'/'+schema+'/service-user.sql', to_replace)

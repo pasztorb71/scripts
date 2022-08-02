@@ -1,13 +1,12 @@
 import os
 import re
 import shutil
+from distutils.dir_util import copy_tree
 from inspect import getfile
 from os.path import exists
 
 import psycopg2
 from tabulate import tabulate
-
-from setuptools._distutils.dir_util import copy_tree
 
 from Repository import Repository
 
@@ -147,7 +146,7 @@ def get_tablename_from_command(command):
     command = command.replace('IF EXISTS ','').replace('"','')
     patterns = ["ALTER TABLE (\w+[.])?([a-zA-z0-9_$\"]+)",
                 "COMMENT ON COLUMN (\w+[.])?([a-zA-z0-9_$\"]+)",
-                "CREATE INDEX .* ON (\w+[.])?([a-zA-z0-9_$\"]+)",
+                "CREATE.*INDEX .* ON (\w+[.])?([a-zA-z0-9_$\"]+)",
                 "UPDATE (\w+[.])?([a-zA-z0-9_\"]+)",
                 "DELETE FROM (\w+[.])?([a-zA-z0-9_\"]+)",
                 "GRANT .* ON TABLE (\${.*}).(.*) TO ",

@@ -1,7 +1,6 @@
 import os
 
-from utils import copy_dir, replace_in_file, copy_file
-from Repository import get_db_name
+from utils import copy_dir, replace_in_file, copy_file, git_init, get_db_name
 
 
 def _cre_docker_compose_build(fname):
@@ -20,12 +19,13 @@ def create_file(fname):
 
 if __name__ == '__main__':
   # prepare
-    repo = 'mlff-settlement-tro-clearing-postgredb'
+    repo = 'mlff-enforcement-eligibilty-detection-postgredb'
     base = 'c:/GIT/MLFF/'+repo
     db = get_db_name(base)
     db_path = db.replace('-', '_')
     to_replace = [['core-customer', db],['core_customer', db_path]]
   #work
+    #git_init(base)
     copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\.gitlab\\', base+'/.gitlab')
     copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\docs\\', base+'/docs')
     replace_in_file(base+'/docs/development.adoc', to_replace)
@@ -54,4 +54,4 @@ if __name__ == '__main__':
     copy_file(r'c:\GIT\MLFF\mlff-core-customer-postgredb\README.adoc', base+'/README.adoc')
     replace_in_file(base+'/README.adoc', to_replace)
   #post
-    replace_in_file(base+'/.env', [['VERSION=0.4.0', 'VERSION=0.2.0']])
+    #replace_in_file(base+'/.env', [['VERSION=0.4.0', 'VERSION=0.2.0']])
