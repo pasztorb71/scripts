@@ -1,0 +1,106 @@
+--liquibase formatted sql
+
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:HIST_TABLE_GENERATOR runOnChange:true endDelimiter:/
+--comment HIST_TABLE_GENERATOR procedure létrehozása..
+---------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE ${schema_name}.hist_table_generator(IN p_table_schema text, IN p_table_name text)
+ LANGUAGE plpgsql
+AS $procedure$
+DECLARE
+
+  v_table_ddl text;
+  v_sql_eleje text;
+  v_sql_vege  text;
+  v_alter1_pk text;
+  v_alter2_ck text;
+  v_comment_row text;
+  c1 record;
+  c2 record;
+  
+BEGIN
+  v_sql_eleje := 'X__HIST_TS timestamptz(6) DEFAULT clock_timestamp() NOT NULL, X__HIST_STATE VARCHAR(1) NOT NULL, X__ID';
+
+  v_alter1_pk := 'ALTER TABLE #HIST_table_schema# ADD CONSTRAINT pk_#HIST_TABLE# 
+                       PRIMARY KEY ( X__ID, X__HIST_TS )' ;
+
+  v_alter2_ck := 'ALTER TABLE #HIST_table_schema# ADD CONSTRAINT CK_#HIST_TABLE#_OP CHECK( X__HIST_STATE IN ( ''I'', ''U'', ''D'' ) )';
+  
+  v_sql_vege  := REPLACE(v_sql_vege, '#TBLSPACE#', 'TS_' || USER || '_HISTDATA');
+  
+  FOR c1 IN SELECT t.table_schema, t.table_name, t.table_name || '$hist' AS journal_table_name, REPLACE(pg_catalog.obj_description(pgc.oid, 'pg_class'),'''', '''''') AS comments
+             FROM information_schema.tables t
+             LEFT JOIN pg_catalog.pg_class pgc
+			ON t.table_name = pgc.relname
+            WHERE t.table_name NOT IN ('databasechangelog', 'databasechangeloglock')
+              AND t.table_name NOT LIKE '%$hist'
+              AND t.table_schema = p_table_schema
+              AND (p_table_name IS NULL OR T.table_name = lower(p_table_name))
+            ORDER BY T.table_name, journal_table_name
+  LOOP
+  
+    v_table_ddl := ${schema_name}.gen_create_table_statement(c1.table_schema, cast(c1.table_name as text));
+    
+    v_table_ddl := REPLACE(v_table_ddl, '"', '');
+    
+    v_table_ddl := REPLACE(SUBSTR(v_table_ddl, 1, position('(' in v_table_ddl ) - 1), c1.table_name, c1.table_schema||'.'||c1.journal_table_name) ||
+                   REPLACE(SUBSTR(v_table_ddl, position('(' in v_table_ddl )), 'x__id', v_sql_eleje);
+    
+    EXECUTE v_table_ddl;
+  
+    v_alter1_pk := REPLACE(v_alter1_pk, '#HIST_TABLE#', c1.journal_table_name);
+    v_alter1_pk := REPLACE(v_alter1_pk, '#HIST_table_schema#', c1.table_schema||'.'||c1.journal_table_name);
+  	EXECUTE v_alter1_pk;
+    
+    v_alter2_ck := REPLACE(v_alter2_ck, '#HIST_TABLE#', c1.journal_table_name);
+    v_alter2_ck := REPLACE(v_alter2_ck, '#HIST_table_schema#', c1.table_schema||'.'||c1.journal_table_name);
+    EXECUTE v_alter2_ck;
+      
+    v_comment_row := 'COMMENT ON TABLE  #HIST_TABLE#  IS ''History table, source description: #TCOM# ''';
+    v_comment_row := REPLACE(v_comment_row, '#HIST_TABLE#', c1.table_schema||'.'||c1.journal_table_name);
+    v_comment_row := REPLACE(v_comment_row, '#TCOM#', COALESCE(c1.COMMENTS, ''));
+    EXECUTE v_comment_row;
+  
+      
+    v_comment_row := 'COMMENT ON COLUMN ' || c1.table_schema||'.'||c1.journal_table_name ||
+                     '.X__HIST_TS IS ''History timestamp, the moment of the DML operation.''';
+    EXECUTE v_comment_row;
+    
+    v_comment_row := ' COMMENT ON COLUMN ' || c1.table_schema||'.'||c1.journal_table_name ||
+                     '.X__HIST_STATE IS ''History DML Operations: ' ||
+                     ' ("I"-Insert record; "U"-Update record; "D"-Delete record, physical deletion).''';
+    EXECUTE v_comment_row;
+    
+    
+  			
+    FOR c2 IN SELECT c.table_schema, c.table_name,c.COLUMN_NAME,PGD.DESCRIPTION AS comments
+  			FROM PG_CATALOG.PG_STATIO_ALL_TABLES AS st
+  			  INNER JOIN PG_CATALOG.PG_DESCRIPTION PGD ON (PGD.OBJOID=st.RELID)
+  			  INNER JOIN INFORMATION_SCHEMA.COLUMNS c ON (PGD.OBJSUBID=C.ORDINAL_POSITION
+  			    AND  c.table_schema=st.SCHEMANAME AND c.table_name=st.RELNAME)    
+  			  WHERE c.table_name NOT IN ('databasechangelog', 'databasechangeloglock')
+  			  	AND c.table_name = lower(p_table_name)
+  			  	AND c.table_schema = lower(p_table_schema)
+  			  	ORDER BY c.table_name, c.column_name  
+    LOOP
+    
+      v_comment_row := 'COMMENT ON COLUMN ' ||  c1.table_schema||'.'||c1.journal_table_name || '.' || c2.COLUMN_NAME ||
+                       ' is ''Logged field: ' || REPLACE(c2.comments,'''','"') || ''' ';
+      EXECUTE v_comment_row;
+      
+    END LOOP;
+  
+  END LOOP;
+
+END;
+$procedure$
+;
+/
+
+-- Permissions
+
+ALTER PROCEDURE ${schema_name}.hist_table_generator(text, text) OWNER TO ${dba_user_name};
+
+GRANT EXECUTE ON PROCEDURE ${schema_name}.hist_table_generator(text, text) TO ${schema_name}_exec;
+

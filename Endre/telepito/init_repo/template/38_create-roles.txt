@@ -1,0 +1,57 @@
+--liquibase formatted sql
+
+--===============================================================================================--
+-- ROLE ==
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:#SCHEMA_NAME#_ROLES runOnChange:true
+--comment A #schema_name# Schema Role-ok létrehozása..
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_catalog.pg_database WHERE datname = '#db_name#' and not exists (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = '#schema_name#_full')
+---------------------------------------------------------------------------------------------------
+
+CREATE ROLE ${schema_name}_sel;
+CREATE ROLE ${schema_name}_del;
+CREATE ROLE ${schema_name}_mod;
+CREATE ROLE ${schema_name}_exec;
+CREATE ROLE ${schema_name}_full;
+
+GRANT ${schema_name}_sel, ${schema_name}_del, ${schema_name}_mod, ${schema_name}_exec TO ${schema_name}_full;
+
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:#SCHEMA_NAME#_HISTSEL_ROLE runOnChange:true
+--comment A #schema_name# Schema kiegészítő #schema_name#_histsel, a History táblák olvasására szolgáló role-jának létrehozása..
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:0 SELECT count(*) FROM pg_catalog.pg_roles WHERE rolname = '#schema_name#_histsel'
+---------------------------------------------------------------------------------------------------
+
+CREATE ROLE ${schema_name}_histsel;
+
+GRANT ${schema_name}_histsel TO ${schema_name}_full;
+
+
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:#SCHEMA_NAME#_TBL_OWN_ROLE runOnChange:true
+--comment A #schema_name# Schema kiegészítő, a táblák tulajdonlására szolgáló role-jának létrehozása, és kiosztása..
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:0 SELECT count(*) FROM pg_catalog.pg_roles WHERE rolname = '#schema_name#_tbl_own'
+--------------------------------------------------------------------------------- ------------------
+
+CREATE ROLE ${schema_name}_tbl_own;
+
+GRANT ${schema_name}_tbl_own TO ${dba_user_name};
+
+
+--===============================================================================================--
+-- Csak IDEIGLENES beállítás!! ==
+---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:#SCHEMA_NAME#_TBL_OWN_ROLE-TO-FULL runOnChange:true
+--comment A táblák tulajdonlására szolgáló role IDEIGLENES odaadása..
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_catalog.pg_roles WHERE rolname = '#schema_name#_full'
+---------------------------------------------------------------------------------------------------
+
+GRANT ${schema_name}_tbl_own TO ${schema_name}_full;

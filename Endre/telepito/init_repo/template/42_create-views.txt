@@ -1,0 +1,14 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- =================================================================================== -->
+    <!-- A schema-hoz tartozó view-k létrehozása...                                          -->
+    <!-- =================================================================================== -->
+
+    <!--<include file="v_example_view/v_example_view.sql" relativeToChangelogFile="true"/>-->
+
+
+</databaseChangeLog>
+
