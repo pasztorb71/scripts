@@ -1,4 +1,4 @@
-passw.txt
-params.txt
+db_passw.txt
+icell_passw.txt
 **/*.log
 **/__pycache__

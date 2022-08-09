@@ -1,10 +1,9 @@
 import multiprocessing
-import os
 
 import psycopg2
 
-from sql_runner.Cluster import Cluster
-from utils import print_dict_queried, print_dict, password_from_file, load_from_file
+from Cluster import Cluster
+from utils import password_from_file
 
 
 def mproc_single_command_tmpl(host, port, db, return_dict):
@@ -124,7 +123,6 @@ def mproc_grant_dwh_read(host, port, db, return_dict):
         user="postgres",
         password='fLXyFS0RpmIX9uxGII4N')
     cur = conn.cursor()
-    recout = []
     #cur.execute("CREATE USER dwh_read WITH PASSWORD 'mlffTitkosPassword123!';")
     cur.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_owner = 'postgres';")
     record = cur.fetchall()
@@ -163,7 +161,7 @@ def sum_counts(d):
     return sum
 
 
-def parallel_run(databases, func):
+def parallel_run(host, port, databases, func):
     global jobs
     return_dict = get_return_dict()
     jobs = []
@@ -179,7 +177,7 @@ if __name__ == '__main__':
     #databases = load_from_file('../databases.txt')
     databases = cluster.databases[0:]
     #databases = ['core_customer']
-    return_dict = parallel_run(databases, mproc_count_tables)
+    return_dict = parallel_run(host, port, databases, mproc_count_tables, loc='local')
     # print_dict(return_dict)
     print(sum_counts(return_dict))
     # print_dict_queried(return_dict)

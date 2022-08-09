@@ -1,4 +1,4 @@
-from sql_runner.Cluster import Cluster
+from Cluster import Cluster
 from utils import password_from_file
 
 host, port = 'localhost', 5433

@@ -48,8 +48,9 @@ def process_commands():
             if tablename:
                 version.check_table_version_file(ticket.get_version(), repo, tablename) # DDL sql
 
-            if is_history_related_command(stmt)
+            if is_history_related_command(stmt):
                 history_commands.append(gen_history_command_from_command(stmt))
+
             if header:
                 print()
                 print(header[:-1])

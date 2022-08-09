@@ -100,8 +100,9 @@ def git_init(base):
 
 def print_dict(d):
     for db, records in sorted(d.items()):
-        print(db + ': ', end='')
-        print(d[db])
+        print(db)
+        for value in records:
+            print('  ' + value)
 
 def print_dict_queried(d):
     for db, records in d.items():
@@ -129,16 +130,16 @@ def get_password(env, user):
 
 
 def password_from_file(phost, pport):
-    with open(getfile(password_from_file).rsplit('\\',1)[0] + '/params.txt', 'r') as f:
+    with open(getfile(password_from_file).rsplit('\\',1)[0] + '/db_passw.txt', 'r') as f:
         for line in f.read().split('\n')[1:]:
             host, port, passw = line.split()
-            if host == phost and port == pport:
+            if host == phost and port == str(pport):
                 break
     return passw
 
 
 def get_login_from_file():
-    with open(getfile(get_login_from_file).rsplit('\\',1)[0] + '/passw.txt', 'r') as f:
+    with open(getfile(get_login_from_file).rsplit('\\',1)[0] + '/icell_passw.txt', 'r') as f:
         return f.read().split()
 
 

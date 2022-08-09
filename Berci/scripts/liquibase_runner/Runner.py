@@ -1,6 +1,7 @@
 import glob
 import os
 
+from docker_ips import ipdict, base_ips
 from utils import get_dbname_from_project
 
 
@@ -42,6 +43,8 @@ class Runner:
         return 'liquibase-install-step-01.xml' if db == 'postgres' else 'liquibase-install-step-02.xml'
 
     def get_dbs(self, repo):
+            if repo == 'doc-postgredb':
+                return ['document']
             t = repo.split('-')
             return ['_'.join(t[1:-1])]
 
@@ -56,25 +59,11 @@ class Runner:
             dblist = [file.replace('liquibase-install-','').replace('.xml','') for file in files]
             return dblist
 
-    def get_ip_addresses(self, loc):
-        if loc == 'remote':
-            return ['gateway.docker.internal:5433',
-                    'gateway.docker.internal:5434']
-        elif loc == 'all':
-                return ['gateway.docker.internal:5433',
-                        'gateway.docker.internal:5434',
-                        'gateway.docker.internal:5435',
-                        ]
-        elif loc == 'local':
-            return ['gateway.docker.internal']
-        elif loc == 'sandbox':
-            return ['gateway.docker.internal:5433']
-        elif loc == 'dev':
-            return ['gateway.docker.internal:5434']
-        elif loc == 'fit':
-            return ['gateway.docker.internal:5435']
-        elif loc == 'perf':
-            return ['gateway.docker.internal:5436']
+    def get_ip_addresses_for_docker(self, loc):
+        if loc in ['remote', 'all']:
+            return ipdict[loc]
+        else:
+            return base_ips[loc]
 
     def run_for_repo(self, ip_address, repo):
         if self.full:
@@ -88,7 +77,7 @@ class Runner:
         self.loc = loc
         self.checkonly = checkonly
         self.password = 'fLXyFS0RpmIX9uxGII4N' if loc != 'local' else 'mysecretpassword'
-        for ip_address in self.get_ip_addresses(loc):
+        for ip_address in self.get_ip_addresses_for_docker(loc):
             print(ip_address)
             for repo in [repo.get_name() for repo in self.repos]:
                 self.run_for_repo(ip_address, repo)

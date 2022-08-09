@@ -4,17 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="889c292f-eaef-4f5a-bd5b-74a1e2f22a8d" name="Changes" comment="Átszervezés Feature branch-re, Readme">
+    <list default="true" id="889c292f-eaef-4f5a-bd5b-74a1e2f22a8d" name="Changes" comment="New directory checks">
+      <change afterPath="$PROJECT_DIR$/docker_ips.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_Runner.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atszervezesek/CI_struktura_letrehozas.py" beforeDir="false" afterPath="$PROJECT_DIR$/atszervezesek/CI_struktura_letrehozas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/command_templates.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/command_templates.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checks/run_tests_inserts.py" beforeDir="false" afterPath="$PROJECT_DIR$/checks/run_tests_inserts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checks/test_run_tests_inserts.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_run_tests_inserts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquibase_gen/gen_table/Confluence.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/gen_table/Confluence.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/liquibase_runner/Runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_runner/Runner.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/liquibase_runner/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_runner/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_runner/test_Runner.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql_runner/Cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/Cluster.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sql_runner/cmdlist.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/cmdlist.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql_runner/run_tests_inserts.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/run_tests_inserts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql_runner/parallel_runner/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/parallel_runner/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql_runner/test_utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql_runner/ver.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/ver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,97 +67,13 @@
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\bertalan.pasztor\PycharmProjects\liquibase\Berci\scripts" />
+      <recent name="C:\Users\bertalan.pasztor\PycharmProjects\liquibase\Berci\scripts\checks" />
       <recent name="C:\Users\bertalan.pasztor\PycharmProjects\liquibase\Berci" />
       <recent name="C:\Users\bertalan.pasztor\PycharmProjects\liquibase" />
       <recent name="C:\Users\bertalan.pasztor\PycharmProjects\liquibase\liquibase_wrapper\gen_table" />
-      <recent name="C:\Users\bertalan.pasztor\PycharmProjects\liquibase\liquibase_wrapper\create_repo" />
     </key>
   </component>
   <component name="RunManager" selected="Python.run_tests_inserts">
-    <configuration name="CI_struktura_letrehozas" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="scripts" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/atszervezesek" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/atszervezesek/CI_struktura_letrehozas.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="scripts" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/liquibase_gen/changelog_generator" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="main (2)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="scripts" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/liquibase_runner" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/liquibase_runner/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="main (3)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="scripts" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Git" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Git/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="liquibase" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -202,11 +124,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/sql_runner" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/checks" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/sql_runner/run_tests_inserts.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/checks/run_tests_inserts.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -215,13 +137,69 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests for test_Runner.TestRunner" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="scripts" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/liquibase_runner" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_Runner.TestRunner&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for test_utils.Test" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="scripts" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/sql_runner" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_utils.Test&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for test_utils.Test.test_password_from_file1" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="scripts" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_utils.Test.test_password_from_file1&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in scripts" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="scripts" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.run_tests_inserts" />
-        <item itemvalue="Python.main (2)" />
-        <item itemvalue="Python.CI_struktura_letrehozas" />
-        <item itemvalue="Python.main (1)" />
-        <item itemvalue="Python.main (3)" />
+        <item itemvalue="Python tests.Python tests for test_utils.Test.test_password_from_file1" />
+        <item itemvalue="Python tests.Python tests in scripts" />
+        <item itemvalue="Python tests.Python tests for test_utils.Test" />
+        <item itemvalue="Python tests.Python tests for test_Runner.TestRunner" />
       </list>
     </recent_temporary>
   </component>
@@ -233,13 +211,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1651066216396</updated>
-    </task>
-    <task id="LOCAL-00004" summary="OOP ready">
-      <created>1651072042993</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1651072042993</updated>
     </task>
     <task id="LOCAL-00005" summary="Optimized">
       <created>1651074697775</created>
@@ -577,7 +548,14 @@
       <option name="project" value="LOCAL" />
       <updated>1659449660364</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="New directory checks">
+      <created>1660039608218</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1660039608218</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -604,7 +582,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Endre, Imi lefutott mindenhol" />
     <MESSAGE value="Synchronize all master branches" />
     <MESSAGE value="Generalize" />
     <MESSAGE value="Create_repo kész" />
@@ -629,7 +606,8 @@
     <MESSAGE value="Fix gitignore" />
     <MESSAGE value="Átszervezés Feature branch-re" />
     <MESSAGE value="Átszervezés Feature branch-re, Readme" />
-    <option name="LAST_COMMIT_MESSAGE" value="Átszervezés Feature branch-re, Readme" />
+    <MESSAGE value="New directory checks" />
+    <option name="LAST_COMMIT_MESSAGE" value="New directory checks" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -654,12 +632,23 @@
           <line>74</line>
           <option name="timeStamp" value="71" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/liquibase_runner/main.py</url>
+          <line>8</line>
+          <option name="timeStamp" value="78" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/test_utils.py</url>
+          <line>18</line>
+          <option name="timeStamp" value="79" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
         <watch expression="g2" />
         <watch expression="base" />
+        <watch expression="cmdlist" />
       </configuration>
     </watches-manager>
   </component>
