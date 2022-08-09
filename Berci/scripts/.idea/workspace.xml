@@ -6,7 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="889c292f-eaef-4f5a-bd5b-74a1e2f22a8d" name="Changes" comment="Átszervezés Feature branch-re, Readme">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/atszervezesek/CI_struktura_letrehozas.py" beforeDir="false" afterPath="$PROJECT_DIR$/atszervezesek/CI_struktura_letrehozas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/command_templates.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/command_templates.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/gen_table/Confluence.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/gen_table/Confluence.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_runner/Runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_runner/Runner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_runner/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_runner/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql_runner/cmdlist.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/cmdlist.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql_runner/run_tests_inserts.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/run_tests_inserts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +52,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="TODO_SCOPE" value="All Places" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../../../../GIT/MLFF/mlff-core-customer-postgredb/README.adoc" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -59,7 +67,7 @@
       <recent name="C:\Users\bertalan.pasztor\PycharmProjects\liquibase\liquibase_wrapper\create_repo" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main (2)">
+  <component name="RunManager" selected="Python.run_tests_inserts">
     <configuration name="CI_struktura_letrehozas" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="scripts" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -131,11 +139,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/liquibase_gen/create_repo" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Git" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/liquibase_gen/create_repo/main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Git/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -186,27 +194,34 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_utils.Test.test_get_login_from_file" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="run_tests_inserts" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="scripts" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/sql_runner" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_utils.Test.test_get_login_from_file&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/sql_runner/run_tests_inserts.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.run_tests_inserts" />
         <item itemvalue="Python.main (2)" />
-        <item itemvalue="Python.main (1)" />
         <item itemvalue="Python.CI_struktura_letrehozas" />
+        <item itemvalue="Python.main (1)" />
         <item itemvalue="Python.main (3)" />
-        <item itemvalue="Python tests.Python tests for test_utils.Test.test_get_login_from_file" />
       </list>
     </recent_temporary>
   </component>
@@ -218,20 +233,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1651066216396</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Remove interactions, stop at first error">
-      <created>1651066761548</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1651066761548</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Make procedures">
-      <created>1651070873574</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1651070873574</updated>
     </task>
     <task id="LOCAL-00004" summary="OOP ready">
       <created>1651072042993</created>
@@ -562,7 +563,21 @@
       <option name="project" value="LOCAL" />
       <updated>1659449110230</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="Átszervezés Feature branch-re, Readme">
+      <created>1659449605643</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1659449605643</updated>
+    </task>
+    <task id="LOCAL-00052" summary="Átszervezés Feature branch-re, Readme">
+      <created>1659449660364</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1659449660364</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -635,9 +650,9 @@
           <option name="timeStamp" value="70" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py</url>
-          <line>39</line>
-          <option name="timeStamp" value="80" />
+          <url>file://$PROJECT_DIR$/Git/main.py</url>
+          <line>74</line>
+          <option name="timeStamp" value="71" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

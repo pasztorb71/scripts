@@ -11,6 +11,7 @@ class Changelog_header_generator():
         self.comment = ''
         self.version = version
         self.serial = serial
+        self.original_serial = serial
         self.table_name = ''
         self.prev_table = ''
         self.prev_column = ''
@@ -19,13 +20,13 @@ class Changelog_header_generator():
         tmp = self.get_template(command)
         self.command = command
         table_name = utils.get_tablename_from_command(self.command)
+        if self.prev_table == '':
+            self.prev_table = table_name
         column_name = utils.get_columnname_from_command(self.command)
         if table_name == self.prev_table and column_name == self.prev_column and command.startswith('COMMENT ON COLUMN'):
             return '',''
         else:
-            self.prev_table = table_name
-            self.prev_column = column_name
-            return tmp\
+            tmp = tmp\
                 .replace('!!author!!', self.author)\
                 .replace('!!table_upper!!',table_name.upper())\
                 .replace('!!version!!', self.version)\
@@ -36,8 +37,11 @@ class Changelog_header_generator():
                 .replace('!!table_lower!!', table_name.lower()) \
                 .replace('!!consname!!', utils.get_consname_from_command(self.command))\
                 .replace('!!indexname!!', utils.get_indexname_from_command(self.command)) \
-                .replace('!!trigger!!', utils.get_triggername_from_command(self.command)), \
-                table_name
+                .replace('!!trigger!!', utils.get_triggername_from_command(self.command))
+            self.prev_table = table_name
+            self.prev_column = column_name
+
+            return tmp, table_name
 
     def get_template(self, command):
         template = None
@@ -56,6 +60,7 @@ class Changelog_header_generator():
         elif re.match('.*ALTER COLUMN.* SET DEFAULT ',command): template = tmp_set_default
         elif re.match('.*ALTER COLUMN.* DROP NOT NULL',command): template = tmp_drop_not_null
         elif re.match('.*ALTER COLUMN.* SET NOT NULL',command): template = tmp_set_not_null
+        elif re.match('.*ALTER TABLE.* DROP DEFAULT',command): template = tmp_drop_default
         elif re.match('.*ALTER COLUMN.* TYPE ',command): template = tmp_column_type
         elif re.match('.*RENAME COLUMN.*',command): template = tmp_rename_column
         elif re.match('DROP TABLE.*',command): template = tmp_drop_table
@@ -67,13 +72,13 @@ class Changelog_header_generator():
         return template
 
     def get_next_serial(self, table_name):
-        if table_name == self.table_name:
+        if table_name == self.prev_table:
             self.serial += 1
             out = str(self.serial).rjust(2, '0')
         else:
-            self.serial = 1
+            self.serial = self.original_serial + 1
             out = str(self.serial).rjust(2,'0')
-            self.table_name = table_name
+            self.prev_table = table_name
         return out
 
 

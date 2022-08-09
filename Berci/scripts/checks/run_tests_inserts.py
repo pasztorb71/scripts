@@ -1,8 +1,6 @@
 import re
 
 from utils import get_conn_service_user, password_from_file
-from Cluster import Cluster
-from cmdlist import cmdlist
 
 def runteszt(conn):
     print(conn.info.dbname)
@@ -32,7 +30,7 @@ if __name__ == '__main__':
     host, port = 'localhost', 5433
     cluster = Cluster(host=host, port=port, passw=password_from_file(host, port))
     #databases = load_from_file('../databases.txt')
-    databases = ['core_notification_wa']
+    databases = ['document']
     #databases = cluster.databases
     for db in databases:
-        runteszt(get_conn_service_user('fit', db))
+        runteszt(get_conn_service_user('local', db))

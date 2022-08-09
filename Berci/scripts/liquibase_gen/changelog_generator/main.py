@@ -25,12 +25,20 @@ def p_print(stmt):
         print('COMMIT;')
 
 
+def is_history_related_command(stmt):
+    pass
+
+
+def gen_history_command_from_command(stmt):
+    pass
+
+
 def process_commands():
     try:
-        history_changesets = []
+        history_commands = []
         for stmt in commands[0:]:
             header, tablename = g.generate_header(stmt)
-            # TODO MMAke history handling
+            # TODO MAke history handling
             """
             if utils.is_history_table(repo.get_db_name(), repo.get_schema(), tablename):
                 header, hist_tablename = g.generate_header(stmt, hist=True)
@@ -38,10 +46,15 @@ def process_commands():
                 history_changesets.append(stmt)
             """
             if tablename:
-                version.check_table_version_file(ticket.get_version(), repo, tablename)
+                version.check_table_version_file(ticket.get_version(), repo, tablename) # DDL sql
+
+            if is_history_related_command(stmt)
+                history_commands.append(gen_history_command_from_command(stmt))
             if header:
                 print()
                 print(header[:-1])
+            else:
+                raise Exception("No header found")
             p_print(stmt)
             """
             if re.match('.*ADD CONSTRAINT .* CHECK ',stmt):
@@ -59,14 +72,20 @@ def process_commands():
 
 
 if __name__ == '__main__':
-    ticket = Ticket('MLFFDEV-5063')
-    repo = Repository('trip')
+    ticket = Ticket('MLFFDEV-5309')
+    repo = Repository('psp-clearing')
     print('Repository name: ' + repo.get_name())
-    version.check_schema_version_file('0.06.0', repo)
-    g = Changelog_header_generator(author='bertalan.pasztor', jira=ticket.name, version='0.06.0', serial=1)
+    version.check_schema_version_file(ticket.get_version(), repo)
+    g = Changelog_header_generator(author='bertalan.pasztor', jira=ticket.name, version=ticket.get_version(), serial=0)
     # TODO history táblára is megcsinálni
     commands = [
-        "CREATE UNIQUE INDEX ix_trip_driverid_platenum ON trip.trip USING btree (driver_id, plate_number) WHERE status = 'MATCHED';",
+        "ALTER TABLE psp_clearing.psp_correction ADD psp_settlement_batch_id varchar(30) NULL;",
+        "COMMENT ON COLUMN psp_clearing.psp_correction.psp_settlement_batch_id IS 'Identifier of settlement batch record (x__id from the psp_clearing.psp_settlement_batch) (for conciliation)';",
+        "ALTER TABLE psp_clearing.psp_correction ADD CONSTRAINT fk_pspcorr_pspsettbatch_id FOREIGN KEY (psp_settlement_batch_id) REFERENCES psp_clearing.psp_settlement_batch(x__id) DEFERRABLE",
+        "CREATE INDEX ix_pspcorr_pspsettbatch_id ON psp_clearing.psp_correction USING btree (psp_settlement_batch_id);",
+        "ALTER TABLE psp_clearing.psp_correction$hist ADD psp_settlement_batch_id varchar(30) NULL;",
+        "COMMENT ON COLUMN psp_clearing.psp_correction$hist.psp_settlement_batch_id IS 'Logged field: Identifier of settlement batch record (x__id from the psp_clearing.psp_settlement_batch) (for conciliation)';",
+
     ]
     # TODO tasks = [new_enum('notification_wa.event.event', '')]
     process_commands()

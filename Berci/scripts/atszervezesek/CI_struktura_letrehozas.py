@@ -19,7 +19,7 @@ def create_file(fname):
 
 if __name__ == '__main__':
   # prepare
-    repo = 'mlff-enforcement-eligibilty-detection-postgredb'
+    repo = 'mlff-data-ingestion-meta-postgredb'
     base = 'c:/GIT/MLFF/'+repo
     db = get_db_name(base)
     db_path = db.replace('-', '_')
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     replace_in_file(base+'/.env', to_replace)
     copy_file(path+'.asciidoctorconfig.adoc', base+'/.asciidoctorconfig.adoc')
   #readme file
-    os.rename(base+'/README.md', base+'/OLD-README.md')
+    #os.rename(base+'/README.md', base+'/OLD-README.md')
     copy_file(r'c:\GIT\MLFF\mlff-core-customer-postgredb\README.adoc', base+'/README.adoc')
     replace_in_file(base+'/README.adoc', to_replace)
   #post

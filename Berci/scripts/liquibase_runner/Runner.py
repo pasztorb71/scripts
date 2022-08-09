@@ -14,15 +14,17 @@ class Runner:
 
     def _call_liquibase(self, project, env, postgrespass, db):
         print(project + ' : ' + db)
-        cmd = '''docker run --rm -v #base##project#\liquibase\:/liquibase/changelog liquibase/liquibase:latest --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=#changelog# update'''
+        cmd = '''docker run --rm -v #base##project#\liquibase\#projectdb#\:/liquibase/changelog liquibase/liquibase:4.12 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=#changelog# update'''
+        if self.checkonly:
+            cmd = cmd.replace('update', 'status --verbose')
         cmd = cmd\
             .replace('#base#', self.base)\
             .replace('#project#', project)\
             .replace('#env#', env)\
             .replace('#password#', postgrespass)\
             .replace('#db#', db)\
+            .replace('#projectdb#', get_dbname_from_project(project))\
             .replace('#changelog#', self.get_changelog(db, project))
-        #print(cmd)
         ret_code = os.system(cmd)
         if ret_code != 0:
             exit(ret_code)
@@ -37,8 +39,7 @@ class Runner:
     def get_changelog(self, db, project):
         if os.path.isfile(self.base+project+'/liquibase/liquibase-install-databases.xml'):
             return 'liquibase-install-databases.xml' if db == 'postgres' else 'liquibase-install-' + db + '.xml'
-        db_name = get_dbname_from_project(project)
-        return db_name+'\liquibase-install-step-01.xml' if db == 'postgres' else db_name+'\liquibase-install-step-02.xml'
+        return 'liquibase-install-step-01.xml' if db == 'postgres' else 'liquibase-install-step-02.xml'
 
     def get_dbs(self, repo):
             t = repo.split('-')
@@ -82,9 +83,10 @@ class Runner:
         for db in self.get_dbs(repo):
             self._call_liquibase(repo, ip_address, self.password, db)
 
-    def run(self, loc, full):
+    def run(self, loc, full, checkonly):
         self.full = full
         self.loc = loc
+        self.checkonly = checkonly
         self.password = 'fLXyFS0RpmIX9uxGII4N' if loc != 'local' else 'mysecretpassword'
         for ip_address in self.get_ip_addresses(loc):
             print(ip_address)

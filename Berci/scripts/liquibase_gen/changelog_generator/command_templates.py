@@ -64,10 +64,10 @@ tmp_cre_index = """-------------------------------------------------------------
 """
 tmp_update = """---------------------------------------------------------------------------------------------------
 --changeset !!author!!:!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
---comment Update column !!colname!!.
+--comment Update table !!table_lower!!.
 --
 --preconditions onFail:MARK_RAN onError:HALT
---precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_catalog.pg_tables WHERE schemaname = '!!schema!!' AND tablename = '!!table_lower!!'
 ---------------------------------------------------------------------------------------------------
 """
 tmp_delete = """---------------------------------------------------------------------------------------------------
@@ -81,6 +81,14 @@ tmp_delete = """----------------------------------------------------------------
 tmp_set_default = """---------------------------------------------------------------------------------------------------
 --changeset !!author!!:!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
 --comment Set default on column !!colname!!.
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
+---------------------------------------------------------------------------------------------------
+"""
+tmp_drop_default = """---------------------------------------------------------------------------------------------------
+--changeset !!author!!:!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
+--comment Drop default from column !!colname!! on table !!table_lower!!.
 --
 --preconditions onFail:MARK_RAN onError:HALT
 --precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'

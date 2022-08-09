@@ -164,11 +164,29 @@ cmdlist = {
         (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, matching_session_refid, customer_id, driver_id, 
         payer_id, vdu_id, plate_number, toll_category, status, start_time, end_time, start_location_latitude, 
         start_location_longitude, start_location_time, end_location_latitude, end_location_longitude, end_location_time, 
-        end_location_name, sum_amount, start_location_name)
+        end_location_name, start_location_name)
         VALUES('tesztid', '2022-05-13 12:50:06.925', '3QHR3Z608HM0K502', NULL, NULL, 0, 
         'tesztid', 'driverId', 'driverId', '3QHR3Z40FKB48A01', 'vduId', 'plateNumber', 1, 
-        'MATCHED', '2022-05-13 11:50:06.811', NULL, 47, 19, '2022-06-10 13:06:21.000', NULL, NULL, NULL, NULL, NULL, NULL)""",
-        "DELETE FROM trip WHERE x__id = 'tesztid'"
+        'MATCHED', '2022-05-13 11:50:06.811', NULL, 47, 19, '2022-06-10 13:06:21.000', NULL, NULL, NULL, NULL, NULL);""",
+        """INSERT INTO trip_segment
+        (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, trip_id, matching_segment_refid, segment_refid, 
+        matched_segment_status, segment_type, exit_location_latitude, exit_location_longitude, exit_location_datetime, 
+        amount, payment_status, payment_sending_status, payment_change_datetime, enforcement_sending_status, 
+        enforcement_change_datetime, "name", entry_location_latitude, entry_location_longitude, entry_location_datetime, 
+        entry_matched_section_direction, entry_matched_section_fact, entry_matched_section_refid, 
+        exit_matched_section_direction, exit_matched_section_fact, exit_matched_section_refid)
+        VALUES('tesztid', '2022-07-27 11:16:33.364', '0', '2022-08-02 11:10:00.070', '0', 48, 'tesztid', 
+        '959aaeaf-00ae-4d67-9653-19315f762e9b', '37', 'EXITED', 'CLOSED', 15, -6, '2022-07-27 11:16:34.572', NULL, 
+        'NOT_YET_CREATED', 'NOT_YET_CREATED', NULL, 'NOT_YET_CREATED', NULL, NULL, 10, -6, '2022-07-27 11:16:33.604', 
+        true, true, '37seg1sec', true, true, '37seg3sec');""",
+        """INSERT INTO trip_matched_section
+        (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, trip_segment_id, section_refid, direction, 
+        fact, latitude, longitude, match_time, matched_section_type, "name", request_id)
+        VALUES('tesztid', '2022-06-21 10:24:29.388', '0', NULL, NULL, 0, 'tesztid', '7seg3sec', true, true, 90, 
+        -6, '2022-06-21 10:24:29.124', 'AFFECTED', NULL, 'default requestid');""",
+        "DELETE FROM trip_matched_section WHERE x__id = 'tesztid'",
+        "DELETE FROM trip_segment WHERE x__id = 'tesztid'",
+        "DELETE FROM trip WHERE x__id = 'tesztid'",
     ],
     'payment_retry': [
         """INSERT INTO task
