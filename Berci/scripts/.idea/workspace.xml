@@ -4,15 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="889c292f-eaef-4f5a-bd5b-74a1e2f22a8d" name="Changes" comment="Parallelize insert teszt">
-      <change afterPath="$PROJECT_DIR$/checks/db_changeset_status.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_changelog_generator.py" afterDir="false" />
+    <list default="true" id="889c292f-eaef-4f5a-bd5b-74a1e2f22a8d" name="Changes" comment="# TODO MAke history handling">
+      <change afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/tasks.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_tasks.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/Repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/command_templates.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/command_templates.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquibase_runner/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_runner/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/test_changelog_header_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_changelog_header_generator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/create_repo/test_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/create_repo/test_create_repo.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,28 +65,7 @@
       <recent name="C:\Users\bertalan.pasztor\PycharmProjects\liquibase\liquibase_wrapper\gen_table" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests for test_changelog_generator.Test">
-    <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="scripts" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/liquibase_gen/changelog_generator" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python tests.Python tests in scripts">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="liquibase" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -129,7 +108,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_changelog_generator.Test" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_changelog_header_generator.TestChangelogHeaderGenerator" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="scripts" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -139,11 +118,11 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_changelog_generator.Test&quot;" />
+      <option name="_new_target" value="&quot;test_changelog_header_generator.TestChangelogHeaderGenerator&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_changelog_generator.Test.test_gen_history_command_from_command" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_changelog_header_generator.TestChangelogHeaderGenerator.test_generate_header_for_column" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="scripts" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -153,11 +132,11 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_changelog_generator.Test.test_gen_history_command_from_command&quot;" />
+      <option name="_new_target" value="&quot;test_changelog_header_generator.TestChangelogHeaderGenerator.test_generate_header_for_column&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_changelog_generator.Test.test_gen_history_command_from_command1" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_changelog_header_generator.TestChangelogHeaderGenerator.test_generate_header_for_drop_constraint" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="scripts" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -167,11 +146,11 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_changelog_generator.Test.test_gen_history_command_from_command1&quot;" />
+      <option name="_new_target" value="&quot;test_changelog_header_generator.TestChangelogHeaderGenerator.test_generate_header_for_drop_constraint&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_changelog_generator.Test.test_is_history_related_command" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_tasks.Test.test_new_enum" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="scripts" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -181,17 +160,31 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_changelog_generator.Test.test_is_history_related_command&quot;" />
+      <option name="_new_target" value="&quot;test_tasks.Test.test_new_enum&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in scripts" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="scripts" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Python tests for test_changelog_generator.Test" />
-        <item itemvalue="Python.main (1)" />
-        <item itemvalue="Python tests.Python tests for test_changelog_generator.Test.test_gen_history_command_from_command1" />
-        <item itemvalue="Python tests.Python tests for test_changelog_generator.Test.test_gen_history_command_from_command" />
-        <item itemvalue="Python tests.Python tests for test_changelog_generator.Test.test_is_history_related_command" />
+        <item itemvalue="Python tests.Python tests in scripts" />
+        <item itemvalue="Python tests.Python tests for test_tasks.Test.test_new_enum" />
+        <item itemvalue="Python tests.Python tests for test_changelog_header_generator.TestChangelogHeaderGenerator" />
+        <item itemvalue="Python tests.Python tests for test_changelog_header_generator.TestChangelogHeaderGenerator.test_generate_header_for_column" />
+        <item itemvalue="Python tests.Python tests for test_changelog_header_generator.TestChangelogHeaderGenerator.test_generate_header_for_drop_constraint" />
       </list>
     </recent_temporary>
   </component>
@@ -203,13 +196,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1651066216396</updated>
-    </task>
-    <task id="LOCAL-00006" summary="Beautify">
-      <created>1651074937947</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1651074937947</updated>
     </task>
     <task id="LOCAL-00007" summary="Core_customer-hez igazítás">
       <created>1652968872134</created>
@@ -547,7 +533,14 @@
       <option name="project" value="LOCAL" />
       <updated>1660048336984</updated>
     </task>
-    <option name="localTasksCounter" value="55" />
+    <task id="LOCAL-00055" summary="# TODO MAke history handling">
+      <created>1660134970849</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1660134970849</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -574,7 +567,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Generalize" />
     <MESSAGE value="Create_repo kész" />
     <MESSAGE value="Átszervezés" />
     <MESSAGE value="Header folyamatban" />
@@ -599,7 +591,8 @@
     <MESSAGE value="Átszervezés Feature branch-re, Readme" />
     <MESSAGE value="New directory checks" />
     <MESSAGE value="Parallelize insert teszt" />
-    <option name="LAST_COMMIT_MESSAGE" value="Parallelize insert teszt" />
+    <MESSAGE value="# TODO MAke history handling" />
+    <option name="LAST_COMMIT_MESSAGE" value="# TODO MAke history handling" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

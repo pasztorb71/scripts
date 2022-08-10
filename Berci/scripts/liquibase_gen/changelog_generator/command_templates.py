@@ -115,7 +115,7 @@ tmp_column_type = """-----------------------------------------------------------
 --comment Change type of !!colname!! column.
 --
 --preconditions onFail:MARK_RAN onError:HALT
---precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema."columns" c WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM information_schema.columns WHERE table_schema = '!!schema!!' AND table_name = '!!table_lower!!' AND column_name = '!!colname!!'
 ---------------------------------------------------------------------------------------------------
 """
 tmp_drop_index = """---------------------------------------------------------------------------------------------------

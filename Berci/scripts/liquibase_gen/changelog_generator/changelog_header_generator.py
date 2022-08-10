@@ -5,7 +5,7 @@ from liquibase_gen.changelog_generator.command_templates import *
 
 
 class Changelog_header_generator():
-    def __init__(self, author, jira, version='0.1.0', serial=1):
+    def __init__(self, author, jira, version='0.1.0', serial=0):
         self.author = author
         self.jira = jira
         self.comment = ''
