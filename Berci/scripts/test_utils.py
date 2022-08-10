@@ -9,10 +9,10 @@ class Test(TestCase):
         self.assertEqual(get_login_from_file()[0], 'bertalan.pasztor')
 
     def test_is_history_table_exist(self):
-        self.assertTrue(utils.is_history_table('core_customer', 'customer', 'customer'))
+        self.assertTrue(utils.has_history_table('core_customer', 'customer', 'customer'))
 
     def test_is_history_table_not_exist(self):
-        self.assertFalse(utils.is_history_table('core_customer', 'customer', 'user_session'))
+        self.assertFalse(utils.has_history_table('core_customer', 'customer', 'user_session'))
 
     def test_get_tablename(self):
         tabname = utils.get_tablename_from_command('ALTER TABLE account_info.payment_method ALTER COLUMN x__version TYPE int8 USING x__version::int8;')

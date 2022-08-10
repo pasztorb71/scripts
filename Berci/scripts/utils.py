@@ -277,7 +277,7 @@ def get_dbname_from_project(project):
     return db.replace('-', '_')
 
 
-def is_history_table(db, schema, table):
+def has_history_table(db, schema, table):
     conn = get_conn('local', db, 'postgres')
     cur = conn.cursor()
     cur.execute("select count(*) from pg_tables where schemaname = '" + schema + "' and tablename = '" + table + "$hist'")

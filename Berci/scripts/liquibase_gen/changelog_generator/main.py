@@ -4,7 +4,7 @@ import version
 from Repository import Repository
 from liquibase_gen.changelog_generator.Ticket import Ticket
 from liquibase_gen.changelog_generator.changelog_header_generator import Changelog_header_generator
-from utils import get_files_from_path_ext_filtered
+from utils import get_files_from_path_ext_filtered, get_tablename_from_command
 
 
 def get_commands():
@@ -26,47 +26,49 @@ def p_print(stmt):
 
 
 def is_history_related_command(stmt):
-    pass
-
+    if ' CONSTRAINT ' in stmt:
+        return False
+    patterns = ['.*ADD COLUMN.*',
+                'COMMENT ON COLUMN.*',
+                'COMMENT ON TABLE.*',
+                '.*ALTER COLUMN.* TYPE ',
+                '.*RENAME COLUMN.*',
+                'DROP TABLE.*',
+                '.* ADD .*',
+                '.* DROP COLUMN .*',
+                ]
+    if any([re.match(pat, stmt) for pat in patterns]):
+        return True
+    return False
 
 def gen_history_command_from_command(stmt):
-    pass
+    name = get_tablename_from_command(stmt)
+    if re.match('COMMENT ON COLUMN.*',stmt):
+        stmt = stmt.replace(" IS '", " IS 'Logged field: ")
+    return f"{name}$hist".join(stmt.rsplit(name,1))
+
 
 
 def process_commands():
+    history_commands = []
+    for stmt in commands[0:]:
+        if is_history_related_command(stmt):
+            history_commands.append(gen_history_command_from_command(stmt))
     try:
-        history_commands = []
-        for stmt in commands[0:]:
+        for stmt in commands[0:] + history_commands:
             header, tablename = g.generate_header(stmt)
-            # TODO MAke history handling
-            """
-            if utils.is_history_table(repo.get_db_name(), repo.get_schema(), tablename):
-                header, hist_tablename = g.generate_header(stmt, hist=True)
-                history_changesets.append(header[:-1])
-                history_changesets.append(stmt)
-            """
+
             if tablename:
                 version.check_table_version_file(ticket.get_version(), repo, tablename) # DDL sql
-
-            if is_history_related_command(stmt):
-                history_commands.append(gen_history_command_from_command(stmt))
 
             if header:
                 print()
                 print(header[:-1])
             else:
-                raise Exception("No header found")
+                if 'COMMENT ON COLUMN ' not in stmt:
+                    raise Exception("No header found")
             p_print(stmt)
-            """
-            if re.match('.*ADD CONSTRAINT .* CHECK ',stmt):
-                table_name = utils.get_tablename_from_command(stmt)
-                column_name = utils.get_columnname_from_command(stmt)
-                stmt = "COMMENT ON COLUMN " + table_name + '.' + column_name + " IS 'komment';"
-                header, tablename = g.generate_header(stmt)
-                print()
-                print(header[:-1])
-                p_print(stmt)
-            """
+
     except Exception as e:
         print(stmt)
         raise e
@@ -84,8 +86,6 @@ if __name__ == '__main__':
         "COMMENT ON COLUMN psp_clearing.psp_correction.psp_settlement_batch_id IS 'Identifier of settlement batch record (x__id from the psp_clearing.psp_settlement_batch) (for conciliation)';",
         "ALTER TABLE psp_clearing.psp_correction ADD CONSTRAINT fk_pspcorr_pspsettbatch_id FOREIGN KEY (psp_settlement_batch_id) REFERENCES psp_clearing.psp_settlement_batch(x__id) DEFERRABLE",
         "CREATE INDEX ix_pspcorr_pspsettbatch_id ON psp_clearing.psp_correction USING btree (psp_settlement_batch_id);",
-        "ALTER TABLE psp_clearing.psp_correction$hist ADD psp_settlement_batch_id varchar(30) NULL;",
-        "COMMENT ON COLUMN psp_clearing.psp_correction$hist.psp_settlement_batch_id IS 'Logged field: Identifier of settlement batch record (x__id from the psp_clearing.psp_settlement_batch) (for conciliation)';",
 
     ]
     # TODO tasks = [new_enum('notification_wa.event.event', '')]
