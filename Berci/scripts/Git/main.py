@@ -17,10 +17,14 @@ def _mproc_ck_branch(git, return_dict, branch):
 
 def _mproc_multiple_commands(git, return_dict, commands):
     out = []
+    err = []
     for cmd in commands:
         proc=subprocess.Popen('cmd /u /c git -C ' + git.base +'/' + git.repo +' '+cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out.append(proc.stdout.read().decode('utf-8'))
-    return_dict[git.repo] = out
+        e = proc.stderr.read().decode('utf-8')
+        if any(x in e for x in ['error:', 'Aborting']):
+            err.append(e)
+    return_dict[git.repo] = {'stdout': out, 'stderr': err}
 
 
 def wait_until_end(jobs):
@@ -53,8 +57,14 @@ def is_branch_synchronized_in_multiple_repos(gitlist, branch, filtered='n'):
 def synchronize_branch_in_multiple_repos(gitlist, branch):
     commands = ['checkout '+branch, 'pull origin '+branch]
     ret_dict = parallel_run(gitlist, _mproc_multiple_commands, commands)
+    for d in ret_dict:
+        print(f"{d} : ", end='')
+        if ret_dict[d]['stderr']:
+            for i in ret_dict[d]['stderr']:
+                print('\n  ' + i.replace('\n', '\n  '))
+        else:
+            print('Synchronizing ok')
     print('Synchronize_branch lefutott')
-    return ret_dict
 
 
 def create_branch(git, ticket):
@@ -71,10 +81,11 @@ if __name__ == '__main__':
     repo = Repository()
     base = repo.get_base()
     repo_names = repo.get_repo_names()
-    #repos = ['mlff-payment-psp-proxy-postgredb']
+    #repo_names = ['mlff-core-customer-postgredb']
     gitlist = [Git(base, name) for name in repo_names]
     #create_branch(gitlist[0], Ticket('MLFFDEV-4498'))
-    #synchronize_branch_in_multiple_repos(gitlist, branch='master')
+    synchronize_branch_in_multiple_repos(gitlist, branch='master')
+    exit(0)
     ret_dict = is_branch_synchronized_in_multiple_repos(gitlist, branch='master', filtered='y')
     print('Differencia:')
     print_dict(ret_dict)

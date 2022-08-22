@@ -3,7 +3,7 @@ import multiprocessing
 import psycopg2
 
 from Cluster import Cluster
-from utils import password_from_file
+from utils import password_from_file, print_dict_queried
 
 
 def mproc_single_command_tmpl(host, port, db, return_dict):
@@ -175,9 +175,9 @@ if __name__ == '__main__':
     host, port = 'localhost', 5433
     cluster = Cluster(host=host, port=port, passw=password_from_file(host, port))
     #databases = load_from_file('../databases.txt')
-    databases = cluster.databases[0:]
+    databases = cluster.databases[0:1]
     #databases = ['core_customer']
     return_dict = parallel_run(host, port, databases, mproc_count_tables, loc='local')
     # print_dict(return_dict)
     print(sum_counts(return_dict))
-    # print_dict_queried(return_dict)
+    #print_dict_queried(return_dict)

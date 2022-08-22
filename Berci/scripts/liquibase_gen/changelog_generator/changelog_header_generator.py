@@ -69,6 +69,7 @@ class Changelog_header_generator():
         elif re.match('.* DROP COLUMN .*',command): template = tmp_drop_column
         elif re.match('.*GRANT .*',command): template = tmp_grant
         elif re.match('.*ALTER INDEX .* RENAME .*',command): template = tmp_rename_index
+        elif re.match('ALTER SCHEMA .* RENAME TO .*',command): template = tmp_rename_schema
         return template
 
     def get_next_serial(self, table_name):

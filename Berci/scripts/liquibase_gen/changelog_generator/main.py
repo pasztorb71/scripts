@@ -75,17 +75,20 @@ def process_commands():
 
 
 if __name__ == '__main__':
-    ticket = Ticket('MLFFDEV-5309')
-    repo = Repository('psp-clearing')
+    ticket = Ticket('MLFFDEV-5066')
+    repo = Repository('notification-dispacther')
     print('Repository name: ' + repo.get_name())
     version.check_schema_version_file(ticket.get_version(), repo)
     g = Changelog_header_generator(author='bertalan.pasztor', jira=ticket.name, version=ticket.get_version(), serial=0)
     commands = [
-        "ALTER TABLE psp_clearing.psp_correction ADD psp_settlement_batch_id varchar(30) NULL;",
-        "COMMENT ON COLUMN psp_clearing.psp_correction.psp_settlement_batch_id IS 'Identifier of settlement batch record (x__id from the psp_clearing.psp_settlement_batch) (for conciliation)';",
-        "ALTER TABLE psp_clearing.psp_correction ADD CONSTRAINT fk_pspcorr_pspsettbatch_id FOREIGN KEY (psp_settlement_batch_id) REFERENCES psp_clearing.psp_settlement_batch(x__id) DEFERRABLE",
-        "CREATE INDEX ix_pspcorr_pspsettbatch_id ON psp_clearing.psp_correction USING btree (psp_settlement_batch_id);",
-
+        "DROP TABLE notification_dispatcher.staging;",
+        "ALTER SCHEMA notification_common RENAME TO notification_dispacther;",
+        "DROP TABLE notification_dispatcher.staging;",
+        "ALTER TABLE notification_dispacther.notification DROP CONSTRAINT ck_notif_event_name;",
+        "DELETE FROM notification_dispacther.notification WHERE event_name NOT IN ('REGISTRATION','PHONE_NUMBER_MODIFICATION','AD_HOC_TICKET_PAYMENT_SUCCESS','AD_HOC_TICKET_PAYMENT_FAILED','TICKET_PAYMENT_SUCCES','TICKET_PAYMENT_FAILED','TRIP_PAYMENT_FAILED','TRIP_PAYMENT_SUCCESS','APPROACH_TOLL_ROAD_SEG','ENTER_CLOSED_SEG','EXIT_CLOSED_SEG','ENTER_OPEN_SEG');",
+        "ALTER TABLE notification_dispacther.notification ADD CONSTRAINT ck_notif_event_name CHECK (((event_name)::text = ANY (ARRAY[('REGISTRATION'::character varying)::text, ('PHONE_NUMBER_MODIFICATION'::character varying)::text, ('AD_HOC_TICKET_PAYMENT_SUCCESS'::character varying)::text, ('AD_HOC_TICKET_PAYMENT_FAILED'::character varying)::text, ('TICKET_PAYMENT_SUCCES'::character varying)::text, ('TICKET_PAYMENT_FAILED'::character varying)::text, ('TRIP_PAYMENT_FAILED'::character varying)::text, ('TRIP_PAYMENT_SUCCESS'::character varying)::text, ('APPROACH_TOLL_ROAD_SEG'::character varying)::text, ('ENTER_TOLL_ROAD_SEG'::character varying)::text, ('EXIT_TOLL_ROAD_SEG'::character varying)::text])));",
+        "COMMENT ON COLUMN notification_dispacther.notification.event_name IS 'event name for notification ENUM:''REGISTRATION'',''PHONE_NUMBER_MODIFICATION'',''AD_HOC_TICKET_PAYMENT_SUCCESS'',''AD_HOC_TICKET_PAYMENT_FAILED'',''TICKET_PAYMENT_SUCCES'',''TICKET_PAYMENT_FAILED'',''TRIP_PAYMENT_FAILED'',''TRIP_PAYMENT_SUCCESS'',''APPROACH_TOLL_ROAD_SEG'',''ENTER_CLOSED_SEG'',''EXIT_CLOSED_SEG'',''ENTER_OPEN_SEG''';",
+        "COMMENT ON COLUMN notification_dispacther.notification$hist.event_name IS 'Logged field: event name for notification ENUM:''REGISTRATION'',''PHONE_NUMBER_MODIFICATION'',''AD_HOC_TICKET_PAYMENT_SUCCESS'',''AD_HOC_TICKET_PAYMENT_FAILED'',''TICKET_PAYMENT_SUCCES'',''TICKET_PAYMENT_FAILED'',''TRIP_PAYMENT_FAILED'',''TRIP_PAYMENT_SUCCESS'',''APPROACH_TOLL_ROAD_SEG'',''ENTER_CLOSED_SEG'',''EXIT_CLOSED_SEG'',''ENTER_OPEN_SEG''';",
     ]
     # TODO tasks = [new_enum('notification_wa.event.event', '')]
     process_commands()

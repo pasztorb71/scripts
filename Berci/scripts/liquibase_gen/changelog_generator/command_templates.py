@@ -182,3 +182,11 @@ tmp_rename_index = """----------------------------------------------------------
 --precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_catalog.pg_indexes WHERE schemaname = '!!schema!!' AND indexname = '!!indexname!!'
 ---------------------------------------------------------------------------------------------------
 """
+tmp_rename_schema = """---------------------------------------------------------------------------------------------------
+--changeset !!author!!:!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
+--comment Rename schema !!schema!!.
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:1 SELECT * FROM information_schema.schemata WHERE schema_name = '!!schema!!'
+---------------------------------------------------------------------------------------------------
+"""

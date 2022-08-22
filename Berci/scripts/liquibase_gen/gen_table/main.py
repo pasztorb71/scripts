@@ -99,11 +99,11 @@ def table_grants(tab_name):
 --precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_tables WHERE schemaname = '!sema!' AND tablename = '!table!';
 ---------------------------------------------------------------------------------------------------
 
-ALTER TABLE !sema!.!table! OWNER TO ${schema_name_!sema!}_tbl_own;
+ALTER TABLE !sema!.!table! OWNER TO ${schema_name}_tbl_own;
 
-GRANT SELECT ON TABLE !sema!.!table! TO ${schema_name_!sema!}_sel;
-GRANT INSERT, UPDATE ON TABLE !sema!.!table! TO ${schema_name_!sema!}_mod;
-GRANT DELETE, TRUNCATE ON TABLE !sema!.!table! TO ${schema_name_!sema!}_del;
+GRANT SELECT ON TABLE !sema!.!table! TO ${schema_name}_sel;
+GRANT INSERT, UPDATE ON TABLE !sema!.!table! TO ${schema_name}_mod;
+GRANT DELETE, TRUNCATE ON TABLE !sema!.!table! TO ${schema_name}_del;
 
 """.replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema))
 
@@ -192,12 +192,12 @@ def create_tablefile():
 
 if __name__ == '__main__':
     #TODO könyvtár és fájl létrehozása, esetleg beírás a create_table.sql-be is
-    repo = Repository('psp-clearing')
+    repo = Repository('vehicle')
     base = repo.get_base_path()
-    tab_name = 'psp_clearing.psp_correction'.lower()
-    tab_short_name = 'pspcorr'
+    tab_name = 'vehicle.vehicle_media'.lower()
+    tab_short_name = 'vemed'
     history = 'y'
-    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/psp_clearing.psp_correction'
+    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/KOM+-+VehicleMedia+service+database'
     db = repo.get_db_name()
     db_path = db.replace('-', '_')
     schema = repo.get_schema

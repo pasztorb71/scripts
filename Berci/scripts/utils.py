@@ -100,9 +100,12 @@ def git_init(base):
 
 def print_dict(d):
     for db, records in sorted(d.items()):
-        print(db)
-        for value in records:
-            print('  ' + value)
+        if isinstance(records, str):
+            print(f"  {db} : {records}")
+        else:
+            print(db)
+            for value in records:
+                print('  ' + value)
 
 def print_dict_queried(d):
     for db, records in d.items():
@@ -178,7 +181,8 @@ def get_columnname_from_command(command):
 
 def get_schema_from_command(command):
     command = command.replace('IF EXISTS ','').replace('"','')
-    patterns = ["ALTER TABLE ([a-zA-z0-9_\"]+)",
+    patterns = ["ALTER SCHEMA ([a-zA-z0-9_\"]+) ",
+                "ALTER TABLE ([a-zA-z0-9_\"]+)",
                 "COMMENT ON COLUMN ([a-zA-z0-9_\"]+)",
                 ".* INDEX .* (?:ON )([a-zA-z0-9_\"]+)",
                 "UPDATE ([a-zA-z0-9_\"]+)",
