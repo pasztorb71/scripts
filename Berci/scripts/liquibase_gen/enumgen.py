@@ -4,12 +4,12 @@ import re
 def gen_enum(tabname, colname, values):
     valuelist = values.split(',')
     f1 = "ALTER TABLE " + tabname + " ADD " if tabname else ''
-    f1 += "CONSTRAINT ck_ CHECK (((" + colname + ")::text = ANY ((ARRAY["
+    f1 += f"CONSTRAINT ck_{tabname.split('.')[1]}_{colname} CHECK (((" + colname + ")::text = ANY ((ARRAY["
     l = []
     for v in valuelist:
         l.append("'" + v + "'::character varying")
     f2 = ', '.join(l)
-    f3 = '])::text[])));'
+    f3 = '])::text[]))),'
     del_command = 'DELETE FROM ' + tabname + ' WHERE ' + colname + " NOT IN('" + "', '".join(valuelist) + "');"
     return del_command+'\n' + f1 + f2 + f3
 
@@ -21,6 +21,8 @@ def prep_enum( p):
 
 
 if __name__ == '__main__':
-    table = 'psp_clearing.psp_correction'
-    c, p = prep_enum("CHECK(correction_state IN ('CREATED,EXECUTED,DELETED'))")
+    table = 'notification_wa.staging'
+    c, p = prep_enum("CHECK(channel IN ('WHATSAPP,PUSH_NOTIFICATION,EMAIL'))")
+    print(gen_enum(table, c, p))
+    c, p = prep_enum("CHECK(staging_status IN ('INITIAL,INBOUND_ERROR,OUTBOUND_ERROR,PROVIDER_ERROR,EXPIRED,DONE,LOG'))")
     print(gen_enum(table, c, p))

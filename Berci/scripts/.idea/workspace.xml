@@ -5,20 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="889c292f-eaef-4f5a-bd5b-74a1e2f22a8d" name="Changes" comment="Begin tasks">
-      <change afterPath="$PROJECT_DIR$/table.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_table.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Git/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Git/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checks/db_changeset_status.py" beforeDir="false" afterPath="$PROJECT_DIR$/checks/db_changeset_status.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/changelog_header_generator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/command_templates.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/command_templates.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checks/run_tests_inserts.py" beforeDir="false" afterPath="$PROJECT_DIR$/checks/run_tests_inserts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquibase_gen/changelog_generator/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/changelog_generator/tasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/engines.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/engines.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_gen/enumgen.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/enumgen.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/liquibase_gen/gen_table/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_gen/gen_table/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquibase_runner/Runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_runner/Runner.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/liquibase_runner/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquibase_runner/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sql_runner/parallel_runner/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/sql_runner/parallel_runner/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_tasks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,7 +54,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="TODO_SCOPE" value="All Places" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../.." />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -72,7 +69,28 @@
       <recent name="C:\Users\bertalan.pasztor\PycharmProjects\liquibase\liquibase_wrapper\gen_table" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main (4)">
+  <component name="RunManager" selected="Python.main (2)">
+    <configuration name="enumgen" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="scripts" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/liquibase_gen" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/liquibase_gen/enumgen.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="scripts" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -144,11 +162,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Git" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/sql_runner/parallel_runner" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Git/main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/sql_runner/parallel_runner/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -199,27 +217,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_utils.Test.test_get_schema_from_command" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="scripts" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_utils.Test.test_get_schema_from_command&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main (4)" />
         <item itemvalue="Python.main (2)" />
         <item itemvalue="Python.main (3)" />
         <item itemvalue="Python.main (1)" />
-        <item itemvalue="Python tests.Python tests for test_utils.Test.test_get_schema_from_command" />
+        <item itemvalue="Python.main (4)" />
+        <item itemvalue="Python.enumgen" />
       </list>
     </recent_temporary>
   </component>

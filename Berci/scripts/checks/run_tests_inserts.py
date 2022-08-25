@@ -3,7 +3,7 @@ import re
 from Cluster import Cluster
 from sql_runner.cmdlist import cmdlist
 from sql_runner.parallel_runner.main import parallel_run
-from utils import get_conn_service_user, password_from_file, print_dict
+from utils import get_conn_service_user, password_from_file, print_sql_result
 
 
 def runteszt(host, port, db, return_dict):
@@ -44,5 +44,5 @@ if __name__ == '__main__':
     databases = ['enforcement_detection_image']
     databases = cluster.databases
     return_dict = parallel_run(host, 5432, databases, runteszt)
-    print_dict(return_dict)
+    print_sql_result(return_dict)
 

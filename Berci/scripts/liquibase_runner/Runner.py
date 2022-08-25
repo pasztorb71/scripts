@@ -6,16 +6,17 @@ from utils import get_dbname_from_project
 
 
 class Runner:
+    repos = []
     def __init__(self, base, repos=[]):
         self.base = base
         self.password = ''
         self.loc = ''
         self.full = False
-        self.repos = repos
+        Runner.repos = repos
 
     def _call_liquibase(self, project, env, postgrespass, db):
         print(project + ' : ' + db)
-        cmd = '''docker run --rm -v #base##project#\liquibase\#projectdb#\:/liquibase/changelog liquibase/liquibase:4.12 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=#changelog# update'''
+        cmd = '''docker run --rm -v #base##project#\liquibase\#projectdb#\:/liquibase/changelog liquibase/liquibase:4.7 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=#changelog# update'''
         if self.checkonly:
             cmd = cmd.replace('update', 'status --verbose')
         cmd = cmd\
@@ -26,6 +27,7 @@ class Runner:
             .replace('#db#', db)\
             .replace('#projectdb#', get_dbname_from_project(project))\
             .replace('#changelog#', self.get_changelog(db, project))
+        #ret_code = os_command(cmd)
         ret_code = os.system(cmd)
         if ret_code != 0:
             exit(ret_code)
@@ -73,6 +75,7 @@ class Runner:
             self._call_liquibase(repo, ip_address, self.password, db)
 
     def run(self, loc, full, checkonly):
+        if not checkonly and not self.confirm(loc): return
         self.full = full
         self.loc = loc
         self.checkonly = checkonly
@@ -90,5 +93,13 @@ class Runner:
 
     def clear_repo(self):
         pass
+
+    @classmethod
+    def confirm(cls, loc):
+        print(f"Az alábbi repokra lesz telepítve, host: {loc}")
+        for r in Runner.repos:
+            print(f" - {r.get_name()}")
+        if input("Mehet a telepítés? [y/n]") == "y":
+            return True
 
 

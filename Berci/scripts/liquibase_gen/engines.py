@@ -4,7 +4,7 @@ from sqlalchemy.sql.ddl import CreateTable
 
 
 def create_db_engine(db, user, password, local='y'):
-    host = 'localhost'
+    host = 'localhost:5434'
     if local == 'gcp':
         host = '34.79.34.14'
     engine = create_engine('postgresql+psycopg2://' + user + ':' + password + '@' + host + '/' + db)
@@ -27,15 +27,14 @@ def create_oracle_engine(db, user, password, local='y'):
     return engine
 
 if __name__ == '__main__':
-    o = create_oracle_engine('SANDBOX2', 'mlff_dba', 'mlff_dba')
+    e = create_db_engine('core_customer', 'postgres', 'fLXyFS0RpmIX9uxGII4N')
+    meta_data = MetaData(schema='customer', bind=e)
+    MetaData.reflect(meta_data, bind=e)
+    table1 = meta_data.tables['customer.customer'].create(bind=e)
+    print(CreateTable(table1, bind=e))
     exit(0)
-    meta_data = MetaData(schema='core_customer', bind=o)
-    MetaData.reflect(meta_data, bind=o)
-    e = create_db_engine('postgres', 'postgres', 'mysecretpassword')
-    table1 = meta_data.tables['core_customer.customer'].create(bind=e)
-    print(CreateTable(table1, bind=o))
     #meta_data.create(table1)
-
+    o = create_oracle_engine('SANDBOX2', 'mlff_dba', 'mlff_dba')
     exit(0)
 
     e = create_db_engine('postgres', 'postgres', 'mysecretpassword')

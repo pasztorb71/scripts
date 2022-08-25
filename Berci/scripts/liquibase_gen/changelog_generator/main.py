@@ -4,6 +4,7 @@ import version
 from Repository import Repository
 from liquibase_gen.changelog_generator.Ticket import Ticket
 from liquibase_gen.changelog_generator.changelog_header_generator import Changelog_header_generator
+from liquibase_gen.changelog_generator.commands import command_list
 from utils import get_files_from_path_ext_filtered, get_tablename_from_command
 
 
@@ -75,20 +76,11 @@ def process_commands():
 
 
 if __name__ == '__main__':
-    ticket = Ticket('MLFFDEV-5066')
-    repo = Repository('notification-dispacther')
+    ticket = Ticket('MLFFDEV-5682')
+    repo = Repository('notification-wa')
     print('Repository name: ' + repo.get_name())
     version.check_schema_version_file(ticket.get_version(), repo)
     g = Changelog_header_generator(author='bertalan.pasztor', jira=ticket.name, version=ticket.get_version(), serial=0)
-    commands = [
-        "DROP TABLE notification_dispatcher.staging;",
-        "ALTER SCHEMA notification_common RENAME TO notification_dispacther;",
-        "DROP TABLE notification_dispatcher.staging;",
-        "ALTER TABLE notification_dispacther.notification DROP CONSTRAINT ck_notif_event_name;",
-        "DELETE FROM notification_dispacther.notification WHERE event_name NOT IN ('REGISTRATION','PHONE_NUMBER_MODIFICATION','AD_HOC_TICKET_PAYMENT_SUCCESS','AD_HOC_TICKET_PAYMENT_FAILED','TICKET_PAYMENT_SUCCES','TICKET_PAYMENT_FAILED','TRIP_PAYMENT_FAILED','TRIP_PAYMENT_SUCCESS','APPROACH_TOLL_ROAD_SEG','ENTER_CLOSED_SEG','EXIT_CLOSED_SEG','ENTER_OPEN_SEG');",
-        "ALTER TABLE notification_dispacther.notification ADD CONSTRAINT ck_notif_event_name CHECK (((event_name)::text = ANY (ARRAY[('REGISTRATION'::character varying)::text, ('PHONE_NUMBER_MODIFICATION'::character varying)::text, ('AD_HOC_TICKET_PAYMENT_SUCCESS'::character varying)::text, ('AD_HOC_TICKET_PAYMENT_FAILED'::character varying)::text, ('TICKET_PAYMENT_SUCCES'::character varying)::text, ('TICKET_PAYMENT_FAILED'::character varying)::text, ('TRIP_PAYMENT_FAILED'::character varying)::text, ('TRIP_PAYMENT_SUCCESS'::character varying)::text, ('APPROACH_TOLL_ROAD_SEG'::character varying)::text, ('ENTER_TOLL_ROAD_SEG'::character varying)::text, ('EXIT_TOLL_ROAD_SEG'::character varying)::text])));",
-        "COMMENT ON COLUMN notification_dispacther.notification.event_name IS 'event name for notification ENUM:''REGISTRATION'',''PHONE_NUMBER_MODIFICATION'',''AD_HOC_TICKET_PAYMENT_SUCCESS'',''AD_HOC_TICKET_PAYMENT_FAILED'',''TICKET_PAYMENT_SUCCES'',''TICKET_PAYMENT_FAILED'',''TRIP_PAYMENT_FAILED'',''TRIP_PAYMENT_SUCCESS'',''APPROACH_TOLL_ROAD_SEG'',''ENTER_CLOSED_SEG'',''EXIT_CLOSED_SEG'',''ENTER_OPEN_SEG''';",
-        "COMMENT ON COLUMN notification_dispacther.notification$hist.event_name IS 'Logged field: event name for notification ENUM:''REGISTRATION'',''PHONE_NUMBER_MODIFICATION'',''AD_HOC_TICKET_PAYMENT_SUCCESS'',''AD_HOC_TICKET_PAYMENT_FAILED'',''TICKET_PAYMENT_SUCCES'',''TICKET_PAYMENT_FAILED'',''TRIP_PAYMENT_FAILED'',''TRIP_PAYMENT_SUCCESS'',''APPROACH_TOLL_ROAD_SEG'',''ENTER_CLOSED_SEG'',''EXIT_CLOSED_SEG'',''ENTER_OPEN_SEG''';",
-    ]
+    commands = command_list
     # TODO tasks = [new_enum('notification_wa.event.event', '')]
     process_commands()

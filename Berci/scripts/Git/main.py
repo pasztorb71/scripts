@@ -5,7 +5,7 @@ import subprocess
 from Repository import Repository
 
 from Git.Git_class import Git
-from utils import print_dict
+from utils import print_sql_result
 
 
 def _mproc_ck_branch(git, return_dict, branch):
@@ -88,6 +88,6 @@ if __name__ == '__main__':
     exit(0)
     ret_dict = is_branch_synchronized_in_multiple_repos(gitlist, branch='master', filtered='y')
     print('Differencia:')
-    print_dict(ret_dict)
+    print_sql_result(ret_dict)
 
 

@@ -98,22 +98,22 @@ def git_init(base):
     os.system('git -C '+base+' clean -f -d')
 
 
-def print_dict(d):
+def has_header(d):
+    return isinstance(d.items()[0][1][0], list)
+
+
+def print_sql_result(d):
     for db, records in sorted(d.items()):
         if isinstance(records, str):
             print(f"  {db} : {records}")
         else:
-            print(db)
-            for value in records:
-                print('  ' + value)
-
-def print_dict_queried(d):
-    for db, records in d.items():
-        print('Database: ' + db)
-        if records:
-            print(tabulate(records[1:], headers=records[0], tablefmt="pipe"))
-        print()
-
+            print(f"Database: {db}")
+            if has_header(d):
+                print(tabulate(records[1:], headers=records[0], tablefmt="pipe"))
+                print()
+            else:
+                for value in records:
+                    print('  ' + value)
 
 def get_port(env):
     if env == 'sandbox':

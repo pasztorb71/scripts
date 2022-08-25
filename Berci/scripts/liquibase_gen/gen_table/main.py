@@ -4,6 +4,7 @@ import pandas as pd
 
 from Repository import Repository
 from liquibase_gen.gen_table.Confluence import Confluence
+from liquibase_gen.gen_table.params import gen_table_params
 
 
 def modify_type(col):
@@ -192,12 +193,13 @@ def create_tablefile():
 
 if __name__ == '__main__':
     #TODO könyvtár és fájl létrehozása, esetleg beírás a create_table.sql-be is
-    repo = Repository('vehicle')
+    params = gen_table_params
+    repo = Repository(params['repo'])
     base = repo.get_base_path()
-    tab_name = 'vehicle.vehicle_media'.lower()
-    tab_short_name = 'vemed'
-    history = 'y'
-    url = 'https://confluence.icellmobilsoft.hu/display/MLFF/KOM+-+VehicleMedia+service+database'
+    tab_name = params['tablename'].lower()
+    tab_short_name = params['table_shortname']
+    history = params['history']
+    url = params['url']
     db = repo.get_db_name()
     db_path = db.replace('-', '_')
     schema = repo.get_schema

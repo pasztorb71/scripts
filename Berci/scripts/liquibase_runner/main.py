@@ -2,10 +2,11 @@ import os
 
 from Repository import Repository
 from liquibase_runner.Runner import Runner
+from liquibase_runner.params import repositories, params
 
 
-def confirm(repos):
-    print("Az alábbi repokra lesz telepítve:")
+def confirm_old(repos, loc):
+    print(f"Az alábbi repokra lesz telepítve, host: {loc}")
     for r in repos:
         print(f" - {r.get_name()}")
     if input("Mehet a telepítés? [y/n]") == "y":
@@ -16,12 +17,7 @@ def confirm(repos):
 if __name__ == '__main__':
     repo = Repository()
     base = repo.get_base()
-    repos = [Repository(name) for name in os.listdir(Repository.base)]
-    repos = [Repository(x) for x in os.listdir('c:/GIT/MLFF/') if 'visual' in x]
-    #repos = load_from_file('repos.txt')
-    repos = [Repository('dispacther')]
+    repos = repositories
     runner = Runner(base, repos)
-    #TODO beletenni maga előtt teljes törlés opciót
-    if not confirm(repos):
-        exit(0)
-    runner.run(loc='sandbox', full=False, checkonly=False) #local ,sandbox, remote, dev, fit, perf
+    # TODO beletenni maga előtt teljes törlés opciót
+    runner.run(params['loc'], params['full'], params['checkonly'])
