@@ -2,6 +2,7 @@ import re
 
 import version
 from Repository import Repository
+from liquibase_gen.changelog_generator import params
 from liquibase_gen.changelog_generator.Ticket import Ticket
 from liquibase_gen.changelog_generator.changelog_header_generator import Changelog_header_generator
 from liquibase_gen.changelog_generator.commands import command_list
@@ -48,8 +49,6 @@ def gen_history_command_from_command(stmt):
         stmt = stmt.replace(" IS '", " IS 'Logged field: ")
     return f"{name}$hist".join(stmt.rsplit(name,1))
 
-
-
 def process_commands():
     history_commands = []
     for stmt in commands[0:]:
@@ -76,11 +75,11 @@ def process_commands():
 
 
 if __name__ == '__main__':
-    ticket = Ticket('MLFFDEV-5682')
-    repo = Repository('notification-wa')
+    ticket = params['ticket']
+    repo = Repository(params['repository'])
     print('Repository name: ' + repo.get_name())
     version.check_schema_version_file(ticket.get_version(), repo)
     g = Changelog_header_generator(author='bertalan.pasztor', jira=ticket.name, version=ticket.get_version(), serial=0)
-    commands = command_list
-    # TODO tasks = [new_enum('notification_wa.event.event', '')]
+    commands = command_list(repo)
     process_commands()
+
