@@ -2,10 +2,10 @@ import re
 
 import version
 from Repository import Repository
-from liquibase_gen.changelog_generator import params
 from liquibase_gen.changelog_generator.Ticket import Ticket
 from liquibase_gen.changelog_generator.changelog_header_generator import Changelog_header_generator
 from liquibase_gen.changelog_generator.commands import command_list
+from liquibase_gen.changelog_generator.paramsfile import params
 from utils import get_files_from_path_ext_filtered, get_tablename_from_command
 
 
@@ -75,7 +75,7 @@ def process_commands():
 
 
 if __name__ == '__main__':
-    ticket = params['ticket']
+    ticket = Ticket(params['ticket'])
     repo = Repository(params['repository'])
     print('Repository name: ' + repo.get_name())
     version.check_schema_version_file(ticket.get_version(), repo)

@@ -1,5 +1,3 @@
-import os
-
 from Repository import Repository
 from liquibase_runner.Runner import Runner
 from liquibase_runner.params import repositories, params

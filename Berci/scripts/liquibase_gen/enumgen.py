@@ -21,8 +21,6 @@ def prep_enum( p):
 
 
 if __name__ == '__main__':
-    table = 'notification_wa.staging'
-    c, p = prep_enum("CHECK(channel IN ('WHATSAPP,PUSH_NOTIFICATION,EMAIL'))")
-    print(gen_enum(table, c, p))
-    c, p = prep_enum("CHECK(staging_status IN ('INITIAL,INBOUND_ERROR,OUTBOUND_ERROR,PROVIDER_ERROR,EXPIRED,DONE,LOG'))")
+    table = 'visual_check.check_package'
+    c, p = prep_enum("CHECK(result_status IN ('UNDEFINED, REJECTED_VALUABLE, ACCEPTED_VALUABLE, REJECTED_WORTHLESS, ACCEPTED_WORTHLESS, ERROR'))")
     print(gen_enum(table, c, p))

@@ -3,7 +3,7 @@ import psycopg2
 from Cluster import Cluster
 from Repository import Repository
 from sql_runner.parallel_runner.main import parallel_run
-from utils import password_from_file, print_sql_result, print_dict_queried
+from utils import password_from_file
 
 
 def get_changelogs(host, port, db, return_dict):

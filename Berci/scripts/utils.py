@@ -122,6 +122,8 @@ def get_port(env):
         return 5434
     elif env == 'fit':
         return 5435
+    elif env == 'perf':
+        return 5436
     elif env == 'local':
         return 5432
 

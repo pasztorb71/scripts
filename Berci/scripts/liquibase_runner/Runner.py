@@ -16,7 +16,7 @@ class Runner:
 
     def _call_liquibase(self, project, env, postgrespass, db):
         print(project + ' : ' + db)
-        cmd = '''docker run --rm -v #base##project#\liquibase\#projectdb#\:/liquibase/changelog liquibase/liquibase:4.7 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=#changelog# update'''
+        cmd = '''docker run --rm -v #base##project#\liquibase\#projectdb#\:/liquibase/changelog liquibase/liquibase:4.15 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=#changelog# update'''
         if self.checkonly:
             cmd = cmd.replace('update', 'status --verbose')
         cmd = cmd\
@@ -28,6 +28,7 @@ class Runner:
             .replace('#projectdb#', get_dbname_from_project(project))\
             .replace('#changelog#', self.get_changelog(db, project))
         #ret_code = os_command(cmd)
+        #print(cmd)
         ret_code = os.system(cmd)
         if ret_code != 0:
             exit(ret_code)
