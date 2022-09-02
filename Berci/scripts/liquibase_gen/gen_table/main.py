@@ -193,6 +193,7 @@ def create_tablefile():
 
 if __name__ == '__main__':
     #TODO könyvtár és fájl létrehozása, esetleg beírás a create_table.sql-be is
+    #TODO Changeset header-be vrziószámot, ticketet beírni
     params = gen_table_params
     repo = Repository(params['repo'])
     base = repo.get_base_path()

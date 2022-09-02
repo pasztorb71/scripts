@@ -104,16 +104,17 @@ def has_header(d):
 
 def print_sql_result(d):
     for db, records in sorted(d.items()):
-        if isinstance(records, str):
-            print(f"  {db} : {records}")
-        else:
-            print(f"Database: {db}")
-            if has_header(d):
-                print(tabulate(records[1:], headers=records[0], tablefmt="pipe"))
-                print()
+        print(f"Database: {db}")
+        if records:
+            if isinstance(records, str):
+                print(f"  {records}")
             else:
-                for value in records:
-                    print('  ' + value)
+                if has_header(d):
+                    print(tabulate(records[1:], headers=records[0], tablefmt="pipe"))
+                    print()
+                else:
+                    for value in records:
+                        print('  ' + value)
 
 def get_port(env):
     if env == 'sandbox':
@@ -124,6 +125,8 @@ def get_port(env):
         return 5435
     elif env == 'perf':
         return 5436
+    elif env == 'train':
+        return 5437
     elif env == 'local':
         return 5432
 
@@ -134,13 +137,18 @@ def get_password(env, user):
     return 'fLXyFS0RpmIX9uxGII4N' if env != 'local' else 'mysecretpassword'
 
 
-def password_from_file(phost, pport):
+def password_from_file(puser, phost, pport):
+    pass_out = ''
     with open(getfile(password_from_file).rsplit('\\',1)[0] + '/db_passw.txt', 'r') as f:
         for line in f.read().split('\n')[1:]:
-            host, port, passw = line.split()
-            if host == phost and port == str(pport):
+            user, host, port, passw = line.split()
+            if '_service' in puser and '_service' in user:
+                pass_out = passw
                 break
-    return passw
+            if host == phost and port == str(pport) and user == puser:
+                pass_out = passw
+                break
+    return pass_out
 
 
 def get_login_from_file():
@@ -306,9 +314,13 @@ def get_conn_service_user(env, db):
 
 def get_conn(env, db, user):
     port = get_port(env)
-    return psycopg2.connect(
-        host='localhost',
-        port=port,
-        database=db,
-        user=user,
-        password=get_password(env, user))
+    p = password_from_file(user, 'localhost', port)
+    try:
+        return psycopg2.connect(
+            host='localhost',
+            port=port,
+            database=db,
+            user=user,
+            password=password_from_file(user, 'localhost', port))
+    except Exception as e:
+        print(e)

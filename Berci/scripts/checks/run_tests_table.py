@@ -116,11 +116,11 @@ def init_logging(level):
 
 if __name__ == '__main__':
     logger, sh = init_logging(logging.INFO)
-    host, port = 'localhost', 5435
-    cluster = Cluster(host=host, port=port, passw=password_from_file(host, port))
+    host, port = 'localhost', 5432
+    cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     #databases = load_from_file('databases.txt')
     databases = cluster.databases[0:]
     databases = ['core_notification_wa']
     for db in databases:
-        tabla_letrehozas_teszt('sandbox', db)
-        tabla_modositas_teszt('sandbox', db)
+        tabla_letrehozas_teszt('train', db)
+        tabla_modositas_teszt('train', db)

@@ -27,11 +27,12 @@ class Test(TestCase):
         self.assertEqual(expected, colname)
 
     def test_password_from_file(self):
-        self.assertEqual('fLXyFS0RpmIX9uxGII4N', utils.password_from_file('localhost', 5433))
+        self.assertEqual('mlffTitkosPassword123!', utils.password_from_file('notification_wa_service', 'localhost', 5433))
 
     def test_password_from_file1(self):
-        self.assertEqual('mysecretpassword', utils.password_from_file('localhost', 5432))
+        self.assertEqual('mysecretpassword', utils.password_from_file('postgres', 'localhost', 5432))
 
     def test_get_schema_from_command(self):
         actual = utils.get_schema_from_command("ALTER SCHEMA notification_common RENAME TO notification_dispacther;")
         self.assertEqual('notification_common', actual)
+

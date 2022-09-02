@@ -32,9 +32,9 @@ def check_schema_version_file(version, repo):
     schema_version_file = '/'.join([version_dir, 'schema-version-'+main_ver+'.xml'])
     with open(schema_version_file, 'r', encoding='utf-8') as f:
         content = f.read()
-    version_line = '<include file="version-0/'+version+'.xml" relativeToChangelogFile="true"/>'
+    version_line = f'<include file="version-0/{version}.xml" relativeToChangelogFile="true" labels="{main_ver}.{patch_ver}"/>'
     if version_line not in content:
-        message = 'Not pach version row in schema version file!'
+        message = 'Not patch version row in schema version file!'
         print(message)
         if input("Create version row? [y/n]") == "y":
             append_to_file_after_line(schema_version_file,'<include file="version-0', '    '+version_line)

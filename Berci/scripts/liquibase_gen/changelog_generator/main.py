@@ -44,6 +44,7 @@ def is_history_related_command(stmt):
     return False
 
 def gen_history_command_from_command(stmt):
+    stmt = stmt.replace("NOT NULL", "NULL")
     name = get_tablename_from_command(stmt)
     if re.match('COMMENT ON COLUMN.*',stmt):
         stmt = stmt.replace(" IS '", " IS 'Logged field: ")

@@ -86,7 +86,7 @@ class Repository():
         return name.replace('-', '_')
 
     def get_schema_version_dir(self):
-        return '/'.join([self.base_path[:-1], self.db_path, self.schema, 'xml-version-tree'])
+        return '/'.join([self.base_path[:-1], self.db_path, self.schema, 'tables', '_xml-version-tree'])
 
     def get_tables_dir(self):
         return '/'.join([self.base_path[:-1], self.db_path, self.schema, 'tables'])
