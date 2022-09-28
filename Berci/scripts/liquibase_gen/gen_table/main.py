@@ -121,7 +121,7 @@ def table_header(tab_name, ticket_name, version):
     print("""--===============================================================================================--
 -- TABLE ==
 ---------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:!TABLE!-!!version!!-!!ticket!! runOnChange:true
+--changeset bertalan.pasztor:!TABLE!-!!ticket!! runOnChange:true
 --comment A !table! tábla létrehozása..
 --
 --preconditions onFail:MARK_RAN onError:HALT
@@ -137,7 +137,7 @@ def table_history(tab_name, ticket_name, version):
     print("""--===============================================================================================--
 -- HISTORY ==
 ---------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:!TABLE!$HIST-!!version!!-!!ticket!! runOnChange:true
+--changeset bertalan.pasztor:!TABLE!$HIST-!!ticket!! runOnChange:true
 --comment A !table!$hist history tábla létrehozása..
 --
 --preconditions onFail:MARK_RAN onError:HALT
@@ -150,7 +150,7 @@ call ${schema_name}.HIST_TABLE_GENERATOR('${schema_name}', '!table!');
 --===============================================================================================--
 -- GRANT$HIST ==
 ---------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:!TABLE!$HIST_GRANT-!!version!!-!!ticket!! runOnChange:true
+--changeset bertalan.pasztor:!TABLE!$HIST_GRANT-!!ticket!! runOnChange:true
 --comment A !table!$hist táblára Select jog kiosztása..
 --
 --preconditions onFail:MARK_RAN onError:HALT
@@ -163,7 +163,7 @@ GRANT SELECT ON TABLE !sema!.!table!$hist TO ${schema_name}_sel;
 --===============================================================================================--
 -- TRIGGER ==
 ---------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:TR_!TABLE!$HIST-!!version!!-!!ticket!! runOnChange:true
+--changeset bertalan.pasztor:TR_!TABLE!$HIST-!!ticket!! runOnChange:true
 --comment A tr_!table!$hist trigger létrehozása..
 ---------------------------------------------------------------------------------------------------
 
