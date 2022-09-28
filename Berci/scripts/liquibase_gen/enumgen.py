@@ -21,6 +21,6 @@ def prep_enum( p):
 
 
 if __name__ == '__main__':
-    table = 'visual_check.check_package'
-    c, p = prep_enum("CHECK(result_status IN ('UNDEFINED, REJECTED_VALUABLE, ACCEPTED_VALUABLE, REJECTED_WORTHLESS, ACCEPTED_WORTHLESS, ERROR'))")
+    table = 'invoice.invoice'
+    c, p = prep_enum("CHECK(invoice_state IN ('EN,ID'))")
     print(gen_enum(table, c, p))

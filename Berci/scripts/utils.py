@@ -8,8 +8,6 @@ from os.path import exists
 import psycopg2
 from tabulate import tabulate
 
-from Repository import Repository
-
 
 def move_upper_dir(path):
     return path.rsplit('/',1)[0] if path[-1] != '/' else path.rsplit('/',2)[0]
@@ -98,8 +96,8 @@ def git_init(base):
     os.system('git -C '+base+' clean -f -d')
 
 
-def has_header(d):
-    return isinstance(d.items()[0][1][0], list)
+def has_header(l):
+    return isinstance([0], list)
 
 
 def print_sql_result(d):
@@ -109,10 +107,11 @@ def print_sql_result(d):
             if isinstance(records, str):
                 print(f"  {records}")
             else:
-                if has_header(d):
+                if has_header(records):
                     print(tabulate(records[1:], headers=records[0], tablefmt="pipe"))
                     print()
                 else:
+                    print(f"records: {records}")
                     for value in records:
                         print('  ' + value)
 
@@ -156,21 +155,26 @@ def get_login_from_file():
         return f.read().split()
 
 
-def get_tablename_from_command(command):
+def get_tablename_from_command(repo, command):
     command = command.replace('IF EXISTS ','').replace('"','')
+    if command.startswith('DROP INDEX '):
+        return repo.get_tablename_from_indexname(command.replace('DROP INDEX ', '').replace(';', ''))
     patterns = ["ALTER TABLE (\w+[.])?([a-zA-z0-9_$\"]+)",
                 "COMMENT ON COLUMN (\w+[.])?([a-zA-z0-9_$\"]+)",
-                "CREATE.*INDEX .* ON (\w+[.])?([a-zA-z0-9_$\"]+)",
+                "CREATE.*INDEX .* ON (\w+)[.]?([a-zA-z0-9_$\"]+)",
                 "UPDATE (\w+[.])?([a-zA-z0-9_\"]+)",
                 "DELETE FROM (\w+[.])?([a-zA-z0-9_\"]+)",
                 "GRANT .* ON TABLE (\${.*}).(.*) TO ",
                 ".* TABLE (\w+[.])?([a-zA-z0-9_$\"]+)",
+                "INSERT INTO (\w+[.])?([a-zA-z0-9_\"]+)",
                 ]
     outs = [re.match(pattern, command) for pattern in patterns]
     try:
         m = next(item for item in outs if item is not None)
     except:
         m = None
+    if outs[2]:                     # CREATE.*INDEX
+        return m.group(2)
     return m.group(2).replace('"','') if m else ''
 
 
@@ -219,7 +223,7 @@ def get_consname_from_command(command):
 def get_indexname_from_command(command):
     command = command.replace('IF EXISTS ', '').replace('"', '')
     patterns = ["DROP INDEX .*\.(\w+)",
-                "ALTER INDEX .*RENAME TO (\w+)",
+                "ALTER INDEX .*\.(\w+) RENAME TO \w+",
                 ".* INDEX (\w+)[;]?",]
     outs = [re.match(pattern, command) for pattern in patterns]
     try:
@@ -273,16 +277,26 @@ def load_from_file(fname):
     with open('/'.join([project_root,'liquibase',fname]), 'r') as f:
         return [x for x in f.read().split('\n') if not x.startswith('#')]
 
-def append_to_file_after_line(fname, after, what):
+def get_last_nth_occurence_of_list_element(plist, pelem, nth):
+    index_after = [idx for idx, s in enumerate(plist) if pelem in s]
+    if not index_after:
+        return None
+    return index_after[-nth] + 1
+
+def append_to_file_after_line_last_occurence(fname, after, what):
   with open(fname, 'r', encoding='utf-8') as f:
     text = f.readlines()
   already_exists = [idx for idx, s in enumerate(text) if what in s]
   if already_exists:
     return
-  index_after = [idx for idx, s in enumerate(text) if after in s]
+  index_after = get_last_nth_occurence_of_list_element(text, after, 1)
   if not index_after:
-    return
-  text.insert(index_after[-1] + 1, what + '\n')
+      index_header_end = get_last_nth_occurence_of_list_element(text, '    <!-- ==================================', 2)
+      if not index_header_end:
+        return
+      else:
+          index_after = index_header_end + 1
+  text.insert(index_after, what + '\n')
   with open(fname, 'w', encoding='utf-8') as out:
     out.write(''.join(text))
 
@@ -297,19 +311,6 @@ def has_history_table(db, schema, table):
     cur.execute("select count(*) from pg_tables where schemaname = '" + schema + "' and tablename = '" + table + "$hist'")
     res = cur.fetchone()[0]
     return res == 1
-
-
-def get_conn_service_user(env, db):
-    port = get_port(env)
-    try:
-        return psycopg2.connect(
-            host='localhost',
-            port=port,
-            database=db,
-            user=Repository().get_sema_from_dbname(db) + '_service',
-            password='mlffTitkosPassword123!')
-    except:
-        return None
 
 
 def get_conn(env, db, user):

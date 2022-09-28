@@ -1,16 +1,25 @@
 import os
 import re
 
+import psycopg2
+
+import utils
+from utils import get_port
+
+
 class Repository():
     base = 'c:\\GIT\\MLFF\\'
 
-    def __init__(self, name=''):
+    def __init__(self, name='', schema=''):
         if name:
             self.name = self.find_name(name)
             self.base_path = 'c:/GIT/MLFF/' + self.name + '/liquibase/'
             self.dbname = self.get_db_name()
             self.db_path = self.dbname.replace('-', '_')
-            self.schema = self.get_schema()
+            self.schema = self.get_schema() if not schema else schema
+
+    def __str__(self):
+        return f'Repository({self.name})'
 
     def show(self):
         print("""  A.  mlff-core-customer-postgredb                         JAKARTA   telepítése
@@ -35,7 +44,8 @@ class Repository():
   R.  mlff-payment-retry-postgredb                         LIBRA     telepítése
   S.  mlff-payment-transaction-postgredb                   LIBRA     telepítése
   T.  mlff-settlement-tro-clearing-postgredb               LIBRA     telepítése
-  U.  mlff-settlement-psp-clearing-postgredb               LIBRA     telepítése
+  T.  mlff-settlement-tro-clearing-postgredb               LIBRA     telepítése
+  U.  mlff-payment-invoice-postgredb                       LIBRA     telepítése
 
   V.  mlff-enforcement-eligibility-declaration-postgredb   K-Team    telepítése
   W.  mlff-enforcement-eligibility-detection-postgredb     K-Team    telepítése
@@ -88,12 +98,61 @@ class Repository():
     def get_schema_version_dir(self):
         return '/'.join([self.base_path[:-1], self.db_path, self.schema, 'tables', '_xml-version-tree'])
 
+    def get_table_version_dir(self):
+        return f"{self.get_schema_version_dir()}/version-0"
+
     def get_tables_dir(self):
         return '/'.join([self.base_path[:-1], self.db_path, self.schema, 'tables'])
 
-    def get_sema_from_dbname(self, db):
+    @staticmethod
+    def get_sema_from_dbname(db):
         if db == 'document':
             return 'document_meta'
         if db == 'payment_transaction':
             return 'payment_transaction'
         return db.split('_', 1)[1]
+
+    def is_table_file_exists(self, tablename):
+        dirname = self.get_tables_dir()
+        schema = tablename.split
+        if not os.path.isdir(f"{dirname}/{tablename}"):
+            return False
+        if os.path.isfile(f"{dirname}/{tablename}/{tablename}.sql"):
+            return True
+        return False
+
+    def create_tablefile(self, tab_name):
+        dirname = self.get_tables_dir()
+        if not os.path.isdir(f"{dirname}/{tab_name}"):
+            os.mkdir(f"{dirname}/{tab_name}")
+        fname = f"{dirname}/{tab_name}/{tab_name}.sql"
+        open(fname, 'a').close()
+        print(f"{fname} file created.")
+
+    def add_table_to_create_table_xls(self, tab_name):
+        dirname = self.get_tables_dir()
+        ddl_line = f'<include file="{tab_name}/{tab_name}.sql" relativeToChangelogFile="true"/>'
+        utils.append_to_file_after_line_last_occurence(f"{dirname}/create-tables.xml", '--<include file=', '    ' + ddl_line)
+
+    def get_tablename_from_indexname(self, indexname):
+        arr = indexname.split('.')
+        schema, iname = arr[0], arr[1]
+        conn = utils.get_conn('local', self.dbname, 'postgres')
+        cur = conn.cursor()
+        cur.execute(f"SELECT tablename FROM pg_catalog.pg_indexes where schemaname = '{schema}' and indexname = '{iname}'")
+        tabname = cur.fetchone()[0]
+        conn.close()
+        return tabname
+
+
+def get_conn_service_user(env, db):
+    port = get_port(env)
+    try:
+        return psycopg2.connect(
+            host='localhost',
+            port=port,
+            database=db,
+            user=Repository.get_sema_from_dbname(db) + '_service',
+            password='mlffTitkosPassword123!')
+    except:
+        return None

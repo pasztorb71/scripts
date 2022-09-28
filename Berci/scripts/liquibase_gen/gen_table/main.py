@@ -1,13 +1,14 @@
-import math
-
 import pandas as pd
 
 from Repository import Repository
+from Ticket import Ticket
 from liquibase_gen.gen_table.Confluence import Confluence
 from liquibase_gen.gen_table.params import gen_table_params
 
 
 def modify_type(col):
+    if col.startswith('enum'):
+        return 'varchar(30)'
     return col.lower().replace('varchar2', 'varchar')\
         .replace('timestamp_with_timezone', 'timestamptz(6)')\
         .replace('decimal', 'numeric')\
@@ -26,7 +27,7 @@ def get_table_from_confluence(table, url):
     return table_comment, [list(df.columns)] + df.values.tolist()
 
 def is_col_needed(name):
-    return name.lower().startswith('x__') == False and name.lower() != 'auditable fields'
+    return name.lower().startswith('x__') == False and not any(name.lower() == x for x in ['auditable fields', 'audit fields'])
 
 def is_nan_or_none(name):
     return name == '' or pd.isnull(name)
@@ -52,11 +53,11 @@ def table_columns(tab_name, table, tab_short_name):
              "\n\tx__version int8 NOT NULL DEFAULT 0,"
     print(header)
     colnames = table[0]
-    fk =[]
+    constraints =[]
     for col in [row for row in table if is_col_needed(row[0])][1:]:
         if colnames[3].upper() == 'DEFAULT':
             default = ' DEFAULT ' + ("'"+str(col[3])+"'") if not is_nan_or_none(col[3]) else ''
-            null = ' NULL' if col[2].lower() == 'nullable' else ' NOT NULL'
+            null = ' NULL' if any(col[2].lower() == x for x in ['nullable', 'yes']) else ' NOT NULL'
         else:
             default = ' DEFAULT ' + get_default_colval(str(col[2]), col[1]) if not is_nan_or_none(col[2]) else ''
             null = ' NULL' if is_nan_or_none(col[3]) or col[3].lower() == 'nullable' else ' NOT NULL'
@@ -64,10 +65,14 @@ def table_columns(tab_name, table, tab_short_name):
         type = modify_type(col[1])
         print('\t' + col[0].lower() + ' ' + type + null + default + ',')
         if col[0].lower().endswith('_id'):
-            fk.append('CONSTRAINT fk_'+tab_short_name+'_'+col[0].lower()+' FOREIGN KEY ('+col[0].lower()+') REFERENCES '+tab_name.split('.')[0]+'.'+col[0].lower().split('_')[0]+'(x__id) DEFERRABLE')
+            constraints.append('CONSTRAINT fk_'+tab_short_name+'_'+col[0].lower()+' FOREIGN KEY ('+col[0].lower()+') REFERENCES '+tab_name.split('.')[0]+'.'+col[0].lower().split('_id')[0]+'(x__id) DEFERRABLE')
+        if col[1].lower().startswith('enum'):
+            constraints.append('CONSTRAINT ck_'+tab_short_name+'_'+col[0].lower()+f" CHECK ((({col[0].lower()})::text = ANY (ARRAY[('{col[1].split('enum')[1]}'::character varying)::text]))),")
+        if 'check(' in col[1].lower():
+            constraints.append('CONSTRAINT ck_' + tab_short_name + '_' + col[0].lower() + f" CHECK ((({col[0].lower()})::text = ANY (ARRAY[(''::character varying)::text]))),")
     print('\t' + 'CONSTRAINT pk_' + tab_name.split('.')[1] + ' PRIMARY KEY (x__id)', end='')
-    if fk:
-        print(',\n\t' + ',\n\t'.join(fk))
+    if constraints:
+        print(',\n\t' + ',\n\t'.join(constraints))
     print(');')
 
 def table_comments(tab_comment, tab_name, table):
@@ -86,14 +91,14 @@ COMMENT ON COLUMN !table!.x__version IS 'Versioning of changes';""".replace('!ta
         print('COMMENT ON COLUMN ' + tab_name + "." + col[0].lower() + " IS '" + modified_comment + "';")
 
 
-def table_grants(tab_name):
+def table_grants(tab_name, ticket_name, version):
     t = tab_name.split('.')
     sema = t[0]
     table = t[1]
     print("""--===============================================================================================--
 -- GRANT ==
 ---------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:!TABLE!_GRANT runOnChange:true
+--changeset bertalan.pasztor:!TABLE!_GRANT-!!version!!-!!ticket!! runOnChange:true
 --comment A !table! táblára jogosultságok kiosztása..
 --
 --preconditions onFail:MARK_RAN onError:HALT
@@ -106,33 +111,33 @@ GRANT SELECT ON TABLE !sema!.!table! TO ${schema_name}_sel;
 GRANT INSERT, UPDATE ON TABLE !sema!.!table! TO ${schema_name}_mod;
 GRANT DELETE, TRUNCATE ON TABLE !sema!.!table! TO ${schema_name}_del;
 
-""".replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema))
+""".replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema).replace('!!version!!', version).replace('!!ticket!!',ticket_name))
 
 
-def table_header(tab_name):
+def table_header(tab_name, ticket_name, version):
     t = tab_name.split('.')
     sema = t[0]
     table = t[1]
     print("""--===============================================================================================--
 -- TABLE ==
 ---------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:!TABLE! runOnChange:true
+--changeset bertalan.pasztor:!TABLE!-!!version!!-!!ticket!! runOnChange:true
 --comment A !table! tábla létrehozása..
 --
 --preconditions onFail:MARK_RAN onError:HALT
 --precondition-sql-check expectedResult:0 SELECT count(*) FROM pg_tables WHERE schemaname = '!sema!' AND tablename = '!table!';
 ---------------------------------------------------------------------------------------------------
-""".replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema))
+""".replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema).replace('!!version!!', version).replace('!!ticket!!',ticket_name))
 
 
-def table_history(tab_name):
+def table_history(tab_name, ticket_name, version):
     t = tab_name.split('.')
     sema = t[0]
     table = t[1]
     print("""--===============================================================================================--
 -- HISTORY ==
 ---------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:!TABLE!$HIST runOnChange:true
+--changeset bertalan.pasztor:!TABLE!$HIST-!!version!!-!!ticket!! runOnChange:true
 --comment A !table!$hist history tábla létrehozása..
 --
 --preconditions onFail:MARK_RAN onError:HALT
@@ -145,7 +150,7 @@ call ${schema_name}.HIST_TABLE_GENERATOR('${schema_name}', '!table!');
 --===============================================================================================--
 -- GRANT$HIST ==
 ---------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:!TABLE!$HIST_GRANT runOnChange:true
+--changeset bertalan.pasztor:!TABLE!$HIST_GRANT-!!version!!-!!ticket!! runOnChange:true
 --comment A !table!$hist táblára Select jog kiosztása..
 --
 --preconditions onFail:MARK_RAN onError:HALT
@@ -158,13 +163,13 @@ GRANT SELECT ON TABLE !sema!.!table!$hist TO ${schema_name}_sel;
 --===============================================================================================--
 -- TRIGGER ==
 ---------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:TR_!TABLE!$HIST runOnChange:true
+--changeset bertalan.pasztor:TR_!TABLE!$HIST-!!version!!-!!ticket!! runOnChange:true
 --comment A tr_!table!$hist trigger létrehozása..
 ---------------------------------------------------------------------------------------------------
 
 call ${schema_name}.HIST_TRIGGER_GENERATOR('${schema_name}', '!table!');
 
-""".replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema))
+""".replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema).replace('!!version!!', version).replace('!!ticket!!',ticket_name))
 
 
 def table_indexes(tab_name, table, tab_short_name):
@@ -173,28 +178,33 @@ def table_indexes(tab_name, table, tab_short_name):
             print('CREATE INDEX ix_'+tab_short_name+'_'+col[0].lower()+' ON '+tab_name+' USING btree ('+col[0].lower()+');')
 
 
-def print_table_script(tab_comment, tab_name, table, history):
+def print_table_script(tab_comment, tab_name, table, history, ticket_name, version):
     print('--liquibase formatted sql\n')
-    table_header(tab_name)
+    table_header(tab_name, ticket_name, version)
     table_columns(tab_name, table, tab_short_name)
     print()
     table_indexes(tab_name, table, tab_short_name)
     print()
     table_comments(tab_comment, tab_name, table)
     print()
-    table_grants(tab_name)
+    table_grants(tab_name, ticket_name, version)
     if history == 'y':
-        table_history(tab_name)
+        table_history(tab_name, ticket_name, version)
 
 
-def create_tablefile():
-    pass
+def create_tablefile(repo:Repository, tab_name):
+    if not repo.is_table_file_exists(tab_name):
+        if input("Create DDL file? [y/n]") == "y":
+            repo.create_tablefile(tab_name)
+            repo.add_table_to_create_table_xls(tab_name)
+        else:
+            print('DDL file not created!')
 
 
 if __name__ == '__main__':
     #TODO könyvtár és fájl létrehozása, esetleg beírás a create_table.sql-be is
-    #TODO Changeset header-be vrziószámot, ticketet beírni
     params = gen_table_params
+    ticket = Ticket(params['ticket'])
     repo = Repository(params['repo'])
     base = repo.get_base_path()
     tab_name = params['tablename'].lower()
@@ -203,8 +213,8 @@ if __name__ == '__main__':
     url = params['url']
     db = repo.get_db_name()
     db_path = db.replace('-', '_')
-    schema = repo.get_schema
-    create_tablefile()
+    create_tablefile(repo, tab_name.split('.')[1])
+    #TODO beírni a create-tables.xml-be
     tab_comment, table = get_table_from_confluence(tab_name, url)
-    print_table_script(tab_comment, tab_name, table, history)
+    print_table_script(tab_comment, tab_name, table, history, ticket_name=ticket.name, version=ticket.get_version())
 

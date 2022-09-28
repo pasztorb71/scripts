@@ -18,3 +18,16 @@ class TestRepository(TestCase):
     def test_get_db_name(self):
         r = Repository('mlff-payment-psp-proxy-postgredb')
         self.assertEqual('payment_psp_proxy', r.get_db_name())
+
+    def test_is_table_file_exists_true(self):
+        repo = Repository('trip')
+        self.assertTrue(repo.is_table_file_exists('trip'))
+
+    def test_is_table_file_exists_false(self):
+        repo = Repository('trip')
+        self.assertFalse(repo.is_table_file_exists('triptmp'))
+
+    def test_get_tablename_from_indexname(self):
+        repo = Repository('customer')
+        value = repo.get_tablename_from_indexname('customer.ix_cust_cocallcode_linum')
+        self.assertEqual('customer', value)

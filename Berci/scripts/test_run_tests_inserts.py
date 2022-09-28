@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from utils import get_conn_service_user
+from Repository import get_conn_service_user
 
 
 class Test(TestCase):

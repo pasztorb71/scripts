@@ -240,4 +240,16 @@ cmdlist = {
         "DELETE FROM psp_settlement_batch WHERE x__id = 'tesztid'",
         "DELETE FROM psp_settlement_package WHERE x__id = 'tesztid'",
     ],
+    'payment_invoice': [
+        """INSERT INTO invoice (x__id, x__insdate, x__insuser, x__moddate, x__moduser, x__version, invoice_state, 
+        transaction_id, reference_id, source_id, source_type, receipt_number, amount, currency, vat_calculated, payment_time, 
+        validity_start, front_plate_number, segment_short_name, location_start_from, location_exit_to, segment_type, 
+        toll_category, psp_transaction_id, doc_storage_id, "language", customer_id, segment_identifier, 
+        entry_matched_section_refid, exit_matched_section_refid) 
+        VALUES('tesztid', '2022-07-25 23:19:29.345', 'Service User', '2022-07-28 14:00:43.776', 'Service User', 
+        3, 'INITIALIZED'::character varying, '', ' ', ' ', ' ', '', 0, 
+        'IDR'::character varying, '0'::numeric, '', '', '', '', '', '', '', 0, '', '', '', '', '', '', ' ');
+;""",
+        "DELETE FROM invoice WHERE x__id = 'tesztid'",
+    ],
 }

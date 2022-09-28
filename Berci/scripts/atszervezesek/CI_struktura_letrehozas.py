@@ -19,13 +19,14 @@ def create_file(fname):
 
 if __name__ == '__main__':
   # prepare
-    repo = 'mlff-data-ingestion-meta-postgredb'
+    repo = 'mlff-enforcement-detection-observation-postgredb'
     base = 'c:/GIT/MLFF/'+repo
     db = get_db_name(base)
     db_path = db.replace('-', '_')
     to_replace = [['core-customer', db],['core_customer', db_path]]
   #work
     #git_init(base)
+    #exit(0)
     copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\.gitlab\\', base+'/.gitlab')
     copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\docs\\', base+'/docs')
     replace_in_file(base+'/docs/development.adoc', to_replace)

@@ -1,6 +1,5 @@
 import Repository
-import utils
-from liquibase_gen.changelog_generator.Ticket import Ticket
+from Ticket import Ticket
 
 
 def create_schema_version(repo, version):

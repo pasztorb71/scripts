@@ -16,12 +16,14 @@ class Ticket:
 
     def get_version(self):
         try:
-            raw = self.content['fields']['fixVersions'][0]['name']
+            raw = self.content['fields']['fixVersions'][-1]['name'].replace('MLFF ','')
         except:
-            return '0.04.0'
-        ver = raw.split()[1]
-        tmp = ver.split('.')
+            return '0.07.0'
+        #ver = raw.split()[1]
+        tmp = raw.split('.')
         tmp[1] = tmp[1].rjust(2, '0')
+        if len(tmp) == 3:
+            return '.'.join(tmp)
         return '.'.join(tmp)+'.0'
 
     def get_title(self):

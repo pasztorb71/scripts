@@ -22,6 +22,23 @@ def mproc_single_command_tmpl(host, port, db, return_dict):
     conn.commit()
     conn.close()
 
+def mproc_single_csabi(host, port, db, return_dict):
+    conn = psycopg2.connect(
+        host=host,
+        port=port,
+        database=db,
+        user="postgres",
+        password='fLXyFS0RpmIX9uxGII4N')
+    cur = conn.cursor()
+    #cur.execute("Truncate table public.debezium_heartbeat")
+    cur.execute("update public.debezium_heartbeat set last_heartbeat_ts = now()")
+    cur.execute("SELECT * from public.debezium_heartbeat")
+    record = cur.fetchall()
+    return_dict[db] = [[desc[0].upper() for desc in cur.description]] + record
+    cur.close()
+    conn.commit()
+    conn.close()
+
 def mproc_multiple_commands_tmpl(host, port, db, return_dict):
     conn = psycopg2.connect(
         host=host,
@@ -83,7 +100,8 @@ def mproc_count_records(host, port, db, return_dict):
         password='fLXyFS0RpmIX9uxGII4N')
     cur = conn.cursor()
     recout = []
-    cur.execute("SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public') and tablename not like '%$hist'")
+    cur.execute("SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public') "
+                "and tablename not like '%$hist' order by 1,2")
     record = cur.fetchall()
     for rec in record:
         cur.execute("select '" + rec[0] + '.' + rec[1] + "' table_name, count(*) from " + rec[0] + '.' + rec[1])
@@ -173,11 +191,11 @@ def parallel_run(host, port, databases, func):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5435
+    host, port = 'localhost', 5436
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     #databases = load_from_file('../databases.txt')
     databases = cluster.databases[0:]
-    #databases = ['core_customer']
-    return_dict = parallel_run(host, port, databases, mproc_count_records)
+    #databases = ['payment_transaction']
+    return_dict = parallel_run(host, port, databases, mproc_single_csabi)
     print_sql_result(return_dict)
 

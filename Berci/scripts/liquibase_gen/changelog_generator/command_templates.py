@@ -190,3 +190,27 @@ tmp_rename_schema = """---------------------------------------------------------
 --precondition-sql-check expectedResult:1 SELECT * FROM information_schema.schemata WHERE schema_name = '!!schema!!'
 ---------------------------------------------------------------------------------------------------
 """
+tmp_rename_table = """---------------------------------------------------------------------------------------------------
+--changeset !!author!!:!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
+--comment Rename table !!table_lower!!.
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_catalog.pg_tables WHERE schemaname = '!!schema!!' AND tablename = '!!table_lower!!'
+---------------------------------------------------------------------------------------------------
+"""
+tmp_insert_into_table = """---------------------------------------------------------------------------------------------------
+--changeset !!author!!:!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
+--comment Insert into table !!table_lower!!.
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_catalog.pg_tables WHERE schemaname = '!!schema!!' AND tablename = '!!table_lower!!'
+---------------------------------------------------------------------------------------------------
+"""
+tmp_trigger_section = """--===============================================================================================--
+-- TRIGGER ==
+---------------------------------------------------------------------------------------------------
+--changeset !!author!!:TR_!!table_upper!!-DDL-!!version!!-!!ticket!!-!!serial!! runOnChange:true
+--comment A tr_!!table_lower!! trigger létrehozása..
+---------------------------------------------------------------------------------------------------
+call ${schema_name}.HIST_TRIGGER_GENERATOR('${schema_name}', '!!table_nohist!!');
+"""

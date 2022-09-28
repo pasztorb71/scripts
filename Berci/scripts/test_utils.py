@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase
 
 import utils
@@ -27,7 +28,8 @@ class Test(TestCase):
         self.assertEqual(expected, colname)
 
     def test_password_from_file(self):
-        self.assertEqual('mlffTitkosPassword123!', utils.password_from_file('notification_wa_service', 'localhost', 5433))
+        self.assertEqual('mlffTitkosPassword123!',
+                         utils.password_from_file('notification_wa_service', 'localhost', 5433))
 
     def test_password_from_file1(self):
         self.assertEqual('mysecretpassword', utils.password_from_file('postgres', 'localhost', 5432))
@@ -36,3 +38,86 @@ class Test(TestCase):
         actual = utils.get_schema_from_command("ALTER SCHEMA notification_common RENAME TO notification_dispacther;")
         self.assertEqual('notification_common', actual)
 
+    def test_append_to_file_after_line_last_occurence_after_exists(self):
+        fname = "c:/tmp/testfile.txt"
+        with open(fname, 'w', encoding='utf-8') as f:
+            f.write("""<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- =================================================================================== -->
+    <!-- A schema-hoz tartozó táblák létrehozása...                                          -->
+    <!-- Részlegesen kötött sorrendben kell futtatni, a Foreign Key hivatkozások miatt!      -->
+    <!-- =================================================================================== -->
+
+    <include file="trip/trip.sql" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>
+""")
+        utils.append_to_file_after_line_last_occurence(fname, '    <include file=', '		testline')
+        expected = """<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- =================================================================================== -->
+    <!-- A schema-hoz tartozó táblák létrehozása...                                          -->
+    <!-- Részlegesen kötött sorrendben kell futtatni, a Foreign Key hivatkozások miatt!      -->
+    <!-- =================================================================================== -->
+
+    <include file="trip/trip.sql" relativeToChangelogFile="true"/>
+		testline
+
+</databaseChangeLog>
+"""
+        with open(fname, 'r', encoding='utf-8') as f:
+            value = f.read()
+        self.assertEqual(expected, value)
+
+    def test_append_to_file_after_line_last_occurence_after_not_exists(self):
+        fname = "c:/tmp/testfile.txt"
+        with open(fname, 'w', encoding='utf-8') as f:
+            f.write("""<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- =================================================================================== -->
+    <!-- A schema-hoz tartozó táblák létrehozása...                                          -->
+    <!-- Részlegesen kötött sorrendben kell futtatni, a Foreign Key hivatkozások miatt!      -->
+    <!-- =================================================================================== -->
+
+
+</databaseChangeLog>
+""")
+        utils.append_to_file_after_line_last_occurence(fname, '    <include file=', '		testline')
+        expected = """<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- =================================================================================== -->
+    <!-- A schema-hoz tartozó táblák létrehozása...                                          -->
+    <!-- Részlegesen kötött sorrendben kell futtatni, a Foreign Key hivatkozások miatt!      -->
+    <!-- =================================================================================== -->
+
+		testline
+
+</databaseChangeLog>
+"""
+        with open(fname, 'r', encoding='utf-8') as f:
+            value = f.read()
+        self.assertEqual(expected, value)
+
+    def test_get_tablename_from_command1(self):
+        command = "CREATE INDEX ix_trip_cust_id ON trip.trip USING btree (customer_id);"
+        self.assertEqual('trip', utils.get_tablename_from_command(command))
+
+    def test_get_tablename_from_command1(self):
+        command = "CREATE INDEX ix_trip_cust_id ON trip.trip USING btree (customer_id);"
+        self.assertEqual('trip', utils.get_tablename_from_command(command))
+
+    def test_get_indexname_from_command(self):
+        index = utils.get_indexname_from_command("ALTER INDEX tariff.ix_segsec_glied_id RENAME TO ix_section_glied_id;")
+        self.assertEqual('ix_segsec_glied_id', index)
