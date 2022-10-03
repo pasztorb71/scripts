@@ -115,16 +115,17 @@ class Changelog_header_generator():
     @staticmethod
     def generate_commandblock(header, stmt, tablename):
         arr = header.split('\n')
-        expected = re.match(".*expectedResult:([0-9]) SELECT", arr[5]).group(1)
-        pre = re.match(".*count\\(\\*\\) (.*)", arr[5]).group(1)
-        cmd = """DO $$
-DECLARE
-  cnt int;
-  v_schema_name text := '${schema_name}';  
-BEGIN
-  
-  cnt := -1;
-  SELECT count(*) INTO cnt !!precond!!;
+        if arr[2] == '-- HISTORY ==':
+            expected = re.match(".*expectedResult:([0-9]) SELECT", arr[8]).group(1)
+            pre = re.match(".*count\\(\\*\\) (.*)", arr[8]).group(1)
+        else:
+            expected = re.match(".*expectedResult:([0-9]) SELECT", arr[5]).group(1)
+            pre = re.match(".*count\\(\\*\\) (.*)", arr[5]).group(1)
+        pre = utils.format_sql(pre)
+        cmd = """  cnt := -1;
+  SELECT count(*) INTO cnt 
+    !!precond!!;
+    
   IF cnt = !!expected!! THEN --<< expectedResult --
     !!command!!;
   END IF;
@@ -134,8 +135,15 @@ BEGIN
 
     def gen_new_header_from_old(self, header, tablename):
         arr = header.split('\n')
-        arr[1] = re.sub('-[0-9].[0-9]{2}.[0.9]-', '-', arr[1]) + '  endDelimiter:/'
+        arr[1] = re.sub('-[0-9].[0-9]{2}.[0.9]-', '-', arr[1]) + ' endDelimiter:/'
         s = arr[0:3] + [arr[0]]
-        return '\n'.join(s)
+        return '\n'.join(s) + """\nSET search_path = ${schema_name};
+        
+DO $$
+DECLARE
+  cnt int;
+  v_schema_name text := '${schema_name}';  
+BEGIN
+"""
 
 

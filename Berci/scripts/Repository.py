@@ -34,6 +34,7 @@ class Repository():
   I.  mlff-enforcement-detection-image-postgredb           N2O       telepítése
   J.  mlff-enforcement-detection-postgredb                 N2O       telepítése
   K.  mlff-enforcement-visual-check-postgredb              N2O       telepítése
+  K.  mlff-enforcement-detection-observation-postgredb     N2O       telepítése
 
   L.  mlff-enforcement-exemption-postgredb                 JAKARTA   telepítése
   M.  mlff-eobu-tariff-postgredb                           JAKARTA   telepítése

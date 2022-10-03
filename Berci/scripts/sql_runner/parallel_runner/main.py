@@ -31,10 +31,17 @@ def mproc_single_csabi(host, port, db, return_dict):
         password='fLXyFS0RpmIX9uxGII4N')
     cur = conn.cursor()
     #cur.execute("Truncate table public.debezium_heartbeat")
-    cur.execute("update public.debezium_heartbeat set last_heartbeat_ts = now()")
-    cur.execute("SELECT * from public.debezium_heartbeat")
-    record = cur.fetchall()
-    return_dict[db] = [[desc[0].upper() for desc in cur.description]] + record
+    #cur.execute("update public.debezium_heartbeat set last_heartbeat_ts = now()")
+    #cur.execute("SELECT * from public.debezium_heartbeat")
+    cur.execute("""CREATE TABLE IF NOT EXISTS public.debezium_heartbeat (
+  last_heartbeat_ts TIMESTAMPTZ DEFAULT NOW()
+  PRIMARY KEY)""")
+    cur.execute("""INSERT INTO public.debezium_heartbeat (last_heartbeat_ts)
+  SELECT NOW ()
+  WHERE (SELECT COUNT(*) FROM public.debezium_heartbeat) =0""")
+    #record = cur.fetchall()
+    #return_dict[db] = [[desc[0].upper() for desc in cur.description]] + record
+    return_dict[db] = ['OK']
     cur.close()
     conn.commit()
     conn.close()
@@ -191,7 +198,7 @@ def parallel_run(host, port, databases, func):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5436
+    host, port = 'localhost', 5435
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     #databases = load_from_file('../databases.txt')
     databases = cluster.databases[0:]

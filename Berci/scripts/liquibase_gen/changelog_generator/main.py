@@ -87,11 +87,13 @@ def process_commands(repo):
         a = g.generate_trigger_section()
         print(a)
 
-def process_commands_new(repo):
+def process_commands_new(repo, version1):
     history_commands = []
     history_comm = False
     last_table = ''
+    is_header = False
     for stmt in commands[0:]:
+        pass
         if is_history_related_command(stmt):
             history_commands.append(gen_history_command_from_command(repo, stmt))
     try:
@@ -104,15 +106,18 @@ def process_commands_new(repo):
             cmd_block = g.generate_commandblock(header, stmt, tablename)
 
             if tablename:
-                version.check_table_version_file(ticket.get_version(), repo, tablename) # DDL sql
+                #TODO check_schema_version_file
+                #version.check_schema_version_file(version1, repo) #
+                version.check_table_version_file(version1, repo, tablename) # DDL sql
 
-            if header and is_newtable:
+            if header and not is_header:
                 print()
                 print(new_header)
+                is_header = True
             p_print(f'{cmd_block}')
-            print(block_end)
             history_comm = '$hist' in tablename
             last_table = tablename
+        print(block_end)
 
 
     except Exception as e:
@@ -130,10 +135,10 @@ if __name__ == '__main__':
     repo = Repository(params['repository'], params['schema'])
     print('Repository name: ' + repo.get_name())
     version1 = ticket.get_version()
-    #version1 = '0.07.0'
-    version.check_schema_version_file(version1, repo)
+    #version1 = '0.08.0'
+    #version.check_schema_version_file(version1, repo)
     g = Changelog_header_generator(author='bertalan.pasztor', jira=ticket.name, version=version1, serial=0)
     commands = command_list(repo)[0].replace('\n','').split(';')
-    process_commands(repo)
-    #process_commands_new(repo)
+    #process_commands(repo)
+    process_commands_new(repo, version1)
 

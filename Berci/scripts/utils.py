@@ -325,3 +325,7 @@ def get_conn(env, db, user):
             password=password_from_file(user, 'localhost', port))
     except Exception as e:
         print(e)
+
+
+def format_sql(pre):
+    return pre.replace(' WHERE ', '\n   WHERE ').replace(' AND ', '\n     AND ')

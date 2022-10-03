@@ -44,7 +44,7 @@ def check_type(colname, coltype):
 
 
 def table_columns(tab_name, table, tab_short_name):
-    header = "CREATE TABLE " + tab_name + " (" + \
+    header = "CREATE TABLE ${schema_name}." + tab_name + " (" + \
              "\n\tx__id varchar(30) NOT NULL," \
              "\n\tx__insdate timestamptz(6) NOT NULL DEFAULT CURRENT_TIMESTAMP," \
              "\n\tx__insuser varchar(30) NOT NULL," \
@@ -104,6 +104,7 @@ def table_grants(tab_name, ticket_name, version):
 --preconditions onFail:MARK_RAN onError:HALT
 --precondition-sql-check expectedResult:1 SELECT count(*) FROM pg_tables WHERE schemaname = '!sema!' AND tablename = '!table!';
 ---------------------------------------------------------------------------------------------------
+SET search_path = ${schema_name};
 
 ALTER TABLE !sema!.!table! OWNER TO ${schema_name}_tbl_own;
 

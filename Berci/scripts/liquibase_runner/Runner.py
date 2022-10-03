@@ -29,6 +29,7 @@ class Runner:
             .replace('#changelog#', self.get_changelog(db, project))
         #ret_code = os_command(cmd)
         #print(cmd)
+        #self.confirm('')
         ret_code = os.system(cmd)
         if ret_code != 0:
             exit(ret_code)

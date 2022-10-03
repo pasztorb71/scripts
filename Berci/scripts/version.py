@@ -82,3 +82,33 @@ def check_table_version_file(version, repo, tablename):
         else:
             print('DDL file not created!')
     return None
+
+def check_schema_version_file(version, repo, tablename):
+    if '$hist' in tablename:
+        return
+    table_dir = '/'.join([repo.get_tables_dir(), tablename])
+    ddlfile_path = '/'.join([table_dir, tablename+'-DDL-'+version+'.sql'])
+    version_dir = repo.get_table_version_dir()
+    table_version_file = '/'.join([version_dir, version + '.xml'])
+    with open(table_version_file, 'r', encoding='utf-8') as f:
+        content = f.read()
+    table_ddl_line = f'<include file="../../{tablename}/{tablename}-DDL-{version}.sql" relativeToChangelogFile="true"/>'
+    if table_ddl_line not in content:
+        print(f"Table version file: {table_version_file}")
+        message = f'No table DDL file version row in table version file! ({tablename})'
+        print(message)
+        if input("Create table row? [y/n]") == "y":
+            append_to_file_after_line_last_occurence(table_version_file, '<include file="../../', '    ' + table_ddl_line)
+        else:
+            return
+
+    if not os.path.isfile(ddlfile_path):
+        print(f"Missing DDL file: {ddlfile_path}")
+        if input("Create DDL file? [y/n]") == "y":
+            if not os.path.isdir(ddlfile_path):
+                os.mkdir(ddlfile_path.rsplit('/')[0]) if not os.path.isdir(ddlfile_path.rsplit('/')[0]) else ''
+            with open(ddlfile_path, 'w', encoding='utf-8') as f:
+                f.write(table_ddl_tmpl)
+        else:
+            print('DDL file not created!')
+    return None
