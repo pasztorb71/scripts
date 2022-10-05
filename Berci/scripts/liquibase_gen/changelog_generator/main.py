@@ -105,10 +105,10 @@ def process_commands_new(repo, version1):
             new_header = g.gen_new_header_from_old(header, tablename)
             cmd_block = g.generate_commandblock(header, stmt, tablename)
 
-            if tablename:
+            #if tablename:
                 #TODO check_schema_version_file
                 #version.check_schema_version_file(version1, repo) #
-                version.check_table_version_file(version1, repo, tablename) # DDL sql
+                #version.check_table_version_file(version1, repo, tablename) # DDL sql
 
             if header and not is_header:
                 print()

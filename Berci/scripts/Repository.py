@@ -133,7 +133,10 @@ class Repository():
     def add_table_to_create_table_xls(self, tab_name):
         dirname = self.get_tables_dir()
         ddl_line = f'<include file="{tab_name}/{tab_name}.sql" relativeToChangelogFile="true"/>'
-        utils.append_to_file_after_line_last_occurence(f"{dirname}/create-tables.xml", '--<include file=', '    ' + ddl_line)
+        utils.append_to_file_after_line_last_occurence(f"{dirname}/create-tables.xml", '<include file=', '  ' + ddl_line)
+        print('Line added to create-tables.xml')
+        print(ddl_line)
+
 
     def get_tablename_from_indexname(self, indexname):
         arr = indexname.split('.')
