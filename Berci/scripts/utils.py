@@ -124,10 +124,28 @@ def get_port(env):
         return 5435
     elif env == 'perf':
         return 5436
-    elif env == 'train':
+    elif env == 'cantas_train':
         return 5437
+    elif env == 'cantas_test':
+        return 5438
     elif env == 'local':
         return 5432
+
+def get_env(port):
+    if port == 5433:
+        return 'sandbox'
+    elif port == 5434:
+        return 'dev'
+    elif port == 5435:
+        return 'fit'
+    elif port == 5436:
+        return 'perf'
+    elif port == 5437:
+        return 'cantas_train'
+    elif port == 5438:
+        return 'cantas_test'
+    elif port == 5432:
+        return 'local'
 
 
 def get_password(env, user):
@@ -243,6 +261,14 @@ def get_files_from_path_ext_filtered(path, ext, cont):
     for root, dirs, files in os.walk(path):
         for file in files:
             if file.endswith(ext) and cont in file:
+                out.append(os.path.join(root, file))
+    return out
+
+def get_files_from_path_fname_filtered(path, name):
+    out = []
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if name in file:
                 out.append(os.path.join(root, file))
     return out
 
