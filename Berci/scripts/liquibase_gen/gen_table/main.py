@@ -36,7 +36,7 @@ def get_enums(parsed_html):
     return None
 
 
-def is_col_needed(name):
+def is_row_needed(name):
     return name.lower().startswith('x__') == False and not any(name.lower() == x for x in ['auditable fields', 'audit fields'])
 
 def is_nan_or_none(name):
@@ -64,7 +64,7 @@ def table_columns(tab_name, table, tab_short_name):
     print(header)
     colnames = table[0]
     constraints =[]
-    for col in [row for row in table if is_col_needed(row[0])][1:]:
+    for col in [row for row in table if is_row_needed(row[0])][1:]:
         if colnames[3].upper() == 'DEFAULT':
             default = ' DEFAULT ' + ("'"+str(col[3])+"'") if not is_nan_or_none(col[3]) else ''
             null = ' NULL' if any(col[2].lower() == x for x in ['nullable', 'yes']) else ' NOT NULL'
@@ -76,7 +76,7 @@ def table_columns(tab_name, table, tab_short_name):
         print('\t' + col[0].lower() + ' ' + type + null + default + ',')
         if col[0].lower().endswith('_id'):
             constraints.append('CONSTRAINT fk_'+tab_short_name+'_'+col[0].lower()+' FOREIGN KEY ('+col[0].lower()+') REFERENCES '+col[0].lower().split('_id')[0]+'(x__id) DEFERRABLE')
-        if col[1].lower().startswith('enum'):
+        if 'enum' in col[1].lower():
             constraints.append('CONSTRAINT ck_'+tab_short_name+'_'+col[0].lower()+f" CHECK ((({col[0].lower()})::text = ANY (ARRAY[('{col[1].split('enum')[1]}'::character varying)::text]))),")
         if 'check(' in col[1].lower():
             constraints.append('CONSTRAINT ck_' + tab_short_name + '_' + col[0].lower() + f" CHECK ((({col[0].lower()})::text = ANY (ARRAY[(''::character varying)::text]))),")
@@ -96,7 +96,7 @@ COMMENT ON COLUMN !table!.x__moddate IS 'Date of last modification';
 COMMENT ON COLUMN !table!.x__moduser IS 'Identifier of modifier user, without FK (nonFK -> SECURITY_USER.X__ID)';
 COMMENT ON COLUMN !table!.x__version IS 'Versioning of changes';""".replace('!table!', tab_name)
     print(header)
-    for col in [row for row in table if is_col_needed(row[0])][1:]:
+    for col in [row for row in table if is_row_needed(row[0])][1:]:
         modified_comment = col[4].replace("'", "''")
         print('COMMENT ON COLUMN ' + tab_name + "." + col[0].lower() + " IS '" + modified_comment + "';")
 
@@ -157,7 +157,7 @@ call ${schema_name}.HIST_TRIGGER_GENERATOR('${schema_name}', '!table!');
 
 
 def table_indexes(tab_name, table, tab_short_name):
-    for col in [row for row in table if is_col_needed(row[0])][1:]:
+    for col in [row for row in table if is_row_needed(row[0])][1:]:
         if col[0].lower().endswith('_id'):
             print('CREATE INDEX ix_'+tab_short_name+'_'+col[0].lower()+' ON '+tab_name+' USING btree ('+col[0].lower()+');')
 
@@ -178,9 +178,11 @@ def print_table_script(tab_comment, schema_name, tab_name, table, history, ticke
 
 def create_tablefile(repo:Repository, tab_name):
     if not repo.is_table_file_exists(tab_name):
+        print(f"DDL file: {repo.get_tables_dir()}/{tab_name}/{tab_name}-DDL-000.sql")
         if input("Create DDL file? [y/n]") == "y":
             repo.create_tablefile(tab_name)
-            repo.add_table_to_create_table_xls(tab_name)
+            #TODO javítani
+            #repo.schema_version_xml(tab_name)
         else:
             print('DDL file not created!')
 

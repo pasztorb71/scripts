@@ -18,4 +18,4 @@ if __name__ == '__main__':
     repos = repositories
     runner = Runner(base, repos)
     # TODO beletenni maga előtt teljes törlés opciót
-    runner.run(params['loc'], params['delete_db_before'], params['checkonly'])
+    runner.run('local', True, params['checkonly'])

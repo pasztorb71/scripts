@@ -102,8 +102,11 @@ def process_commands_new(repo, version1):
             if is_newtable and '$hist' in g.prev_table:
                 print(g.generate_trigger_section())
             header, tablename = g.generate_header(repo, stmt)
-            new_header = g.gen_new_header_from_old(header, tablename)
-            cmd_block = g.generate_commandblock(header, stmt, tablename)
+            if header:
+                new_header = g.gen_new_header_from_old(header, tablename)
+                cmd_block = g.generate_commandblock(header, stmt, tablename)
+            else:
+                cmd_block = stmt;
 
             #if tablename:
                 #TODO check_schema_version_file

@@ -135,6 +135,7 @@ class Changelog_header_generator():
 
     def gen_new_header_from_old(self, header, tablename):
         arr = header.split('\n')
+        #if re.match('.*-[0-9].[0-9]{2}.[0.9]-.*'):
         arr[1] = re.sub('-[0-9].[0-9]{2}.[0.9]-', '-', arr[1]) + ' endDelimiter:/'
         s = arr[0:3] + [arr[0]]
         return '\n'.join(s) + """\nSET search_path = ${schema_name};

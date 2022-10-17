@@ -34,6 +34,9 @@ class Test(TestCase):
     def test_password_from_file1(self):
         self.assertEqual('mysecretpassword', utils.password_from_file('postgres', 'localhost', 5432))
 
+    def test_password_from_file_all_hosts(self):
+        self.assertEqual('mlffTitkosPassword123!', utils.password_from_file('dwh_read', 'localhost', '*'))
+
     def test_get_schema_from_command(self):
         actual = utils.get_schema_from_command("ALTER SCHEMA notification_common RENAME TO notification_dispacther;")
         self.assertEqual('notification_common', actual)

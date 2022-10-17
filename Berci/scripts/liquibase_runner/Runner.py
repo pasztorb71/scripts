@@ -1,6 +1,8 @@
 import glob
 import os
 
+import utils
+from Repository import Repository
 from docker_ips import ipdict, base_ips
 from utils import get_dbname_from_project
 
@@ -11,7 +13,7 @@ class Runner:
         self.base = base
         self.password = ''
         self.loc = ''
-        self.full = False
+        self.delete_db_before = False
         Runner.repos = repos
 
     def _call_liquibase(self, project, env, postgrespass, db):
@@ -29,6 +31,7 @@ class Runner:
             .replace('#changelog#', self.get_changelog(db, project))
         #ret_code = os_command(cmd)
         #print(cmd)
+        #return
         #self.confirm('')
         ret_code = os.system(cmd)
         if ret_code != 0:
@@ -44,7 +47,7 @@ class Runner:
     def get_changelog(self, db, project):
         if os.path.isfile(self.base+project+'/liquibase/liquibase-install-databases.xml'):
             return 'liquibase-install-databases.xml' if db == 'postgres' else 'liquibase-install-' + db + '.xml'
-        return 'liquibase-install-step-01.xml' if db == 'postgres' else 'liquibase-install-step-02.xml'
+        return 'liquibase-install-db1-step-01.xml' if db == 'postgres' else 'liquibase-install-db1-step-02.xml'
 
     def get_dbs(self, repo):
             if repo == 'doc-postgredb':
@@ -70,15 +73,17 @@ class Runner:
             return base_ips[loc]
 
     def run_for_repo(self, ip_address, repo):
-        if self.full:
-            self.clear_repo()
+        if self.delete_db_before:
+            if self.loc != 'local':
+                exit('Nem local esetén nem dobható el az adatbázis!!!')
+            Repository(repo).clear_repo()
         self._call_liquibase(repo, ip_address, self.password, 'postgres')
         for db in self.get_dbs(repo):
             self._call_liquibase(repo, ip_address, self.password, db)
 
-    def run(self, loc, full, checkonly):
+    def run(self, loc, delete_db_before, checkonly):
         if not checkonly and not self.confirm(loc): return
-        self.full = full
+        self.delete_db_before = delete_db_before
         self.loc = loc
         self.checkonly = checkonly
         self.password = 'fLXyFS0RpmIX9uxGII4N' if loc != 'local' else 'mysecretpassword'
@@ -91,9 +96,6 @@ class Runner:
         pass
 
     def run_additional_script(self):
-        pass
-
-    def clear_repo(self):
         pass
 
     @classmethod

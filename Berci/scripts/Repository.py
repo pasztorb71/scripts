@@ -4,6 +4,7 @@ import re
 import psycopg2
 
 import utils
+from Database import Database
 from utils import get_port
 
 
@@ -115,10 +116,9 @@ class Repository():
 
     def is_table_file_exists(self, tablename):
         dirname = self.get_tables_dir()
-        schema = tablename.split
         if not os.path.isdir(f"{dirname}/{tablename}"):
             return False
-        if os.path.isfile(f"{dirname}/{tablename}/{tablename}.sql"):
+        if os.path.isfile(f"{dirname}/{tablename}/{tablename}-DDL-000.sql"):
             return True
         return False
 
@@ -126,11 +126,12 @@ class Repository():
         dirname = self.get_tables_dir()
         if not os.path.isdir(f"{dirname}/{tab_name}"):
             os.mkdir(f"{dirname}/{tab_name}")
-        fname = f"{dirname}/{tab_name}/{tab_name}.sql"
+        fname = f"{dirname}/{tab_name}/{tab_name}-DDL-000.sql"
         open(fname, 'a').close()
         print(f"{fname} file created.")
 
-    def add_table_to_create_table_xls(self, tab_name):
+
+    def schema_version_xml(self, tab_name):
         dirname = self.get_tables_dir()
         ddl_line = f'<include file="{tab_name}/{tab_name}.sql" relativeToChangelogFile="true"/>'
         utils.append_to_file_after_line_last_occurence(f"{dirname}/create-tables.xml", '<include file=', '  ' + ddl_line)
@@ -147,6 +148,25 @@ class Repository():
         tabname = cur.fetchone()[0]
         conn.close()
         return tabname
+
+    def clear_repo(self):
+        self.drop_database()
+        self.drop_roles()
+        self.delete_from_changelog()
+
+    def drop_database(self):
+        clus = Database('postgres', 'localhost', '5432')
+        clus.sql_exec(f'drop database if exists {self.dbname}')
+        print(f'{self.dbname} database dropped.')
+
+    def drop_roles(self):
+        clus = Database('postgres', 'localhost', '5432')
+        clus.drop_roles(self.schema)
+
+    def delete_from_changelog(self):
+        clus = Database('postgres', 'localhost', '5432')
+        clus.delete_databasechangelog(self.schema)
+
 
 
 def get_conn_service_user(env, db):
