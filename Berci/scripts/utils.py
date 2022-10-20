@@ -95,14 +95,18 @@ def git_init(base):
     os.system('git -C '+base+' restore .')
     os.system('git -C '+base+' clean -f -d')
 
+def git_init_from_path(path):
+    a = path.split('\\', 2)
+    repo = a[0] + '/' + a[1]
+    git_init(repo)
 
 def has_header(l):
     return isinstance([0], list)
 
 
-def print_sql_result(d):
+def print_sql_result(d, maxlength):
     for db, records in sorted(d.items()):
-        print(f"Database: {db}")
+        print(f"{db}:".ljust(maxlength), end='')
         if records:
             if isinstance(records, str):
                 print(f"  {records}")

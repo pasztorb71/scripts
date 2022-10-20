@@ -105,9 +105,7 @@ def table_grants(tab_name, ticket_name, version):
     t = tab_name.split('.')
     sema = t[0]
     table = tab_name
-    print("""--===============================================================================================--
--- GRANT ==
----------------------------------------------------------------------------------------------------
+    print("""-- GRANT ==
 ALTER TABLE !table! OWNER TO ${schema_name}_tbl_own;
 
 GRANT SELECT ON TABLE !table! TO ${schema_name}_sel;

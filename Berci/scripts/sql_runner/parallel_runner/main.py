@@ -231,6 +231,22 @@ def mproc_grant_dwh_read(host, port, db, return_dict):
     conn.commit()
     conn.close()
 
+def mproc_grant_dwh_read_databasechangelog(host, port, db, return_dict):
+    try:
+        conn = psycopg2.connect(
+            host=host,
+            port=port,
+            database=db,
+            user="postgres",
+            password=password_from_file('postgres', host, port))
+        cur = conn.cursor()
+        cur.execute("GRANT SELECT ON public.databasechangelog TO dwh_read")
+        return_dict[f'{port}|{db}'] = "OK"
+        cur.close()
+        conn.commit()
+        conn.close()
+    except:
+        return_dict[f'{port}|{db}'] = "Database not exists"
 
 def start_process(target, host, port, db, return_dict):
     p = multiprocessing.Process(target=target, args=(host, port, db, return_dict))
@@ -267,11 +283,12 @@ def parallel_run(host, ports, databases, func):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5432
+    host, port = 'localhost', 5433
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     #databases = load_from_file('../databases.txt')
     databases = cluster.databases[0:]
     #databases = ['payment_transaction']
-    return_dict = parallel_run(host, port, databases, mproc_single_command_test)
-    print_sql_result(return_dict)
+    ports = list(range(5433,5436))
+    return_dict = parallel_run(host, ports, databases, mproc_grant_dwh_read_databasechangelog)
+    print_sql_result(return_dict, len(max(databases, key=len)) + 5)
 
