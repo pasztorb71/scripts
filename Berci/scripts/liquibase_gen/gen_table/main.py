@@ -121,7 +121,7 @@ def table_header(sema, tab_name, ticket_name, version):
     print("""--===============================================================================================--
 -- TABLE ==
 ---------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:!TABLE!-!!ticket!! runOnChange:true
+--changeset bertalan.pasztor:!TABLE!-DDL-!!ticket!!-01 runOnChange:true
 --comment A !table! tábla létrehozása..
 --
 --preconditions onFail:MARK_RAN onError:HALT
@@ -137,12 +137,17 @@ def table_history(tab_name, ticket_name, version):
     print("""--===============================================================================================--
 -- HISTORY ==
 ---------------------------------------------------------------------------------------------------
+--changeset bertalan.pasztor:!TABLE!$HIST-DDL-!!ticket!!-01 runOnChange:true
+--comment A !table!$hist history tábla létrehozása..
+--
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:0 SELECT count(*) FROM pg_tables WHERE schemaname = '!sema!' AND tablename = '!table!$hist';
+---------------------------------------------------------------------------------------------------
+SET search_path = ${schema_name};
+
 call ${schema_name}.HIST_TABLE_GENERATOR('${schema_name}', '!table!');
 
-
---===============================================================================================--
 -- GRANT$HIST ==
----------------------------------------------------------------------------------------------------
 GRANT SELECT ON TABLE !table!$hist TO ${schema_name}_sel;
 
 
