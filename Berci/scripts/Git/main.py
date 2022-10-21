@@ -10,10 +10,18 @@ from utils import print_sql_result
 
 def _mproc_ck_branch(git, return_dict, branch):
     os.popen('git -C '+git.base+'/'+git.repo+' fetch --all --prune')
-    proc=subprocess.Popen('cmd /u /c git -C ' + git.base +'/' + git.repo +' diff '+branch+' origin/'+branch, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc=subprocess.Popen('cmd /u /c git -C ' + git.base +'/' + git.repo +' diff '+branch+' origin/'+branch,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     res = proc.stdout.read()
-    git.synced = 'OK' if not res else 'DIFF'
-    return_dict[git.repo] = 'OK' if not res else 'DIFF'
+    git.synced = 'OK' if not res else 'Remote is ahead'
+    if git.synced == 'OK':
+        proc = subprocess.Popen('cmd /u /c git -C ' + git.base + '/' + git.repo + ' status --porcelain',
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        res = proc.stdout.read()
+        if res:
+            git.synced = 'Local commits ahead'
+
+    return_dict[git.repo] = git.synced
 
 def _mproc_multiple_commands(git, return_dict, commands):
     out = []
@@ -81,12 +89,12 @@ if __name__ == '__main__':
     repo = Repository()
     base = repo.get_base()
     repo_names = repo.get_repo_names()
-    #repo_names = ['mlff-eobu-trip-postgredb']
+    #repo_names = ['mlff-core-customer-postgredb', 'mlff-payment-invoice-postgredb']
     gitlist = [Git(base, name) for name in repo_names]
     #create_branch(gitlist[0], Ticket('MLFFDEV-4498'))
-    #synchronize_branch_in_multiple_repos(gitlist, branch='master')
+    synchronize_branch_in_multiple_repos(gitlist, branch='master')
     ret_dict = is_branch_synchronized_in_multiple_repos(gitlist, branch='master', filtered='y')
     print('Differencia:')
-    print_sql_result(ret_dict)
+    print_sql_result(ret_dict, 50)
 
 

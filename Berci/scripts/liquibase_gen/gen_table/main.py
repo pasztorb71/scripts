@@ -150,11 +150,20 @@ call ${schema_name}.HIST_TABLE_GENERATOR('${schema_name}', '!table!');
 -- GRANT$HIST ==
 GRANT SELECT ON TABLE !table!$hist TO ${schema_name}_sel;
 
+COMMIT;
+
 
 --===============================================================================================--
 -- TRIGGER ==
 ---------------------------------------------------------------------------------------------------
-call ${schema_name}.HIST_TRIGGER_GENERATOR('${schema_name}', '!table!');
+--changeset bertalan.pasztor:TR_!TABLE!$HIST-DDL-!!ticket!!-01 runOnChange:true
+--comment A tr_!table!$hist trigger létrehozása..
+---------------------------------------------------------------------------------------------------
+SET search_path = ${schema_name};
+
+call ${schema_name}.HIST_TRIGGER_GENERATOR('${schema_name}', 'notification_email');
+
+COMMIT;
 
 """.replace('!table!', table).replace('!TABLE!', table.upper()).replace('!!version!!', version).replace('!!ticket!!',ticket_name))
 
