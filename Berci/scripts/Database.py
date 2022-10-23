@@ -23,9 +23,17 @@ class Database:
         conn = self.conn
         conn.autocommit = True
         cur = conn.cursor()
-        cur.execute(cmd)
-        cur.close()
-        conn.close()
+        status = False
+        while not status:
+            try:
+                cur.execute(cmd)
+                status = True
+                cur.close()
+                conn.close()
+            except psycopg2.errors.ObjectInUse as e:
+                print(e)
+                if input("Újra? [y/n]") != "y":
+                    return
 
     def sql_query(self, cmd):
         conn = self.conn
@@ -42,8 +50,12 @@ class Database:
         cur.execute(f"SELECT rolname FROM pg_roles r WHERE r.rolname LIKE '{schema}_%'")
         records = cur.fetchall()
         for x in records:
-            cur.execute(f"drop role if exists {x[0]}")
-            print(f'{x[0]} role dropped.')
+            try:
+                cur.execute(f"drop role if exists {x[0]}")
+                print(f'{x[0]} role dropped.')
+                conn.commit();
+            except psycopg2.errors.DependentObjectsStillExist:
+                conn.rollback();
         conn.commit()
         cur.close()
         conn.close()

@@ -92,7 +92,7 @@ if __name__ == '__main__':
     #repo_names = ['mlff-core-customer-postgredb', 'mlff-payment-invoice-postgredb']
     gitlist = [Git(base, name) for name in repo_names]
     #create_branch(gitlist[0], Ticket('MLFFDEV-4498'))
-    synchronize_branch_in_multiple_repos(gitlist, branch='master')
+    #synchronize_branch_in_multiple_repos(gitlist, branch='master')
     ret_dict = is_branch_synchronized_in_multiple_repos(gitlist, branch='master', filtered='y')
     print('Differencia:')
     print_sql_result(ret_dict, 50)

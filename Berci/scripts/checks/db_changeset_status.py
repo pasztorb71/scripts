@@ -1,4 +1,6 @@
+import json
 import re
+from pprint import pprint
 
 import psycopg2
 from tabulate import tabulate
@@ -61,14 +63,62 @@ def get_all_databases():
     return cluster.databases[0:]
 
 
+def get_repos_containing_release(rname):
+    out = []
+    for repo in Repository().get_repo_names():
+        if utils.file_contains(f'{Repository(repo).get_tables_dir()}/schema-version-0.xml', rname):
+            out.append(repo)
+    return out
+
+
+def get_changeset_ids_from_repos_release(repos, release):
+    out = {}
+    for repo in repos:
+        dir = Repository(repo).get_tables_dir()
+        schema_file = f'{dir}/schema-version-0.xml'
+        with open(schema_file, 'r', encoding='utf8') as f:
+            files = [re.match('.*file="(.*)" relat.*', line).group(1) for line in f.readlines() if release in line]
+
+        d_files = {}
+        for file in files:
+            with open(f'{dir}/{file}', 'r', encoding='utf8') as f:
+                ids = [re.match('.*:(.*) run.*', line).group(1) for line in f.readlines() if line.startswith('--changeset')]
+                d_files[file] = ids
+        out[repo] = d_files
+    return out
+
+
+def print_changeset(changeset_ids: dict):
+    for repo, files in changeset_ids.items():
+        print(repo)
+        for file, ids in files.items():
+            print('  '+'\n  '.join(ids))
+
+
+def print_changeset1(changeset_ids):
+    for repo, files in changeset_ids.items():
+        print(repo)
+        l_ids = []
+        for file, ids in files.items():
+            l_ids += [re.match('.*(MLFFDEV-.*)-.*', id).group(1) for id in ids]
+        f = set(l_ids)
+        print('  '+'\n  '.join(f))
+        pass
+
 if __name__ == '__main__':
+    repos = get_repos_containing_release('R0.09')
+    changeset_ids = get_changeset_ids_from_repos_release(repos, 'R0.09')
+    print_changeset(changeset_ids)
+    #print_changeset1(changeset_ids)
+    #check_
+    exit(0)
     """
     version_files = {}
     result_d = {}
     result_l = []
     """
-    result_arr = [[None] * 3] * 10
     databases = get_all_databases()
+    result_arr = [[None] * 3] * 10
     ports = range(5433, 5435)
     header = []
     for port in ports:

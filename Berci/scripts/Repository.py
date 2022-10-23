@@ -150,9 +150,14 @@ class Repository():
         return tabname
 
     def clear_repo(self):
+        #if input("Main repo-t kézi eldobása megtörtént? [y/n]") != "y":
+        #    return
         self.drop_database()
         self.drop_roles()
-        self.delete_from_changelog()
+        self.drop_main_changelog()
+        if input("Mehet a telepítés? [y/n]") == "y":
+            return True
+
 
     def drop_database(self):
         clus = Database('postgres', 'localhost', '5432')
@@ -163,9 +168,10 @@ class Repository():
         clus = Database('postgres', 'localhost', '5432')
         clus.drop_roles(self.schema)
 
-    def delete_from_changelog(self):
+    def drop_main_changelog(self):
         clus = Database('postgres', 'localhost', '5432')
-        clus.delete_databasechangelog(self.schema)
+        clus.sql_exec(f'drop table if exists public.databasechangelog')
+        print(f'public.databasechangelog dropped.')
 
 
 

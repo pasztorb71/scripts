@@ -65,10 +65,15 @@ class Runner:
             return base_ips[loc]
 
     def run_for_repo(self, ip_address, repo):
+        print(f"Az alábbi repora lesz telepítve: {repo}")
+        if input("Mehet a telepítés? [y/n]") != "y":
+            print('Telepítés megszekítva!')
+            return
         if self.delete_db_before:
             if self.loc != 'local':
                 exit('Nem local esetén nem dobható el az adatbázis!!!')
-            Repository(repo).clear_repo()
+            if not Repository(repo).clear_repo():
+                return
         self._call_liquibase(repo, ip_address, self.password, 'postgres')
         for db in self.get_dbs(repo):
             self._call_liquibase(repo, ip_address, self.password, db)

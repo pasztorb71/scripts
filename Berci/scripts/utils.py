@@ -25,11 +25,11 @@ def copy_file(src, dst):
     if os.path.isfile(src):
         print('  '+src)
         shutil.copyfile(src, dst)
+    else:
+        print('  '+ src + '  nem létezik')
 
 
 def copy_file_and_replace(src, dst, from_to):
-    if exists(dst):
-        return
     copy_file(src, dst)
     replace_in_file(dst, from_to)
 
@@ -281,10 +281,16 @@ def get_files_from_path_ext_find_content(path, ext, cont):
     for root, dirs, files in os.walk(path):
         for file in files:
             if file.endswith(ext):
-                with open(os.path.join(root, file), 'r', encoding='utf-8') as f:
-                    if cont in f.read():
-                        out.append(os.path.join(root, file))
+                if file_contains(os.path.join(root, file), cont):
+                    out.append(os.path.join(root, file))
     return out
+
+
+def file_contains(file, cont,):
+    with open(file, 'r', encoding='utf-8') as f:
+        if cont in f.read():
+            return True
+    return False
 
 
 def get_repo_from_schema(schema):
@@ -304,7 +310,7 @@ def get_repo_from_schema(schema):
 
 def load_from_file(fname):
     project_root = os.path.dirname(os.path.dirname(__file__))
-    with open('/'.join([project_root,'liquibase',fname]), 'r') as f:
+    with open('/'.join([project_root,'scripts',fname]), 'r') as f:
         return [x for x in f.read().split('\n') if not x.startswith('#')]
 
 def get_last_nth_occurence_of_list_element(plist, pelem, nth):
