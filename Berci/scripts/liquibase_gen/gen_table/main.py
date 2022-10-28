@@ -112,6 +112,8 @@ GRANT SELECT ON TABLE !table! TO ${schema_name}_sel;
 GRANT INSERT, UPDATE ON TABLE !table! TO ${schema_name}_mod;
 GRANT DELETE, TRUNCATE ON TABLE !table! TO ${schema_name}_del;
 
+COMMIT;
+
 """.replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema).replace('!!version!!', version).replace('!!ticket!!',ticket_name))
 
 
@@ -161,7 +163,7 @@ COMMIT;
 ---------------------------------------------------------------------------------------------------
 SET search_path = ${schema_name};
 
-call ${schema_name}.HIST_TRIGGER_GENERATOR('${schema_name}', 'notification_email');
+call ${schema_name}.HIST_TRIGGER_GENERATOR('${schema_name}', '!table!');
 
 COMMIT;
 

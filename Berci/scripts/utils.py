@@ -8,6 +8,8 @@ from os.path import exists
 import psycopg2
 from tabulate import tabulate
 
+from Cluster import Cluster
+
 
 def move_upper_dir(path):
     return path.rsplit('/',1)[0] if path[-1] != '/' else path.rsplit('/',2)[0]
@@ -118,6 +120,7 @@ def print_sql_result(d, maxlength):
                     print(f"records: {records}")
                     for value in records:
                         print('  ' + value)
+    print(f'Összesen: {len(d)} db repo')
 
 def get_port(env):
     if env == 'sandbox':
@@ -365,3 +368,9 @@ def get_conn(env, db, user):
 
 def format_sql(pre):
     return pre.replace(' WHERE ', '\n   WHERE ').replace(' AND ', '\n     AND ')
+
+
+def get_all_databases(env):
+    host, port = 'localhost', get_port(env)
+    cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
+    return cluster.databases

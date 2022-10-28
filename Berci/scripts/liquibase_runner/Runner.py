@@ -66,6 +66,7 @@ class Runner:
 
     def run_for_repo(self, ip_address, repo):
         print(f"Az alábbi repora lesz telepítve: {repo}")
+        print(Repository(repo).get_schema_version_content())
         if input("Mehet a telepítés? [y/n]") != "y":
             print('Telepítés megszekítva!')
             return
@@ -97,6 +98,8 @@ class Runner:
 
     @classmethod
     def confirm(cls, loc):
+        if len(Runner.repos) == 1:
+            return True
         print(f"Az alábbi repokra lesz telepítve, host: {loc}")
         for r in Runner.repos:
             print(f" - {r.get_name()}")

@@ -22,38 +22,6 @@ class Repository():
     def __str__(self):
         return f'Repository({self.name})'
 
-    def show(self):
-        print("""  A.  mlff-core-customer-postgredb                         JAKARTA   telepítése
-  B.  mlff-core-notification-dispatcher-postgredb          KOMODO    telepítése
-  C.  mlff-core-notification-email-postgredb               KOMODO    telepítése
-  D.  mlff-core-notification-pn-postgredb                  KOMODO    telepítése
-  E.  mlff-core-notification-wa-postgredb                  KOMODO    telepítése
-  F.  mlff-core-template-postgredb                         KOMODO    telepítése
-  G.  mlff-core-ticket-postgredb                           KOMODO    telepítése
-  H.  mlff-core-vehicle-postgredb                          KOMODO    telepítése
-
-  I.  mlff-enforcement-detection-image-postgredb           N2O       telepítése
-  J.  mlff-enforcement-detection-postgredb                 N2O       telepítése
-  K.  mlff-enforcement-visual-check-postgredb              N2O       telepítése
-  K.  mlff-enforcement-detection-observation-postgredb     N2O       telepítése
-
-  L.  mlff-enforcement-exemption-postgredb                 JAKARTA   telepítése
-  M.  mlff-eobu-tariff-postgredb                           JAKARTA   telepítése
-  N.  mlff-eobu-trip-postgredb                             JAKARTA   telepítése
-  O.  mlff-data-ingestion-meta-postgredb                   DWH       telepítése
-  P.  mlff-payment-account-info-postgredb                  LIBRA     telepítése
-  Q.  mlff-payment-psp-proxy-postgredb                     LIBRA     telepítése
-  R.  mlff-payment-retry-postgredb                         LIBRA     telepítése
-  S.  mlff-payment-transaction-postgredb                   LIBRA     telepítése
-  T.  mlff-settlement-tro-clearing-postgredb               LIBRA     telepítése
-  T.  mlff-settlement-tro-clearing-postgredb               LIBRA     telepítése
-  U.  mlff-payment-invoice-postgredb                       LIBRA     telepítése
-
-  V.  mlff-enforcement-eligibility-declaration-postgredb   K-Team    telepítése
-  W.  mlff-enforcement-eligibility-detection-postgredb     K-Team    telepítése
-
-  Y.  doc-postgredb                  modul telepítése      iCell belsős""")
-
     def get_name(self):
         return self.name
 
@@ -105,6 +73,10 @@ class Repository():
 
     def get_tables_dir(self):
         return '/'.join([self.base_path[:-1], self.db_path, self.schema, 'tables'])
+
+    def get_schema_version_content(self):
+        with open(f'{self.get_tables_dir()}/schema-version-0.xml', 'r', encoding='utf8') as f:
+            return ''.join([line for line in f.readlines() if 'labels=' in line])
 
     @staticmethod
     def get_sema_from_dbname(db):

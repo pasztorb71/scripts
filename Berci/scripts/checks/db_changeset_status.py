@@ -88,12 +88,17 @@ def get_changeset_ids_from_repos_release(repos, release):
     return out
 
 
-def print_changeset(changeset_ids: dict):
-    for repo, files in changeset_ids.items():
-        print(repo)
-        for file, ids in files.items():
-            print('  '+'\n  '.join(ids))
-
+def print_changeset(changeset_ids: dict, format='txt'):
+    if format == 'csv':
+        for repo, files in changeset_ids.items():
+            for file, ids in files.items():
+                for id in ids:
+                    print(f'{repo};{id}')
+    else:
+        for repo, files in changeset_ids.items():
+            print(repo)
+            for file, ids in files.items():
+                print('  '+'\n  '.join(ids))
 
 def print_changeset1(changeset_ids):
     for repo, files in changeset_ids.items():
@@ -108,7 +113,7 @@ def print_changeset1(changeset_ids):
 if __name__ == '__main__':
     repos = get_repos_containing_release('R0.09')
     changeset_ids = get_changeset_ids_from_repos_release(repos, 'R0.09')
-    print_changeset(changeset_ids)
+    print_changeset(changeset_ids, format='csv')
     #print_changeset1(changeset_ids)
     #check_
     exit(0)

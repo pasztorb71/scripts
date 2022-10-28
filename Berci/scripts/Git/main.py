@@ -95,6 +95,6 @@ if __name__ == '__main__':
     #synchronize_branch_in_multiple_repos(gitlist, branch='master')
     ret_dict = is_branch_synchronized_in_multiple_repos(gitlist, branch='master', filtered='y')
     print('Differencia:')
-    print_sql_result(ret_dict, 50)
+    print_sql_result(ret_dict, 52)
 
 

@@ -30,13 +30,13 @@ if __name__ == '__main__':
     header = []
     result_d = {}
     result_l = []
-    for port in range(5433, 5434):
+    for port in range(5432, 5433):
         host = 'localhost'
         header.append(get_env(port))
         cluster = Cluster(host=host, port=port, passw=utils.password_from_file('postgres', host, port))
         databases = cluster.databases[0:]
         #databases = ['payment_psp_clearing']
-        return_dict = parallel_run(host, port, databases, dwh_check)
+        return_dict = parallel_run(host, list(range(5432, 5433)), databases, dwh_check)
         for key, data in return_dict.items():
             if key not in result_d:
                 result_d[key] = [data]
@@ -47,4 +47,4 @@ if __name__ == '__main__':
         result_l.append([i[0]])
         idx = len(result_l) - 1
         result_l[idx] += i[1]
-    utils.print_sql_result(return_dict)
+    utils.print_sql_result(return_dict, 50)

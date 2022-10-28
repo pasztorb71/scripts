@@ -35,6 +35,20 @@ class Database:
                 if input("Újra? [y/n]") != "y":
                     return
 
+    def sql_executemany(self, insert_query, records):
+        conn = self.conn
+        cur = conn.cursor()
+        status = False
+        while not status:
+            try:
+                cur.executemany(insert_query, records)
+                conn.commit()
+                status = True
+            except psycopg2.errors.ObjectInUse as e:
+                print(e)
+                if input("Újra? [y/n]") != "y":
+                    return
+
     def sql_query(self, cmd):
         conn = self.conn
         cur = conn.cursor()

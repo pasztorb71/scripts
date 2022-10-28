@@ -289,6 +289,6 @@ if __name__ == '__main__':
     databases = cluster.databases[0:]
     #databases = ['payment_transaction']
     ports = list(range(5433,5436))
-    return_dict = parallel_run(host, ports, databases, mproc_grant_dwh_read_databasechangelog)
+    return_dict = parallel_run(host, ports, databases, mproc_grant_dwh_read)
     print_sql_result(return_dict, len(max(databases, key=len)) + 5)
 

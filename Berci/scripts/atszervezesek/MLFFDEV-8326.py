@@ -4,7 +4,7 @@ import utils
 
 
 def sema_atszervezes(repos):
-    for repo in repos[1:]:
+    for repo in repos[0:]:
         db = utils.get_db_name(repo)
         db_path = db.replace('-', '_')
         to_replace = [['core-customer', db], ['core_customer', db_path]]
@@ -22,4 +22,5 @@ if __name__ == '__main__':
     fromdb = utils.get_dbname_from_project(src)
     fromdb1 = utils.get_db_name(src)
     repos = [x for x in os.listdir(base) if 'core-customer' not in x]
+    repos = ['mlff-data-ingestion-meta-postgredb']
     sema_atszervezes(repos)
