@@ -374,3 +374,7 @@ def get_all_databases(env):
     host, port = 'localhost', get_port(env)
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     return cluster.databases
+
+def whoami(  ):
+    import sys
+    return f'--- {sys._getframe(1).f_code.co_name} ---'

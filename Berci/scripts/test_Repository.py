@@ -20,14 +20,14 @@ class TestRepository(TestCase):
         self.assertEqual('payment_psp_proxy', r.get_db_name())
 
     def test_is_table_file_exists_true(self):
-        repo = Repository('trip')
+        repo = Repository('trip-postg')
         self.assertTrue(repo.is_table_file_exists('trip'))
 
     def test_is_table_file_exists_false(self):
-        repo = Repository('trip')
+        repo = Repository('trip-postgr')
         self.assertFalse(repo.is_table_file_exists('triptmp'))
 
     def test_get_tablename_from_indexname(self):
         repo = Repository('customer')
-        value = repo.get_tablename_from_indexname('customer.ix_cust_cocallcode_linum')
+        value = repo.get_tablename_from_indexname('customer.ix_cust_custname')
         self.assertEqual('customer', value)

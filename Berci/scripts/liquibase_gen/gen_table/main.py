@@ -78,7 +78,7 @@ def table_columns(tab_name, table, tab_short_name):
             constraints.append('CONSTRAINT fk_'+tab_short_name+'_'+col[0].lower()+' FOREIGN KEY ('+col[0].lower()+') REFERENCES '+col[0].lower().split('_id')[0]+'(x__id) DEFERRABLE')
         if 'enum' in col[1].lower():
             constraints.append('CONSTRAINT ck_'+tab_short_name+'_'+col[0].lower()+f" CHECK ((({col[0].lower()})::text = ANY (ARRAY[('{col[1].split('enum')[1]}'::character varying)::text]))),")
-        if 'check(' in col[1].lower():
+        if any([x  in col[1].lower() for x in ('check(','check (')]):
             constraints.append('CONSTRAINT ck_' + tab_short_name + '_' + col[0].lower() + f" CHECK ((({col[0].lower()})::text = ANY (ARRAY[(''::character varying)::text]))),")
     print('\t' + 'CONSTRAINT pk_' + tab_name + ' PRIMARY KEY (x__id)', end='')
     if constraints:

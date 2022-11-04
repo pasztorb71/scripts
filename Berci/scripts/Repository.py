@@ -18,6 +18,7 @@ class Repository():
             self.dbname = self.get_db_name()
             self.db_path = self.dbname.replace('-', '_')
             self.schema = self.get_schema() if not schema else schema
+            self.instance = self._get_instance()
 
     def __str__(self):
         return f'Repository({self.name})'
@@ -144,6 +145,10 @@ class Repository():
         clus = Database('postgres', 'localhost', '5432')
         clus.sql_exec(f'drop table if exists public.databasechangelog')
         print(f'public.databasechangelog dropped.')
+
+    def _get_instance(self):
+        if self.dbname.startswith('core_'):
+            return 'pg-core-mqid'
 
 
 

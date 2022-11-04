@@ -281,6 +281,17 @@ def parallel_run(host, ports, databases, func):
     wait_until_end(jobs)
     return return_dict
 
+def parallel_run_all_databases(host, ports, func):
+    global jobs
+    return_dict = get_return_dict()
+    jobs = []
+    for port in ports:
+        env = utils.get_env(port)
+        for db in utils.get_all_databases(env)[0:]:
+            start_process(func, host, port, db, return_dict)
+    wait_until_end(jobs)
+    return return_dict
+
 
 if __name__ == '__main__':
     host, port = 'localhost', 5433

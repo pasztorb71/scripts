@@ -18,9 +18,15 @@ class TestRunner(TestCase):
     def test_kill(self):
         pass
 
-    def test_get_ip_addresses_for_docker(self):
+    def test_get_ip_addresses_for_docker1(self):
         self.assertListEqual(['gateway.docker.internal'], self.runner.get_ip_addresses_for_docker('local'))
 
-    def test_get_ip_addresses_for_docker1(self):
+    def test_get_ip_addresses_for_docker2(self):
         self.assertListEqual(['gateway.docker.internal:5433', 'gateway.docker.internal:5434'], self.runner.get_ip_addresses_for_docker('remote'))
+
+    def test_get_ip_addresses_for_docker_new_instances1(self):
+        self.assertListEqual(['gateway.docker.internal:5440'], self.runner.get_ip_addresses_for_docker('new_sandbox', 'pg-doc-mqid'))
+
+    def test_get_ip_addresses_for_docker_new_instances2(self):
+        self.assertListEqual(['gateway.docker.internal:5441'], self.runner.get_ip_addresses_for_docker('new_sandbox', 'pg-core-mqid'))
 

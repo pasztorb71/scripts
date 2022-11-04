@@ -1,9 +1,10 @@
 import glob
 import os
+import re
 
 import utils
 from Repository import Repository
-from docker_ips import ipdict, base_ips
+from docker_ips import ipdict, base_ips, new_base, offset
 from utils import get_dbname_from_project
 
 
@@ -58,11 +59,19 @@ class Runner:
             dblist = [file.replace('liquibase-install-','').replace('.xml','') for file in files]
             return dblist
 
-    def get_ip_addresses_for_docker(self, loc):
-        if loc in ['remote', 'all']:
-            return ipdict[loc]
+    def get_ip_addresses_for_docker(self, loc, inst=''):
+        if loc.startswith('new_'):
+            if self.repos[0].name == 'doc-postgredb':
+                inst = 'pg-doc-mqid'
+            else:
+                id = self.repos[0].name.split('-')[1]
+                inst = 'pg-' + id + '-mqid'
+            return ['gateway.docker.internal:' + str(new_base[loc] + offset[inst])]
         else:
-            return base_ips[loc]
+            if loc in ['remote', 'all']:
+                return ipdict[loc]
+            else:
+                return base_ips[loc]
 
     def run_for_repo(self, ip_address, repo):
         print(f"Az alábbi repora lesz telepítve: {repo}")

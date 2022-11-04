@@ -57,12 +57,6 @@ def get_version_filenames(databases, version):
         out[db] = fnames
     return out
 
-
-def get_all_databases():
-    cluster = Cluster(host='localhost', port=5433, passw=password_from_file('postgres', 'localhost', 5433))
-    return cluster.databases[0:]
-
-
 def get_repos_containing_release(rname):
     out = []
     for repo in Repository().get_repo_names():
@@ -122,7 +116,7 @@ if __name__ == '__main__':
     result_d = {}
     result_l = []
     """
-    databases = get_all_databases()
+    databases = utils.get_all_databases('sandbox')
     result_arr = [[None] * 3] * 10
     ports = range(5433, 5435)
     header = []
