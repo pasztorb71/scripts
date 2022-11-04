@@ -1,11 +1,8 @@
 import glob
 import os
-import re
 
-import utils
 from Repository import Repository
-from docker_ips import ipdict, base_ips, new_base, offset
-from utils import get_dbname_from_project
+from utils import get_dbname_from_project, get_ip_addresses_for_docker
 
 
 class Runner:
@@ -59,21 +56,8 @@ class Runner:
             dblist = [file.replace('liquibase-install-','').replace('.xml','') for file in files]
             return dblist
 
-    def get_ip_addresses_for_docker(self, loc, inst=''):
-        if loc.startswith('new_'):
-            if self.repos[0].name == 'doc-postgredb':
-                inst = 'pg-doc-mqid'
-            else:
-                id = self.repos[0].name.split('-')[1]
-                inst = 'pg-' + id + '-mqid'
-            return ['gateway.docker.internal:' + str(new_base[loc] + offset[inst])]
-        else:
-            if loc in ['remote', 'all']:
-                return ipdict[loc]
-            else:
-                return base_ips[loc]
-
     def run_for_repo(self, ip_address, repo):
+        print(f"Környezet IP: {ip_address}")
         print(f"Az alábbi repora lesz telepítve: {repo}")
         print(Repository(repo).get_schema_version_content())
         if input("Mehet a telepítés? [y/n]") != "y":
@@ -94,10 +78,8 @@ class Runner:
         self.loc = loc
         self.checkonly = checkonly
         self.password = 'fLXyFS0RpmIX9uxGII4N' if loc != 'local' else 'mysecretpassword'
-        for ip_address in self.get_ip_addresses_for_docker(loc):
-            print(ip_address)
-            for repo in [repo.get_name() for repo in self.repos]:
-                self.run_for_repo(ip_address, repo)
+        for repo in [repo.get_name() for repo in self.repos]:
+            self.run_for_repo(get_ip_addresses_for_docker(repo, loc), repo)
 
     def kill(self, param):
         pass

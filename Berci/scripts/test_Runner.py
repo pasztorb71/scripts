@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from Repository import Repository
 from liquibase_runner.Runner import Runner
+from utils import get_ip_addresses_for_docker
 
 
 class TestRunner(TestCase):
@@ -19,14 +20,9 @@ class TestRunner(TestCase):
         pass
 
     def test_get_ip_addresses_for_docker1(self):
-        self.assertListEqual(['gateway.docker.internal'], self.runner.get_ip_addresses_for_docker('local'))
-
-    def test_get_ip_addresses_for_docker2(self):
-        self.assertListEqual(['gateway.docker.internal:5433', 'gateway.docker.internal:5434'], self.runner.get_ip_addresses_for_docker('remote'))
+        self.assertEqual('gateway.docker.internal:5434', get_ip_addresses_for_docker('mlff-core-customer-postgredb', 'dev'))
 
     def test_get_ip_addresses_for_docker_new_instances1(self):
-        self.assertListEqual(['gateway.docker.internal:5440'], self.runner.get_ip_addresses_for_docker('new_sandbox', 'pg-doc-mqid'))
+        self.assertEqual('gateway.docker.internal:5641', get_ip_addresses_for_docker('mlff-core-customer-postgredb','new_fit'))
 
-    def test_get_ip_addresses_for_docker_new_instances2(self):
-        self.assertListEqual(['gateway.docker.internal:5441'], self.runner.get_ip_addresses_for_docker('new_sandbox', 'pg-core-mqid'))
 

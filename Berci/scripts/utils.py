@@ -9,6 +9,7 @@ import psycopg2
 from tabulate import tabulate
 
 from Cluster import Cluster
+from docker_ips import new_base, offset, base_ips
 
 
 def move_upper_dir(path):
@@ -378,3 +379,15 @@ def get_all_databases(env):
 def whoami(  ):
     import sys
     return f'--- {sys._getframe(1).f_code.co_name} ---'
+
+
+def get_ip_addresses_for_docker(repo, loc):
+    if loc.startswith('new_'):
+        if repo == 'doc-postgredb':
+            inst = 'pg-doc-mqid'
+        else:
+            id = repo.split('-')[1]
+            inst = 'pg-' + id + '-mqid'
+        return 'gateway.docker.internal:' + str(new_base[loc] + offset[inst])
+    else:
+        return base_ips[loc]
