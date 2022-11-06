@@ -2,6 +2,7 @@ import os
 from unittest import TestCase
 
 import utils
+from Repository import Repository
 from utils import get_login_from_file
 
 
@@ -16,7 +17,7 @@ class Test(TestCase):
         self.assertFalse(utils.has_history_table('core_customer', 'customer', 'user_session'))
 
     def test_get_tablename(self):
-        tabname = utils.get_tablename_from_command(
+        tabname = utils.get_tablename_from_command('',
             'ALTER TABLE account_info.payment_method ALTER COLUMN x__version TYPE int8 USING x__version::int8;')
         expected = 'payment_method'
         self.assertEqual(expected, tabname)
@@ -119,8 +120,14 @@ class Test(TestCase):
 
     def test_get_tablename_from_command1(self):
         command = "CREATE INDEX ix_trip_cust_id ON trip.trip USING btree (customer_id);"
-        self.assertEqual('trip', utils.get_tablename_from_command(command))
+        self.assertEqual('trip', utils.get_tablename_from_command('',command))
 
     def test_get_indexname_from_command(self):
         index = utils.get_indexname_from_command("ALTER INDEX tariff.ix_segsec_glied_id RENAME TO ix_section_glied_id;")
         self.assertEqual('ix_segsec_glied_id', index)
+
+    def test_get_port1(self):
+        self.assertEqual(5433, utils.get_port('sandbox'))
+
+    def test_get_port2(self):
+        self.assertEqual(5544, utils.get_port('new_dev', Repository('account-info').name))

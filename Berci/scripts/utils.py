@@ -123,7 +123,7 @@ def print_sql_result(d, maxlength):
                         print('  ' + value)
     print(f'Összesen: {len(d)} db repo')
 
-def get_port(env):
+def get_port(env, repo_full_name=''):
     if env == 'sandbox':
         return 5433
     elif env == 'dev':
@@ -138,6 +138,10 @@ def get_port(env):
         return 5438
     elif env == 'local':
         return 5432
+    elif env.startswith('new_'):
+        inst = get_instance_from_repo_full_name(repo_full_name)
+        return new_base[env] + offset[inst]
+
 
 def get_env(port):
     if port == 5433:
@@ -155,7 +159,6 @@ def get_env(port):
     elif port == 5432:
         return 'local'
 
-
 def get_password(env, user):
     if user != 'postgres':
         return 'mlffTitkosPassword123!'
@@ -165,7 +168,9 @@ def get_password(env, user):
 def password_from_file(puser, phost, pport):
     pass_out = ''
     with open(getfile(password_from_file).rsplit('\\',1)[0] + '/db_passw.txt', 'r') as f:
-        for line in f.read().split('\n')[1:]:
+        for line in f.read().split('\n'):
+            if line.startswith('#'):
+                continue
             user, host, port, passw = line.split()
             if '_service' in puser and '_service' in user:
                 pass_out = passw
@@ -380,14 +385,43 @@ def whoami(  ):
     import sys
     return f'--- {sys._getframe(1).f_code.co_name} ---'
 
+def get_instance_from_repo_full_name(repo):
+    if repo == 'doc-postgredb':
+        return 'pg-doc-mqid'
+    else:
+        id = repo.split('-')[1]
+        return 'pg-' + id + '-mqid'
 
 def get_ip_addresses_for_docker(repo, loc):
     if loc.startswith('new_'):
-        if repo == 'doc-postgredb':
-            inst = 'pg-doc-mqid'
-        else:
-            id = repo.split('-')[1]
-            inst = 'pg-' + id + '-mqid'
+        inst = get_instance_from_repo_full_name(repo)
         return 'gateway.docker.internal:' + str(new_base[loc] + offset[inst])
     else:
         return base_ips[loc]
+
+
+def print_table_level_check(return_dict, filtered=False):
+    for db, data in return_dict.items():
+        hasproblem = False
+        tables_has_problem = []
+        if not isinstance(data, list):
+            print(f'{db}: {data}')
+            continue
+        for tabledict in data:
+            if list(tabledict.values())[0] == 'NOT OK':
+                tables_has_problem.append(list(tabledict.keys())[0])
+                hasproblem = True
+        if filtered:
+            if hasproblem:
+                print(db)
+                maxlength = len(max(tables_has_problem, key=len)) + 2
+                for table in tables_has_problem:
+                    print(f'  {table.ljust(maxlength + 2)}')
+        else:
+            if not data:
+                return
+            print(db)
+            maxlength = len(max([list(x.keys())[0] for x in data], key=len)) + 5
+            for tabledict in data:
+                key = list(tabledict.keys())[0]
+                print(f'  {key.ljust(maxlength + 2)}{tabledict[key]}')

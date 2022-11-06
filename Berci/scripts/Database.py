@@ -9,20 +9,29 @@ class Database:
         self.host = host
         self.port = port
         self.user = 'postgres'
+        self.__conn = None
+
+    def __repr__(self):
+        return f'{self.name}__{self.port}'
 
     @property
     def conn(self):
-        return psycopg2.connect(
-            host=self.host,
-            port=self.port,
-            database=self.name,
-            user=self.user,
-            password=utils.password_from_file(self.user, self.host, self.port))
+        if not self.__conn:
+            self.__conn = psycopg2.connect(
+                host=self.host,
+                port=self.port,
+                database=self.name,
+                user=self.user,
+                password=utils.password_from_file(self.user, self.host, self.port))
+        return self.__conn
 
-    def sql_exec(self, cmd):
-        conn = self.conn
-        conn.autocommit = True
-        cur = conn.cursor()
+    def sql_exec(self, *args):
+        if isinstance(*args, str):
+            cmd = [*args]
+        elif isinstance(*args, list):
+            cmd = *args
+        self.conn.autocommit = True
+        cur = self.conn.cursor()
         status = False
         while not status:
             try:
@@ -88,4 +97,18 @@ class Database:
         conn.commit()
         cur.close()
         conn.close()
+
+    def truncate_all_tables(self):
+        cur = self.conn.cursor()
+        cur.execute("SELECT schemaname , tablename FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('public', 'pg_catalog', 'information_schema')")
+        records = cur.fetchall()
+        if not records:
+            return
+        print('A következő táblák lesznek törölve:')
+        for rec in records:
+            print(rec[1])
+        if input("Mehet a törlés[y/n]") == "y":
+            self.sql_exec()
+        pass
+
 
