@@ -44,9 +44,9 @@ def move_dir(src, dst):
         shutil.move(src, dst)
 
 
-def copy_dir(src, dst):
+def copy_dir(src, dst, delete_dir_if_exists=False):
     print('dir : '+src, dst)
-    if os.path.isdir(dst):
+    if delete_dir_if_exists == False and os.path.isdir(dst):
         raise Exception('Directory már létezik: ' + dst)
     if os.path.isdir(src):
         print('  '+dst)
@@ -107,18 +107,18 @@ def has_header(l):
     return isinstance([0], list)
 
 
-def print_sql_result(d, maxlength):
+def print_sql_result(d, maxlength, header=False):
     for db, records in sorted(d.items()):
-        print(f"{db}:".ljust(maxlength), end='')
+        print(f"{db}:".ljust(maxlength))
         if records:
             if isinstance(records, str):
                 print(f"  {records}")
             else:
-                if has_header(records):
+                if header and has_header(records):
                     print(tabulate(records[1:], headers=records[0], tablefmt="pipe"))
                     print()
                 else:
-                    print(f"records: {records}")
+                    #print(f"records: {records}")
                     for value in records:
                         print('  ' + value)
     print(f'Összesen: {len(d)} db repo')
@@ -401,27 +401,40 @@ def get_ip_addresses_for_docker(repo, loc):
 
 
 def print_table_level_check(return_dict, filtered=False):
-    for db, data in return_dict.items():
-        hasproblem = False
-        tables_has_problem = []
-        if not isinstance(data, list):
-            print(f'{db}: {data}')
+    for db, data in sorted(return_dict.items()):
+        if not data:
             continue
-        for tabledict in data:
-            if list(tabledict.values())[0] == 'NOT OK':
-                tables_has_problem.append(list(tabledict.keys())[0])
-                hasproblem = True
-        if filtered:
-            if hasproblem:
-                print(db)
-                maxlength = len(max(tables_has_problem, key=len)) + 2
-                for table in tables_has_problem:
-                    print(f'  {table.ljust(maxlength + 2)}')
-        else:
-            if not data:
-                return
+        if not filtered:
             print(db)
             maxlength = len(max([list(x.keys())[0] for x in data], key=len)) + 5
             for tabledict in data:
                 key = list(tabledict.keys())[0]
                 print(f'  {key.ljust(maxlength + 2)}{tabledict[key]}')
+            continue
+        tables_not_ok = [list(x.keys())[0] for x in data if list(x.values())[0] == 'NOT OK']
+        if tables_not_ok:
+            print(db)
+            maxlength = len(max(tables_not_ok, key=len)) + 2
+            for table in tables_not_ok:
+                print(f'  {table.ljust(maxlength + 2)}NOT OK')
+
+
+def get_conn_service_user(env, db):
+    port = get_port(env)
+    try:
+        return psycopg2.connect(
+            host='localhost',
+            port=port,
+            database=db,
+            user=get_sema_from_dbname(db) + '_service',
+            password='mlffTitkosPassword123!')
+    except:
+        return None
+
+
+def get_sema_from_dbname(db):
+    if db == 'document':
+        return 'document_meta'
+    if db == 'payment_transaction':
+        return 'payment_transaction'
+    return db.split('_', 1)[1]

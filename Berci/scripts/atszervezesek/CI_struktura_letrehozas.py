@@ -19,7 +19,7 @@ def create_file(fname):
 
 if __name__ == '__main__':
   # prepare
-    repo = 'mlff-enforcement-detection-observation-postgredb'
+    repo = 'mlff-eobu-trip-track-postgredb'
     base = 'c:/GIT/MLFF/'+repo
     db = get_db_name(base)
     db_path = db.replace('-', '_')
@@ -27,11 +27,12 @@ if __name__ == '__main__':
   #work
     #git_init(base)
     #exit(0)
-    copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\.gitlab\\', base+'/.gitlab')
-    copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\docs\\', base+'/docs')
+    #TODO loggert bevezetni, a dir és fájl másolásokat csak DEBUG szinten mutassa
+    copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\.gitlab\\', base+'/.gitlab', delete_dir_if_exists=True)
+    copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\docs\\', base+'/docs', delete_dir_if_exists=True)
     replace_in_file(base+'/docs/development.adoc', to_replace)
     replace_in_file(base+'/docs/release-flow.adoc', to_replace)
-    copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\etc\\', base+'/etc')
+    copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\etc\\', base+'/etc', delete_dir_if_exists=True)
     replace_in_file(base+'/etc/docker-compose/docker-compose.postgredb.yml', to_replace)
     replace_in_file(base+'/etc/docker-compose/docker-compose.liquibase.install.step-01.yml', to_replace)
     replace_in_file(base+'/etc/docker-compose/docker-compose.liquibase.install.step-02.yml', to_replace)
@@ -49,7 +50,6 @@ if __name__ == '__main__':
     copy_file(path+'.gitlab-ci.yml', base+'/.gitlab-ci.yml')
     copy_file(path+'.env', base+'/.env')
     replace_in_file(base+'/.env', to_replace)
-    copy_file(path+'.asciidoctorconfig.adoc', base+'/.asciidoctorconfig.adoc')
   #readme file
     #os.rename(base+'/README.md', base+'/OLD-README.md')
     copy_file(r'c:\GIT\MLFF\mlff-core-customer-postgredb\README.adoc', base+'/README.adoc')

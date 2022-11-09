@@ -51,7 +51,7 @@ cmdlist = {
         """INSERT INTO customer
         (x__id, customer_name, date_of_birth, phone_number, email, customer_status, x__insdate, x__insuser, x__moddate, 
         x__moduser, x__version, "language", nik_number)
-        VALUES('tesztid', 'PT d00ed8e22baa484da4eb0f0e473df0e8', '1973-04-02', '+6261389449', NULL, 'ACTIVE', 
+        VALUES('tesztid', 'PT d00ed8e22baa484da4eb0f0e473df0e8', '1973-04-02', '6261389449', NULL, 'ACTIVE', 
         '2022-05-12 16:03:19.572', '0', '2022-05-12 16:03:19.723', '0', 2, 'EN', NULL);
         """,
         "DELETE FROM customer WHERE x__id = 'tesztid'",

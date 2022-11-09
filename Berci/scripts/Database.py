@@ -26,23 +26,23 @@ class Database:
         return self.__conn
 
     def sql_exec(self, *args):
-        if isinstance(*args, str):
-            cmd = [*args]
-        elif isinstance(*args, list):
-            cmd = *args
+        if isinstance(args[0], str):
+            cmds = [args[0]]
+        elif isinstance(args[0], list):
+            cmds = args[0]
         self.conn.autocommit = True
         cur = self.conn.cursor()
         status = False
         while not status:
-            try:
-                cur.execute(cmd)
-                status = True
-                cur.close()
-                conn.close()
-            except psycopg2.errors.ObjectInUse as e:
-                print(e)
-                if input("Újra? [y/n]") != "y":
-                    return
+            for cmd in cmds:
+                try:
+                    cur.execute(cmd)
+                    status = True
+                    self.conn.commit()
+                except psycopg2.errors.ObjectInUse as e:
+                    print(e)
+                    if input("Újra? [y/n]") != "y":
+                        return
 
     def sql_executemany(self, insert_query, records):
         conn = self.conn
@@ -63,8 +63,8 @@ class Database:
         cur = conn.cursor()
         cur.execute(cmd)
         records = cur.fetchall()
+        conn.commit()
         cur.close()
-        conn.close()
         return records
 
     def drop_roles(self, schema):
@@ -99,16 +99,40 @@ class Database:
         conn.close()
 
     def truncate_all_tables(self):
-        cur = self.conn.cursor()
-        cur.execute("SELECT schemaname , tablename FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('public', 'pg_catalog', 'information_schema')")
-        records = cur.fetchall()
+        records = self.sql_query("SELECT schemaname , tablename FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('public', 'pg_catalog', 'information_schema')")
         if not records:
             return
         print('A következő táblák lesznek törölve:')
+        truncate_cmds = []
         for rec in records:
             print(rec[1])
+            truncate_cmds.append(f'truncate table {rec[0]}.{rec[1]} CASCADE')
         if input("Mehet a törlés[y/n]") == "y":
-            self.sql_exec()
-        pass
+            self.sql_exec(truncate_cmds)
+
+    @property
+    def triggers(self):
+        records = self.sql_query("SELECT DISTINCT trigger_schema, trigger_name, event_object_table FROM information_schema.triggers t  WHERE trigger_name LIKE 'tr_%$hist'")
+        return records
+
+    def remove_all_hist_triggers(self):
+        records = self.sql_query("SELECT DISTINCT trigger_schema, trigger_name, event_object_table FROM information_schema.triggers t  WHERE trigger_name LIKE 'tr_%$hist'")
+        if not records:
+            return
+        print('A következő triggerek lesznek törölve:')
+        truncate_cmds = []
+        for rec in records:
+            print(rec)
+            truncate_cmds.append(f'drop trigger {rec[1]} on {rec[0]}.{rec[2]}')
+        if input("Mehet a törlés[y/n]") == "y":
+            self.sql_exec(truncate_cmds)
+
+    def put_triggers(self, triggers):
+        cre_cmds = []
+        for trigger in triggers:
+            cmd = f"call {trigger[0]}.HIST_TRIGGER_GENERATOR('{trigger[0]}', '{trigger[2]}');"
+            print(cmd)
+            self.sql_exec(cmd)
+
 
 

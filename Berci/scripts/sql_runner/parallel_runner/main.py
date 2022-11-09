@@ -176,7 +176,7 @@ def mproc_count_records(host, port, db, return_dict):
     cur = conn.cursor()
     recout = []
     cur.execute("SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public') "
-                "and tablename not like '%$hist' order by 1,2")
+                " order by 1,2")
     record = cur.fetchall()
     for rec in record:
         cur.execute("select '" + rec[0] + '.' + rec[1] + "' table_name, count(*) from " + rec[0] + '.' + rec[1])
@@ -298,8 +298,8 @@ if __name__ == '__main__':
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     #databases = load_from_file('../databases.txt')
     databases = cluster.databases[0:]
-    #databases = ['payment_transaction']
-    ports = list(range(5433,5436))
-    return_dict = parallel_run(host, ports, databases, mproc_grant_dwh_read)
-    print_sql_result(return_dict, len(max(databases, key=len)) + 5)
+    databases = ['core_customer']
+    ports = list(range(5441,5442))
+    return_dict = parallel_run(host, ports, databases, mproc_count_records)
+    print_sql_result(return_dict, len(max(databases, key=len)) + 5, header=True)
 

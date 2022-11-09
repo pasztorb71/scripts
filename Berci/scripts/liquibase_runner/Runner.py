@@ -16,7 +16,7 @@ class Runner:
 
     def _call_liquibase(self, project, env, postgrespass, db):
         print(project + ' : ' + db)
-        cmd = '''docker run --rm -v #base##project#\liquibase\:/liquibase/changelog liquibase/liquibase:4.15 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=#changelog# update'''
+        cmd = '''docker run --rm -v #base##project#\liquibase\:/liquibase/changelog liquibase/liquibase:4.15 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=#changelog# #context# update'''
         if self.checkonly:
             cmd = cmd.replace('update', 'status --verbose')
         cmd = cmd\
@@ -26,7 +26,8 @@ class Runner:
             .replace('#password#', postgrespass)\
             .replace('#db#', db)\
             .replace('#projectdb#', get_dbname_from_project(project))\
-            .replace('#changelog#', self.get_changelog(db, project))
+            .replace('#changelog#', self.get_changelog(db, project))\
+            .replace('#context#', self.get_context())
         #ret_code = os_command(cmd)
         #print(cmd)
         #return
@@ -38,6 +39,9 @@ class Runner:
     def get_changelog(self, db, project):
         db_name = get_dbname_from_project(project)
         return  db_name+'\liquibase-install-db1-step-01.xml' if db == 'postgres' else db_name+'\liquibase-install-db1-step-02.xml'
+
+    def get_context(self):
+        return '--contexts=sand' if self.loc=='sandbox' else ''
 
     def get_dbs(self, repo):
             if repo == 'doc-postgredb':
@@ -61,7 +65,7 @@ class Runner:
         print(f"Az alábbi repora lesz telepítve: {repo}")
         print(Repository(repo).get_schema_version_content())
         if input("Mehet a telepítés? [y/n]") != "y":
-            print('Telepítés megszekítva!')
+            print('Telepítés megszakítva!')
             return
         if self.delete_db_before:
             if self.loc != 'local':

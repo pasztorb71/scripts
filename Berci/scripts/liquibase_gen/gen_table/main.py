@@ -135,6 +135,7 @@ SET search_path = ${schema_name};
 
 def table_history(tab_name, ticket_name, version):
     t = tab_name.split('.')
+    sema = t[0]
     table = tab_name
     print("""--===============================================================================================--
 -- HISTORY ==
@@ -167,7 +168,7 @@ call ${schema_name}.HIST_TRIGGER_GENERATOR('${schema_name}', '!table!');
 
 COMMIT;
 
-""".replace('!table!', table).replace('!TABLE!', table.upper()).replace('!!version!!', version).replace('!!ticket!!',ticket_name))
+""".replace('!table!', table).replace('!sema!', sema).replace('!TABLE!', table.upper()).replace('!!version!!', version).replace('!!ticket!!',ticket_name))
 
 
 def table_indexes(tab_name, table, tab_short_name):

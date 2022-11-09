@@ -3,8 +3,7 @@ import re
 from Cluster import Cluster
 from checks.cmdlist import cmdlist
 from sql_runner.parallel_runner.main import parallel_run
-from utils import password_from_file, print_sql_result
-from Repository import get_conn_service_user
+from utils import password_from_file, print_sql_result, get_conn_service_user
 
 
 def runteszt(host, port, db, return_dict):
@@ -14,8 +13,8 @@ def runteszt(host, port, db, return_dict):
         cmd_list = cmdlist[conn.info.dbname]
     except KeyError:
         print(f"{conn.info.dbname} : no commands")
-    except AttributeError:
-        print('AttributeError: ' + db)
+    #except AttributeError:
+    #    print('AttributeError: ' + db)
     if not cmd_list:
         return
     out = []
@@ -39,11 +38,11 @@ def cmddiff(env):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5433
+    host, port = 'localhost', 5432
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     #databases = load_from_file('../databases.txt')
-    databases = ['payment_invoice']
+    databases = ['core_customer']
     #databases = cluster.databases
-    return_dict = parallel_run(host, port, databases, runteszt)
-    print_sql_result(return_dict)
+    return_dict = parallel_run(host, [port], databases, runteszt)
+    print_sql_result(return_dict,50, header=False)
 

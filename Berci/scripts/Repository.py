@@ -1,11 +1,9 @@
 import os
 import re
 
-import psycopg2
-
 import utils
 from Database import Database
-from utils import get_port
+from utils import get_sema_from_dbname
 
 
 class Repository():
@@ -48,8 +46,8 @@ class Repository():
     def get_schema(self):
         line = ''
         pattern = '.*property name="schema_name.*value="(.*)"/>'
-        p = self.base_path+self.db_path+'/' + self.get_sema_from_dbname(self.db_path)
-        with open(self.get_base_path()+self.db_path+'/' + self.get_sema_from_dbname(self.db_path) + '/liquibase-install-schema.xml', 'r', encoding='utf-8') as f:
+        p = self.base_path + self.db_path +'/' + get_sema_from_dbname(self.db_path)
+        with open(self.get_base_path() + self.db_path +'/' + get_sema_from_dbname(self.db_path) + '/liquibase-install-schema.xml', 'r', encoding='utf-8') as f:
             text = f.read().splitlines()
             for l in text:
                 m = re.match(pattern, l)
@@ -78,14 +76,6 @@ class Repository():
     def get_schema_version_content(self):
         with open(f'{self.get_tables_dir()}/schema-version-0.xml', 'r', encoding='utf8') as f:
             return ''.join([line for line in f.readlines() if 'labels=' in line])
-
-    @staticmethod
-    def get_sema_from_dbname(db):
-        if db == 'document':
-            return 'document_meta'
-        if db == 'payment_transaction':
-            return 'payment_transaction'
-        return db.split('_', 1)[1]
 
     def is_table_file_exists(self, tablename):
         dirname = self.get_tables_dir()
@@ -152,14 +142,3 @@ class Repository():
 
 
 
-def get_conn_service_user(env, db):
-    port = get_port(env)
-    try:
-        return psycopg2.connect(
-            host='localhost',
-            port=port,
-            database=db,
-            user=Repository.get_sema_from_dbname(db) + '_service',
-            password='mlffTitkosPassword123!')
-    except:
-        return None

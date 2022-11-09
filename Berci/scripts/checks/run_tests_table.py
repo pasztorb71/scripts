@@ -2,7 +2,7 @@ import logging
 
 from Cluster import Cluster
 from Repository import Repository
-from utils import password_from_file, get_conn
+from utils import password_from_file, get_conn, get_sema_from_dbname
 
 
 def runteszt(env, db, user, cmd_list):
@@ -69,7 +69,7 @@ def get_cre_table(sema, table):
 def tabla_modositas_teszt(env, db):
     expected_result = 'ERR' if env in ['dev', 'fit'] else 'OK'
     print(db)
-    sema = Repository().get_sema_from_dbname(db)
+    sema = get_sema_from_dbname(db)
     table = '.ttt_proba'
     cre_table = get_cre_table(sema, table)
     runteszt(env=env, db=db, user='postgres', cmd_list=cre_table)
@@ -80,7 +80,7 @@ def tabla_modositas_teszt(env, db):
 
 def tabla_letrehozas_teszt(env, db):
     logger.info(db)
-    sema = Repository().get_sema_from_dbname(db)
+    sema = get_sema_from_dbname(db)
     table = '.ttt_proba_create'
     _cmd_list = [
                 ["create table " + sema + table + " (x numeric)",'ERR'],

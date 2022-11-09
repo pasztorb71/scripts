@@ -9,5 +9,9 @@ if __name__ == '__main__':
     for repo in repos:
         db = Database(repo.get_db_name(), 'localhost', utils.get_port('new_sandbox', repo.name))
         print(f'{db.name} adatbázis az {db.port} porton')
-
-            db.truncate_all_tables()
+        db.truncate_all_tables()
+        triggers = db.triggers
+        db.remove_all_hist_triggers()
+        if input("Kész a migráció?[y/n]") == "y":
+            pass
+        db.put_triggers(triggers)
