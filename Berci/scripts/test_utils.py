@@ -2,6 +2,8 @@ import os
 from unittest import TestCase
 
 import utils
+import utils_command
+import utils_file
 from Repository import Repository
 from utils import get_login_from_file
 
@@ -23,7 +25,7 @@ class Test(TestCase):
         self.assertEqual(expected, tabname)
 
     def test_get_colname(self):
-        colname = utils.get_columnname_from_command(
+        colname = utils_command.get_columnname_from_command(
             'ALTER TABLE account_info.payment_method ALTER COLUMN x__version TYPE int8 USING x__version::int8;')
         expected = 'x__version'
         self.assertEqual(expected, colname)
@@ -39,7 +41,7 @@ class Test(TestCase):
         self.assertEqual('mlffTitkosPassword123!', utils.password_from_file('dwh_read', 'localhost', '*'))
 
     def test_get_schema_from_command(self):
-        actual = utils.get_schema_from_command("ALTER SCHEMA notification_common RENAME TO notification_dispacther;")
+        actual = utils_command.get_schema_from_command("ALTER SCHEMA notification_common RENAME TO notification_dispacther;")
         self.assertEqual('notification_common', actual)
 
     def test_append_to_file_after_line_last_occurence_after_exists(self):
@@ -59,7 +61,7 @@ class Test(TestCase):
 
 </databaseChangeLog>
 """)
-        utils.append_to_file_after_line_last_occurence(fname, '    <include file=', '		testline')
+        utils_file.append_to_file_after_line_last_occurence(fname, '    <include file=', '		testline')
         expected = """<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
@@ -95,7 +97,7 @@ class Test(TestCase):
 
 </databaseChangeLog>
 """)
-        utils.append_to_file_after_line_last_occurence(fname, '    <include file=', '		testline')
+        utils_file.append_to_file_after_line_last_occurence(fname, '    <include file=', '		testline')
         expected = """<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
@@ -123,7 +125,7 @@ class Test(TestCase):
         self.assertEqual('trip', utils.get_tablename_from_command('',command))
 
     def test_get_indexname_from_command(self):
-        index = utils.get_indexname_from_command("ALTER INDEX tariff.ix_segsec_glied_id RENAME TO ix_section_glied_id;")
+        index = utils_command.get_indexname_from_command("ALTER INDEX tariff.ix_segsec_glied_id RENAME TO ix_section_glied_id;")
         self.assertEqual('ix_segsec_glied_id', index)
 
     def test_get_port1(self):

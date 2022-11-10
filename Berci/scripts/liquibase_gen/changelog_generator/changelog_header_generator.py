@@ -1,6 +1,7 @@
 import re
 
 import utils
+import utils_command
 from liquibase_gen.changelog_generator.command_templates import *
 
 
@@ -21,7 +22,7 @@ class Changelog_header_generator():
         table_name = utils.get_tablename_from_command(repo, command)
         if self.prev_table == '':
             self.prev_table = table_name
-        column_name = utils.get_columnname_from_command(command)
+        column_name = utils_command.get_columnname_from_command(command)
         if table_name == self.prev_table and column_name == self.prev_column and command.startswith('COMMENT ON COLUMN'):
             return '',''
 
@@ -32,12 +33,12 @@ class Changelog_header_generator():
                 .replace('!!version!!', self.version)\
                 .replace('!!ticket!!', self.jira)\
                 .replace('!!serial!!', self.get_next_serial(table_name.lower()))\
-                .replace('!!colname!!', utils.get_columnname_from_command(command)) \
-                .replace('!!schema!!', utils.get_schema_from_command(command))\
+                .replace('!!colname!!', utils_command.get_columnname_from_command(command)) \
+                .replace('!!schema!!', utils_command.get_schema_from_command(command))\
                 .replace('!!table_lower!!', table_name.lower()) \
-                .replace('!!consname!!', utils.get_consname_from_command(command))\
-                .replace('!!indexname!!', utils.get_indexname_from_command(command)) \
-                .replace('!!trigger!!', utils.get_triggername_from_command(command))
+                .replace('!!consname!!', utils_command.get_consname_from_command(command))\
+                .replace('!!indexname!!', utils_command.get_indexname_from_command(command)) \
+                .replace('!!trigger!!', utils_command.get_triggername_from_command(command))
         except AttributeError as e:
             print(f'Hibás parancs :{command}')
             raise e

@@ -3,8 +3,10 @@ import psycopg2
 import utils
 from Cluster import Cluster
 from Database import Database
+from checks.db_changeset_status import get_changeset_ids_from_repos_release
 from sql_runner.parallel_runner.main import parallel_run, parallel_run_all_databases
 from utils import get_conn, get_all_databases
+from utils_repo import get_repos_containing_release
 
 
 def insert_into_local_all_changelogs(to_db, records, env, db):
@@ -78,7 +80,20 @@ def insert_proc_parallel():
     utils.print_sql_result(return_dict, len(max(databases, key=len)) + 5)
 
 
+
+def insert_filesystem_all_changelogs():
+    repos = get_repos_containing_release('')
+    changeset_ids = get_changeset_ids_from_repos_release(repos, '')
+    for db, values in changeset_ids.items():
+        file_label = next(iter(values))
+        file = file_label.split('||')[0]
+        label = file_label.split('||')[1]
+        pass
+    pass
+
 if __name__ == '__main__':
     #insert_proc()
+    insert_filesystem_all_changelogs()
+    exit(0)
     insert_proc_parallel()
 

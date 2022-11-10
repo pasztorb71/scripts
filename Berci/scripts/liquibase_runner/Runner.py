@@ -2,7 +2,8 @@ import glob
 import os
 
 from Repository import Repository
-from utils import get_dbname_from_project, get_ip_addresses_for_docker
+from utils import get_ip_addresses_for_docker
+from utils_db_schema import get_dbname_from_project
 
 
 class Runner:
@@ -60,7 +61,7 @@ class Runner:
             dblist = [file.replace('liquibase-install-','').replace('.xml','') for file in files]
             return dblist
 
-    def run_for_repo(self, ip_address, repo):
+    def run_for_repo(self, ip_address, repo, delete_changelog_only=False):
         print(f"Környezet IP: {ip_address}")
         print(f"Az alábbi repora lesz telepítve: {repo}")
         print(Repository(repo).get_schema_version_content())
@@ -70,20 +71,20 @@ class Runner:
         if self.delete_db_before:
             if self.loc != 'local':
                 exit('Nem local esetén nem dobható el az adatbázis!!!')
-            if not Repository(repo).clear_repo():
+            if not Repository(repo).clear_repo(delete_changelog_only):
                 return
         self._call_liquibase(repo, ip_address, self.password, 'postgres')
         for db in self.get_dbs(repo):
             self._call_liquibase(repo, ip_address, self.password, db)
 
-    def run(self, loc, delete_db_before, checkonly):
+    def run(self, loc, delete_db_before, checkonly, delete_changelog_only=False):
         if not checkonly and not self.confirm(loc): return
         self.delete_db_before = delete_db_before
         self.loc = loc
         self.checkonly = checkonly
         self.password = 'fLXyFS0RpmIX9uxGII4N' if loc != 'local' else 'mysecretpassword'
         for repo in [repo.get_name() for repo in self.repos]:
-            self.run_for_repo(get_ip_addresses_for_docker(repo, loc), repo)
+            self.run_for_repo(get_ip_addresses_for_docker(repo, loc), repo, delete_changelog_only)
 
     def kill(self, param):
         pass

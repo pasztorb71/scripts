@@ -1,9 +1,10 @@
 import re
 
 import utils
+import utils_file
 
 if __name__ == '__main__':
-    files = utils.get_files_from_path_fname_filtered('c:/GIT/MLFF', '-DDL-000.sql')
+    files = utils_file.get_files_from_path_fname_filtered('c:/GIT/MLFF', '-DDL-000.sql')
     for file in files[0:]:
         print(file)
         #utils.git_init_from_path(file)

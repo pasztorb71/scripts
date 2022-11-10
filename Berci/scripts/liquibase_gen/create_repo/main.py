@@ -2,7 +2,8 @@ import os
 import re
 import shutil
 
-from utils import copy_dir, replace_in_file, move_upper_dir, copy_file, git_init, copy_file_and_replace
+from utils import move_upper_dir, git_init
+from utils_file import copy_dir, replace_in_file, copy_file, copy_file_and_replace
 
 
 def create_version_file(fname):

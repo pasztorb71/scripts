@@ -1,9 +1,9 @@
 import os
 import re
 
-import utils
+from utils_file import append_to_file_after_line_last_occurence
 from Database import Database
-from utils import get_sema_from_dbname
+from utils_db_schema import get_sema_from_dbname
 
 
 class Repository():
@@ -97,7 +97,7 @@ class Repository():
     def schema_version_xml(self, tab_name):
         dirname = self.get_tables_dir()
         ddl_line = f'<include file="{tab_name}/{tab_name}.sql" relativeToChangelogFile="true"/>'
-        utils.append_to_file_after_line_last_occurence(f"{dirname}/create-tables.xml", '<include file=', '  ' + ddl_line)
+        append_to_file_after_line_last_occurence(f"{dirname}/create-tables.xml", '<include file=', '  ' + ddl_line)
         print('Line added to create-tables.xml')
         print(ddl_line)
 
@@ -112,12 +112,15 @@ class Repository():
         conn.close()
         return tabname
 
-    def clear_repo(self):
+    def clear_repo(self, delete_changelog_only=False):
         #if input("Main repo-t kézi eldobása megtörtént? [y/n]") != "y":
         #    return
-        self.drop_database()
-        self.drop_roles()
-        self.drop_main_changelog()
+        if delete_changelog_only:
+            self.drop_db_changelog()
+        else:
+            self.drop_database()
+            self.drop_roles()
+            self.drop_main_changelog()
         if input("Mehet a telepítés? [y/n]") == "y":
             return True
 
@@ -135,6 +138,11 @@ class Repository():
         clus = Database('postgres', 'localhost', '5432')
         clus.sql_exec(f'drop table if exists public.databasechangelog')
         print(f'public.databasechangelog dropped.')
+
+    def drop_db_changelog(self):
+        clus = Database(self.dbname, 'localhost', '5432')
+        clus.sql_exec(f'drop table if exists public.databasechangelog')
+        print(f'databasechangelog dropped from {self.dbname} database.')
 
     def _get_instance(self):
         if self.dbname.startswith('core_'):

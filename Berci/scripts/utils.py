@@ -1,96 +1,18 @@
 import os
 import re
-import shutil
-from distutils.dir_util import copy_tree
 from inspect import getfile
-from os.path import exists
 
 import psycopg2
 from tabulate import tabulate
 
 from Cluster import Cluster
 from docker_ips import new_base, offset, base_ips
+from utils_db_schema import get_sema_from_dbname
+from utils_repo import get_instance_from_repo_full_name
 
 
 def move_upper_dir(path):
     return path.rsplit('/',1)[0] if path[-1] != '/' else path.rsplit('/',2)[0]
-
-
-def move_file(src, dst):
-    print('file: '+src, dst)
-    if os.path.isfile(src):
-        print('  '+src)
-        shutil.move(src, dst)
-
-
-def copy_file(src, dst):
-    print('file: '+src, dst)
-    if os.path.isfile(src):
-        print('  '+src)
-        shutil.copyfile(src, dst)
-    else:
-        print('  '+ src + '  nem létezik')
-
-
-def copy_file_and_replace(src, dst, from_to):
-    copy_file(src, dst)
-    replace_in_file(dst, from_to)
-
-
-def move_dir(src, dst):
-    print('dir : '+src, dst)
-    if os.path.isdir(src):
-        print('  '+src)
-        shutil.move(src, dst)
-
-
-def copy_dir(src, dst, delete_dir_if_exists=False):
-    print('dir : '+src, dst)
-    if delete_dir_if_exists == False and os.path.isdir(dst):
-        raise Exception('Directory már létezik: ' + dst)
-    if os.path.isdir(src):
-        print('  '+dst)
-        copy_tree(src, dst)
-
-
-def create_old_file(fname):
-    if os.path.isfile(fname + '_old'):
-        raise Exception('már létezik: ' + fname + '_old')
-        # os.remove(fname)
-        # move_file(fname + '_old', fname)
-    move_file(fname, fname + '_old')
-
-
-def replace_in_file(fname, from_to):
-    text = ''
-    with open(fname, 'r', encoding='utf-8') as f:
-        text = f.read()
-        for pair in from_to:
-            text = text.replace(pair[0], pair[1])
-            text = text.replace(pair[0].upper(), pair[1].upper())
-    with open(fname, 'w', encoding='utf-8') as f:
-        f.write(text)
-
-
-def get_db_name(base):
-    m = re.match('.*mlff-(.*)-postgredb', base)
-    if m:
-        return m.group(1)
-    if 'doc-postgredb' in base:
-        return 'document'
-
-
-def get_schema(base, db_path):
-    line = ''
-    pattern = '.*property name="schema_name.*value="(.*)"/>'
-    p = base+db_path+'/' + get_sema_from_dbname(db_path)
-    with open(base+db_path+'/' + get_sema_from_dbname(db_path) + '/liquibase-install-schema.xml', 'r', encoding='utf-8') as f:
-        text = f.read().splitlines()
-        for l in text:
-            m = re.match(pattern, l)
-            if m:
-                return m.group(1)
-    return ''
 
 
 def git_init(base):
@@ -209,147 +131,6 @@ def get_tablename_from_command(repo, command):
     return m.group(2).replace('"','') if m else ''
 
 
-def get_columnname_from_command(command):
-    command = command.replace('IF EXISTS ','').replace('"','')
-    m = None
-    if 'DROP COLUMN ' in command:
-        m = re.match(".* DROP COLUMN (\w+)", command)
-    elif ' COLUMN ' in command:
-        m = re.match(".* COLUMN ([a-zA-z0-9._\"$]+) ", command)
-    elif ' ADD ' in command and 'CONSTRAINT' not in command:
-        m = re.match(".* ADD ([a-zA-z0-9._\"]+) ", command)
-    elif ' ADD CONSTRAINT' in command:
-        m = re.match(".* CHECK \(\(\((\w+)", command)
-    elif 'UPDATE ' in command:
-        m = re.match("UPDATE .* SET (\w+)", command)
-    return m.group(1).split('.')[-1].replace('"','') if m else ''
-
-def get_schema_from_command(command):
-    command = command.replace('IF EXISTS ','').replace('"','')
-    patterns = ["ALTER SCHEMA ([a-zA-z0-9_\"]+) ",
-                "ALTER TABLE ([a-zA-z0-9_\"]+)",
-                "COMMENT ON COLUMN ([a-zA-z0-9_\"]+)",
-                ".* INDEX .* (?:ON )([a-zA-z0-9_\"]+)",
-                "UPDATE ([a-zA-z0-9_\"]+)",
-                "DELETE FROM ([a-zA-z0-9_\"]+)",
-                "DROP INDEX (.*)\.",
-                "GRANT .* ON TABLE \${schema_name_(\w+)",
-                ".* TABLE ([a-zA-z0-9_\"]+)",
-                ".*TRIGGER .*ON \${schema_name_(\w+)",
-                "ALTER INDEX (\w+)"]
-    outs = [re.match(pattern, command) for pattern in patterns]
-    try:
-        m = next(item for item in outs if item is not None)
-    except:
-        m = None
-    return m.group(1).replace('"','') if m else ''
-
-
-def get_consname_from_command(command):
-    command = command.replace('IF EXISTS ', '').replace('"', '')
-    m = re.match(".*CONSTRAINT (\w+)[;]?", command)
-    return m.group(1) if m else ''
-
-
-def get_indexname_from_command(command):
-    command = command.replace('IF EXISTS ', '').replace('"', '')
-    patterns = ["DROP INDEX .*\.(\w+)",
-                "ALTER INDEX .*\.(\w+) RENAME TO \w+",
-                ".* INDEX (\w+)[;]?",]
-    outs = [re.match(pattern, command) for pattern in patterns]
-    try:
-        m = next(item for item in outs if item is not None)
-    except:
-        m = None
-    return m.group(1)  if m else ''
-
-
-def get_triggername_from_command(command):
-    m = re.match(".*TRIGGER (?:IF EXISTS) ([a-zA-z0-9_$\"]+)[;]?", command)
-    return m.group(1)  if m else ''
-
-
-def get_files_from_path_ext_filtered(path, ext, cont):
-    out = []
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            if file.endswith(ext) and cont in file:
-                out.append(os.path.join(root, file))
-    return out
-
-def get_files_from_path_fname_filtered(path, name):
-    out = []
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            if name in file:
-                out.append(os.path.join(root, file))
-    return out
-
-def get_files_from_path_ext_find_content(path, ext, cont):
-    out = []
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            if file.endswith(ext):
-                if file_contains(os.path.join(root, file), cont):
-                    out.append(os.path.join(root, file))
-    return out
-
-
-def file_contains(file, cont,):
-    with open(file, 'r', encoding='utf-8') as f:
-        if cont in f.read():
-            return True
-    return False
-
-
-def get_repo_from_schema(schema):
-    r = ''
-    base = 'c:/GIT/MLFF/'
-    for repo in os.listdir(base):
-        path = base + repo + '/liquibase/'
-        dbname = os.listdir(path)
-        path += dbname[0]
-        schem = filter(lambda file: os.path.isdir(path+'/'+file), os.listdir(path))
-        s = [dir for dir in list(schem) if dir not in ('_init_dbs', 'all-modules')]
-        if s[0] == schema:
-            r = repo
-            break
-    return r
-
-
-def load_from_file(fname):
-    project_root = os.path.dirname(os.path.dirname(__file__))
-    with open('/'.join([project_root,'scripts',fname]), 'r') as f:
-        return [x for x in f.read().split('\n') if not x.startswith('#')]
-
-def get_last_nth_occurence_of_list_element(plist, pelem, nth):
-    index_after = [idx for idx, s in enumerate(plist) if pelem in s]
-    if not index_after:
-        return None
-    return index_after[-nth] + 1
-
-def append_to_file_after_line_last_occurence(fname, after, what):
-  with open(fname, 'r', encoding='utf-8') as f:
-    text = f.readlines()
-  already_exists = [idx for idx, s in enumerate(text) if what in s]
-  if already_exists:
-    return
-  index_after = get_last_nth_occurence_of_list_element(text, after, 1)
-  if not index_after:
-      index_header_end = get_last_nth_occurence_of_list_element(text, '    <!-- ==================================', 2)
-      if not index_header_end:
-        return
-      else:
-          index_after = index_header_end + 1
-  text.insert(index_after, what + '\n')
-  with open(fname, 'w', encoding='utf-8') as out:
-    out.write(''.join(text))
-
-def get_dbname_from_project(project):
-    db = get_db_name(project)
-    return db.replace('-', '_')
-
-
 def has_history_table(db, schema, table):
     conn = get_conn('local', db, 'postgres')
     cur = conn.cursor()
@@ -385,12 +166,6 @@ def whoami(  ):
     import sys
     return f'--- {sys._getframe(1).f_code.co_name} ---'
 
-def get_instance_from_repo_full_name(repo):
-    if repo == 'doc-postgredb':
-        return 'pg-doc-mqid'
-    else:
-        id = repo.split('-')[1]
-        return 'pg-' + id + '-mqid'
 
 def get_ip_addresses_for_docker(repo, loc):
     if loc.startswith('new_'):
@@ -432,9 +207,3 @@ def get_conn_service_user(env, db):
         return None
 
 
-def get_sema_from_dbname(db):
-    if db == 'document':
-        return 'document_meta'
-    if db == 'payment_transaction':
-        return 'payment_transaction'
-    return db.split('_', 1)[1]

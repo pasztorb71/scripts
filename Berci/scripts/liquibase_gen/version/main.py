@@ -1,4 +1,5 @@
 import Repository
+import utils_db_schema
 from Ticket import Ticket
 
 
@@ -7,7 +8,7 @@ def create_schema_version(repo, version):
     base = 'c:/GIT/MLFF/' + repo + '/liquibase/'
     db = get_db_name(base)
     db_path = db.replace('-', '_')
-    schema = Repository.get_sema_from_dbname(db_path)
+    schema = utils_db_schema.get_sema_from_dbname(db_path)
     #with open('/'.join[base,db_path,schema])
     schema_version_path = '/'.join([base+db_path,schema,'xml-version-tree/schema-version-0.xml'])
     with open(schema_version_path, 'r+', encoding='utf-8') as f:

@@ -2,7 +2,8 @@ import logging
 
 from Cluster import Cluster
 from Repository import Repository
-from utils import password_from_file, get_conn, get_sema_from_dbname
+from utils import password_from_file, get_conn
+from utils_db_schema import get_sema_from_dbname
 
 
 def runteszt(env, db, user, cmd_list):

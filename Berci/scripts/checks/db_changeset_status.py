@@ -1,15 +1,12 @@
-import json
 import re
-from pprint import pprint
 
 import psycopg2
 from tabulate import tabulate
 
 import utils
-from Cluster import Cluster
 from Repository import Repository
 from sql_runner.parallel_runner.main import parallel_run
-from utils import password_from_file, get_env
+from utils import get_env
 
 
 def get_changelogs(host, port, db, return_dict):
@@ -57,13 +54,6 @@ def get_version_filenames(databases, version):
         out[db] = fnames
     return out
 
-def get_repos_containing_release(rname):
-    out = []
-    for repo in Repository().get_repo_names():
-        if utils.file_contains(f'{Repository(repo).get_tables_dir()}/schema-version-0.xml', rname):
-            out.append(repo)
-    return out
-
 
 def get_changeset_ids_from_repos_release(repos, release):
     out = {}
@@ -71,13 +61,20 @@ def get_changeset_ids_from_repos_release(repos, release):
         dir = Repository(repo).get_tables_dir()
         schema_file = f'{dir}/schema-version-0.xml'
         with open(schema_file, 'r', encoding='utf8') as f:
-            files = [re.match('.*file="(.*)" relat.*', line).group(1) for line in f.readlines() if release in line]
+            if release:
+                files = [(re.match('.*file="(.*)" relat.*labels="(.*)"/>', line).group(1),
+                           re.match('.*file="(.*)" relat.*labels="(.*)"/>', line).group(2))
+                          for line in f.readlines() if release in line]
+            else:
+                files = [(re.match('.*file="(.*)" relat.*labels="(.*)"/>', line).group(1),
+                           re.match('.*file="(.*)" relat.*labels="(.*)"/>', line).group(2))
+                         for line in f.readlines() if 'labels=' in line and 'debezium' not in line]
 
         d_files = {}
         for file in files:
-            with open(f'{dir}/{file}', 'r', encoding='utf8') as f:
+            with open(f'{dir}/{file[0]}', 'r', encoding='utf8') as f:
                 ids = [re.match('.*:(.*) run.*', line).group(1) for line in f.readlines() if line.startswith('--changeset')]
-                d_files[file] = ids
+                d_files[f'{file[0]}||{file[1]}'] = ids
         out[repo] = d_files
     return out
 
@@ -105,9 +102,10 @@ def print_changeset1(changeset_ids):
         pass
 
 if __name__ == '__main__':
-    repos = get_repos_containing_release('R0.09')
-    changeset_ids = get_changeset_ids_from_repos_release(repos, 'R0.09')
-    print_changeset(changeset_ids, format='csv')
+    release = 'R0.10'
+    repos = get_repos_containing_release(release)
+    changeset_ids = get_changeset_ids_from_repos_release(repos, release)
+    print_changeset(changeset_ids, format='txt')
     #print_changeset1(changeset_ids)
     #check_
     exit(0)
