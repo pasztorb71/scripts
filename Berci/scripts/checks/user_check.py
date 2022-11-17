@@ -1,10 +1,10 @@
 import re
 
 import psycopg2
-from tabulate import tabulate
 
 import utils
 from Cluster import Cluster
+from Repository import Repository
 from sql_runner.parallel_runner.main import parallel_run
 from utils import get_env
 
@@ -42,8 +42,7 @@ def service_user_check(host, port, db, return_dict):
             user='postgres',
             password=utils.password_from_file('postgres', host, port))
     except Exception as e:
-        if re.match('.*database .* does not exist.*', str(e)):
-            print(f'{port}|{db}: {e}')
+        print(f'{port}|{db}: {e}')
         return
     cur = conn.cursor()
     cur.execute("SELECT schema_name FROM information_schema.schemata s WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'public', 'pg_toast')")
@@ -79,10 +78,11 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5433
-    cluster = Cluster(host=host, port=port, passw=utils.password_from_file('postgres', host, 5433))
-    databases = cluster.databases[0:]
-    databases = ['core_customer']
-    ports = list(range(5432, 5433))
+    host, port = 'localhost', 5443
+    #cluster = Cluster(host=host, port=port, passw=utils.password_from_file('postgres', host, 5433))
+    #databases = cluster.databases[0:]
+    databases = Repository.get_db_names_by_group('JAKARTA')
+    #databases = ['eobu_tariff']
+    ports = list(range(port, port+1))
     return_dict = parallel_run(host, ports, databases, service_user_check)
     utils.print_table_level_check(return_dict, filtered=True)

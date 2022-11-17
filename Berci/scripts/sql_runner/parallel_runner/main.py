@@ -183,7 +183,7 @@ def mproc_count_records(host, port, db, return_dict):
         header = [[desc[0].upper() for desc in cur.description]]
         record1 = cur.fetchall()
         recout = recout + record1
-    return_dict[db] = header + recout if record else []
+    return_dict[f'{port}|{db}'] = header + recout if record else []
 
     cur.close()
     conn.commit()
@@ -294,12 +294,13 @@ def parallel_run_all_databases(host, ports, func):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5433
+    host, port = 'localhost', 5443
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     #databases = load_from_file('../databases.txt')
     databases = cluster.databases[0:]
-    databases = ['core_customer']
-    ports = list(range(5441,5442))
+    databases = ['enforcement_exemption']
+    #ports = list(range(5433,5440))
+    ports = [5433, 5442]
     return_dict = parallel_run(host, ports, databases, mproc_count_records)
     print_sql_result(return_dict, len(max(databases, key=len)) + 5, header=True)
 

@@ -14,6 +14,6 @@ class Test(TestCase):
         self.assertFalse(self.table.is_check_constraint_on_column('request_id'))
 
     def test_gen_drop_check_constraint_stmt(self):
-        expected = "ALTER TABLE psp_clearing.psp_settlement_package DROP CONSTRAINT ck_pspsettpac_psp_type;"
-        actual = self.table.gen_drop_check_constraint_stmt('psp_type')
+        expected = "ALTER TABLE staging DROP CONSTRAINT ck_staging_staging_status;"
+        actual = self.table.gen_drop_constraint_stmt('staging_status')
         self.assertEqual(expected, actual)

@@ -1,0 +1,35 @@
+mlff-core-notification-dispatcher-postgredb          KOMODO 
+mlff-core-notification-email-postgredb               KOMODO 
+mlff-core-notification-pn-postgredb                  KOMODO 
+mlff-core-notification-wa-postgredb                  KOMODO 
+mlff-core-template-postgredb                         KOMODO 
+mlff-core-ticket-postgredb                           KOMODO 
+mlff-core-vehicle-postgredb                          KOMODO 
+
+mlff-enforcement-detection-alert-postgredb           N2O    
+mlff-enforcement-detection-image-postgredb           N2O    
+mlff-enforcement-detection-observation-postgredb     N2O    
+mlff-enforcement-detection-postgredb                 N2O    
+mlff-enforcement-visual-check-postgredb              N2O    
+
+mlff-core-customer-postgredb                         JAKARTA
+mlff-enforcement-exemption-postgredb                 JAKARTA
+mlff-eobu-tariff-postgredb                           JAKARTA
+mlff-eobu-trip-postgredb                             JAKARTA
+mlff-eobu-trip-track-postgredb                       JAKARTA
+
+mlff-core-genos-postgredb                            LIBRA  
+mlff-payment-account-info-postgredb                  LIBRA  
+mlff-payment-invoice-postgredb                       LIBRA  
+mlff-payment-psp-proxy-postgredb                     LIBRA  
+mlff-payment-retry-postgredb                         LIBRA  
+mlff-payment-transaction-postgredb                   LIBRA  
+mlff-settlement-psp-clearing-postgredb               LIBRA  
+mlff-settlement-tro-clearing-postgredb               LIBRA  
+
+mlff-enforcement-eligibility-declaration-postgredb   K-Team 
+mlff-enforcement-eligibility-postgredb               K-Team 
+
+doc-postgredb                                        iCell belsős
+mlff-data-ingestion-meta-postgredb                   DWH   
+

@@ -20,5 +20,6 @@ class Table:
         res = cur.fetchone()
         return res[0] == 1
 
-    def gen_drop_check_constraint_stmt(self, column):
-        consname = Column(self.table, column).get_check_constraint_name()
+    def gen_drop_constraint_stmt(self, column):
+        consname = Column(self.conn, self.table, column).get_constraint_name()
+        return f'ALTER TABLE {self.name} DROP CONSTRAINT {consname};'

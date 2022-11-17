@@ -1,13 +1,14 @@
 import re
 
 import utils
+import utils_command
 import version
 from Repository import Repository
 from Ticket import Ticket
 from liquibase_gen.changelog_generator.changelog_header_generator import Changelog_header_generator
 from liquibase_gen.changelog_generator.commands import command_list
 from liquibase_gen.changelog_generator.paramsfile import params
-from utils import get_tablename_from_command
+from utils_command import get_tablename_from_command
 from utils_file import get_files_from_path_ext_filtered
 
 
@@ -63,7 +64,7 @@ def process_commands(repo):
             history_commands.append(gen_history_command_from_command(stmt))
     try:
         for stmt in commands[0:] + history_commands:
-            if g.is_newtable(utils.get_tablename_from_command(repo, stmt)) and '$hist' in g.prev_table:
+            if g.is_newtable(utils_command.get_tablename_from_command(repo, stmt)) and '$hist' in g.prev_table:
                 print(g.generate_trigger_section())
             header, tablename = g.generate_header(repo, stmt)
 
@@ -99,7 +100,7 @@ def process_commands_new(repo, version1):
             history_commands.append(gen_history_command_from_command(repo, stmt))
     try:
         for stmt in commands[0:] + history_commands:
-            is_newtable = g.is_newtable(utils.get_tablename_from_command(repo, stmt))
+            is_newtable = g.is_newtable(utils_command.get_tablename_from_command(repo, stmt))
             if is_newtable and '$hist' in g.prev_table:
                 print(g.generate_trigger_section())
             header, tablename = g.generate_header(repo, stmt)
@@ -132,6 +133,7 @@ def process_commands_new(repo, version1):
         print(a)
 
 block_end = """END$$;
+COMMIT;
 /\n"""
 
 if __name__ == '__main__':

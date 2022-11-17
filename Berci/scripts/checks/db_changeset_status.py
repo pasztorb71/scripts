@@ -7,6 +7,7 @@ import utils
 from Repository import Repository
 from sql_runner.parallel_runner.main import parallel_run
 from utils import get_env
+from utils_repo import get_repos_containing_release
 
 
 def get_changelogs(host, port, db, return_dict):
@@ -102,6 +103,7 @@ def print_changeset1(changeset_ids):
         pass
 
 if __name__ == '__main__':
+    """
     release = 'R0.10'
     repos = get_repos_containing_release(release)
     changeset_ids = get_changeset_ids_from_repos_release(repos, release)
@@ -113,24 +115,21 @@ if __name__ == '__main__':
     version_files = {}
     result_d = {}
     result_l = []
-    """
     databases = utils.get_all_databases('sandbox')
     result_arr = [[None] * 3] * 10
-    ports = range(5433, 5435)
+    ports = range(5433, 5434)
     header = []
     for port in ports:
         header.append(get_env(port))
     host = 'localhost'
     #version_files = get_version_filenames(databases, '0.08')
-    #databases = ['core_vehicle']
+    databases = ['core_vehicle']
     return_dict = parallel_run(host, ports, databases, get_changelogs)
-    """
     for key, data in return_dict.items():
         if key not in result_d:
             result_d[key] = [data]
         else:
             result_d[key].append(data)
-    """
     print(return_dict)
     for key, data in return_dict.items():
         print(f'{key} {data}')

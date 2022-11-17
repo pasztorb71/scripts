@@ -19,7 +19,7 @@ class Changelog_header_generator():
 
     def generate_header(self, repo, command, hist=False):
         tmp = self.get_template(command)
-        table_name = utils.get_tablename_from_command(repo, command)
+        table_name = utils_command.get_tablename_from_command(repo, command)
         if self.prev_table == '':
             self.prev_table = table_name
         column_name = utils_command.get_columnname_from_command(command)
@@ -122,7 +122,7 @@ class Changelog_header_generator():
         else:
             expected = re.match(".*expectedResult:([0-9]) SELECT", arr[5]).group(1)
             pre = re.match(".*count\\(\\*\\) (.*)", arr[5]).group(1)
-        pre = utils.format_sql(pre)
+        pre = Changelog_header_generator.change_precond_to_new_format(pre)
         cmd = """  cnt := -1;
   SELECT count(*) INTO cnt 
     !!precond!!;
@@ -148,4 +148,10 @@ DECLARE
 BEGIN
 """
 
-
+    @staticmethod
+    def change_precond_to_new_format(pre):
+        """
+        if 'FROM information_schema."columns"' in pre:
+            tabname = utils_command.get_tablename_from_command()
+        """
+        return pre.replace(' WHERE ', '\n   WHERE ').replace(' AND ', '\n     AND ')

@@ -1,5 +1,4 @@
 import os
-import re
 from inspect import getfile
 
 import psycopg2
@@ -108,29 +107,6 @@ def get_login_from_file():
         return f.read().split()
 
 
-def get_tablename_from_command(repo, command):
-    command = command.replace('IF EXISTS ','').replace('"','')
-    if command.startswith('DROP INDEX '):
-        return repo.get_tablename_from_indexname(command.replace('DROP INDEX ', '').replace(';', ''))
-    patterns = ["ALTER TABLE (\w+[.])?([a-zA-z0-9_$\"]+)",
-                "COMMENT ON COLUMN (\w+[.])?([a-zA-z0-9_$\"]+)",
-                "CREATE.*INDEX .* ON (\w+)[.]?([a-zA-z0-9_$\"]+)",
-                "UPDATE (\w+[.])?([a-zA-z0-9_\"]+)",
-                "DELETE FROM (\w+[.])?([a-zA-z0-9_\"]+)",
-                "GRANT .* ON TABLE (\${.*}).(.*) TO ",
-                ".* TABLE (\w+[.])?([a-zA-z0-9_$\"]+)",
-                "INSERT INTO (\w+[.])?([a-zA-z0-9_\"]+)",
-                ]
-    outs = [re.match(pattern, command) for pattern in patterns]
-    try:
-        m = next(item for item in outs if item is not None)
-    except:
-        m = None
-    if outs[2]:                     # CREATE.*INDEX
-        return m.group(2)
-    return m.group(2).replace('"','') if m else ''
-
-
 def has_history_table(db, schema, table):
     conn = get_conn('local', db, 'postgres')
     cur = conn.cursor()
@@ -151,10 +127,6 @@ def get_conn(env, db, user):
             password=password_from_file(user, 'localhost', port))
     except Exception as e:
         print(e)
-
-
-def format_sql(pre):
-    return pre.replace(' WHERE ', '\n   WHERE ').replace(' AND ', '\n     AND ')
 
 
 def get_all_databases(env):

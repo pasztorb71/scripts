@@ -1,6 +1,8 @@
+import os
+
 import psycopg2
 
-from utils import password_from_file
+import utils
 
 
 class Database:
@@ -22,7 +24,7 @@ class Database:
                 port=self.port,
                 database=self.name,
                 user=self.user,
-                password=password_from_file(self.user, self.host, self.port))
+                password=utils.password_from_file(self.user, self.host, self.port))
         return self.__conn
 
     def sql_exec(self, *args):
@@ -133,6 +135,9 @@ class Database:
             cmd = f"call {trigger[0]}.HIST_TRIGGER_GENERATOR('{trigger[0]}', '{trigger[2]}');"
             print(cmd)
             self.sql_exec(cmd)
+
+    def dump_database(self):
+        os.system(f"pg_dump -p 5433 -U postgres -Fc --verbose core_customer >core_customer.dump")
 
 
 

@@ -19,7 +19,7 @@ class Test(TestCase):
         self.assertFalse(utils.has_history_table('core_customer', 'customer', 'user_session'))
 
     def test_get_tablename(self):
-        tabname = utils.get_tablename_from_command('',
+        tabname = utils_command.get_tablename_from_command('',
             'ALTER TABLE account_info.payment_method ALTER COLUMN x__version TYPE int8 USING x__version::int8;')
         expected = 'payment_method'
         self.assertEqual(expected, tabname)
@@ -118,11 +118,11 @@ class Test(TestCase):
 
     def test_get_tablename_from_command1(self):
         command = "CREATE INDEX ix_trip_cust_id ON trip.trip USING btree (customer_id);"
-        self.assertEqual('trip', utils.get_tablename_from_command(command))
+        self.assertEqual('trip', utils_command.get_tablename_from_command(command))
 
     def test_get_tablename_from_command1(self):
         command = "CREATE INDEX ix_trip_cust_id ON trip.trip USING btree (customer_id);"
-        self.assertEqual('trip', utils.get_tablename_from_command('',command))
+        self.assertEqual('trip', utils_command.get_tablename_from_command('', command))
 
     def test_get_indexname_from_command(self):
         index = utils_command.get_indexname_from_command("ALTER INDEX tariff.ix_segsec_glied_id RENAME TO ix_section_glied_id;")

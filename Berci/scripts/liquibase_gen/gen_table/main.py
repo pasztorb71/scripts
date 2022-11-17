@@ -106,11 +106,7 @@ def table_grants(tab_name, ticket_name, version):
     sema = t[0]
     table = tab_name
     print("""-- GRANT ==
-ALTER TABLE !table! OWNER TO ${schema_name}_tbl_own;
-
-GRANT SELECT ON TABLE !table! TO ${schema_name}_sel;
-GRANT INSERT, UPDATE ON TABLE !table! TO ${schema_name}_mod;
-GRANT DELETE, TRUNCATE ON TABLE !table! TO ${schema_name}_del;
+call add_privileges_to_table('${schema_name}', '!table!');
 
 COMMIT;
 

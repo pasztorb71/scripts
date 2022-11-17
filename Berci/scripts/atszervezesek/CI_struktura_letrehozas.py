@@ -21,7 +21,7 @@ def create_file(fname):
 
 if __name__ == '__main__':
   # prepare
-    repo = 'mlff-eobu-trip-track-postgredb'
+    repo = 'mlff-enforcement-detection-transit-identifier-postgredb'
     base = 'c:/GIT/MLFF/'+repo
     db = get_db_name(base)
     db_path = db.replace('-', '_')

@@ -60,3 +60,26 @@ def get_indexname_from_command(command):
 def get_triggername_from_command(command):
     m = re.match(".*TRIGGER (?:IF EXISTS) ([a-zA-z0-9_$\"]+)[;]?", command)
     return m.group(1)  if m else ''
+
+
+def get_tablename_from_command(repo, command):
+    command = command.replace('IF EXISTS ','').replace('"','')
+    if command.startswith('DROP INDEX '):
+        return repo.get_tablename_from_indexname(command.replace('DROP INDEX ', '').replace(';', ''))
+    patterns = ["ALTER TABLE (\w+[.])?([a-zA-z0-9_$\"]+)",
+                "COMMENT ON COLUMN (\w+[.])?([a-zA-z0-9_$\"]+)",
+                "CREATE.*INDEX .* ON (\w+)[.]?([a-zA-z0-9_$\"]+)",
+                "UPDATE (\w+[.])?([a-zA-z0-9_\"]+)",
+                "DELETE FROM (\w+[.])?([a-zA-z0-9_\"]+)",
+                "GRANT .* ON TABLE (\${.*}).(.*) TO ",
+                ".* TABLE (\w+[.])?([a-zA-z0-9_$\"]+)",
+                "INSERT INTO (\w+[.])?([a-zA-z0-9_\"]+)",
+                ]
+    outs = [re.match(pattern, command) for pattern in patterns]
+    try:
+        m = next(item for item in outs if item is not None)
+    except:
+        m = None
+    if outs[2]:                     # CREATE.*INDEX
+        return m.group(2)
+    return m.group(2).replace('"','') if m else ''

@@ -1,6 +1,8 @@
 import os
 import re
+from inspect import getfile
 
+import utils
 from utils_file import append_to_file_after_line_last_occurence
 from Database import Database
 from utils_db_schema import get_sema_from_dbname
@@ -55,14 +57,24 @@ class Repository():
                     return m.group(1)
         return ''
 
-    def get_db_name(self):
+    @classmethod
+    def _get_db_name(cls, base_path):
         name = ''
-        m = re.match('.*mlff-(.*)-postgredb', self.base_path)
+        m = re.match('.*mlff-(.*)-postgredb', base_path)
         if m:
             name = m.group(1)
-        if 'doc-postgredb' in self.base_path:
+        if 'doc-postgredb' in base_path:
             name = 'document'
         return name.replace('-', '_')
+
+    @classmethod
+    def get_db_names_by_group(cls, groupname):
+        with open(getfile(cls.get_db_names_by_group).rsplit('\\', 1)[0] + '/csapatok.txt', 'r', encoding='utf8') as f:
+            lines = f.readlines()
+        return [cls._get_db_name(line.split()[0]) for line in lines if groupname in line]
+
+    def get_db_name(self):
+        return self._get_db_name(self.base_path)
 
     def get_schema_version_dir(self):
         return '/'.join([self.base_path[:-1], self.db_path, self.schema, 'tables', '_xml-version-tree'])

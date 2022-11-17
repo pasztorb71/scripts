@@ -31,3 +31,8 @@ class TestRepository(TestCase):
         repo = Repository('customer')
         value = repo.get_tablename_from_indexname('customer.ix_cust_custname')
         self.assertEqual('customer', value)
+
+    def test_get_db_names_by_group(self):
+        actual = Repository.get_db_names_by_group('K-Team')
+        expected = ['enforcement_eligibility_declaration', 'enforcement_eligibility']
+        self.assertListEqual(expected, actual)

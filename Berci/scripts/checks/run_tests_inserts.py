@@ -38,10 +38,10 @@ def cmddiff(env):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5432
+    host, port = 'localhost', 5442
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     #databases = load_from_file('../databases.txt')
-    databases = ['core_customer']
+    databases = ['enforcement_detection']
     #databases = cluster.databases
     return_dict = parallel_run(host, [port], databases, runteszt)
     print_sql_result(return_dict,50, header=False)

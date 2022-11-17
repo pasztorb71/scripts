@@ -6,7 +6,7 @@ from liquibase_gen.changelog_generator.changelog_header_generator import Changel
 class TestChangelogHeaderGenerator(TestCase):
     def test_generate_header_for_drop_constraint(self):
         g = Changelog_header_generator('bertalan.pasztor', 'MLFFDEV-683')
-        generated = g.generate_header('ALTER TABLE visual_check.check_package DROP CONSTRAINT ck_checkpack_status;')
+        generated = g.generate_header('', 'ALTER TABLE visual_check.check_package DROP CONSTRAINT ck_checkpack_status;')
         expected = ("""---------------------------------------------------------------------------------------------------
 --changeset bertalan.pasztor:CHECK_PACKAGE-DDL-0.1.0-MLFFDEV-683-01 runOnChange:true
 --comment Drop constraint ck_checkpack_status.
@@ -20,7 +20,7 @@ class TestChangelogHeaderGenerator(TestCase):
 
     def test_generate_header_for_column(self):
         g = Changelog_header_generator('bertalan.pasztor', 'MLFFDEV-663')
-        generated = g.generate_header('ALTER TABLE account_info.payment_method ALTER COLUMN x__version TYPE int8 USING x__version::int8;')
+        generated = g.generate_header('', 'ALTER TABLE account_info.payment_method ALTER COLUMN x__version TYPE int8 USING x__version::int8;')
         expected = ("""---------------------------------------------------------------------------------------------------
 --changeset bertalan.pasztor:PAYMENT_METHOD-DDL-0.1.0-MLFFDEV-663-01 runOnChange:true
 --comment Change type of x__version column.
