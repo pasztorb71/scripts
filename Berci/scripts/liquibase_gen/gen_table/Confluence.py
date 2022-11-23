@@ -2,6 +2,7 @@ import json
 import re
 
 import requests
+from bs4 import BeautifulSoup
 
 from requests.auth import HTTPBasicAuth
 
@@ -19,6 +20,9 @@ class Confluence:
         return page.text.replace('\\"','\"')
 
     def get_table_comment(self):
+        parsed_html = BeautifulSoup(self.page.text, features="lxml")
+        txt = parsed_html.body.find('p').findNext("p").get_text()
+        return txt
         _dict = json.loads(self.page.text)
         f = _dict['body']['storage']['value']
         a = re.match('.*<p( style="")?>(.*)</p>.*<table.*(?:<table).*',f)

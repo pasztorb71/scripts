@@ -78,10 +78,10 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5443
-    #cluster = Cluster(host=host, port=port, passw=utils.password_from_file('postgres', host, 5433))
-    #databases = cluster.databases[0:]
-    databases = Repository.get_db_names_by_group('JAKARTA')
+    host, port = 'localhost', 5441
+    cluster = Cluster(host=host, port=port, passw=utils.password_from_file('postgres', host, 5433))
+    databases = cluster.databases[0:]
+    #databases = Repository.get_db_names_by_group('JAKARTA')
     #databases = ['eobu_tariff']
     ports = list(range(port, port+1))
     return_dict = parallel_run(host, ports, databases, service_user_check)

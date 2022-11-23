@@ -175,7 +175,7 @@ def mproc_count_records(host, port, db, return_dict):
         password=password_from_file('postgres', host, port))
     cur = conn.cursor()
     recout = []
-    cur.execute("SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public') "
+    cur.execute("SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public', 'information_schema', 'pg_catalog') "
                 " order by 1,2")
     record = cur.fetchall()
     for rec in record:
@@ -294,13 +294,14 @@ def parallel_run_all_databases(host, ports, func):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5443
+    host, port = 'localhost', 5432
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     #databases = load_from_file('../databases.txt')
+    #databases = [x for x in cluster.databases[0:] if 'notification' in x]
     databases = cluster.databases[0:]
-    databases = ['enforcement_exemption']
+    databases = ['settlement_tro_clearing']
     #ports = list(range(5433,5440))
-    ports = [5433, 5442]
+    ports = [5432]
     return_dict = parallel_run(host, ports, databases, mproc_count_records)
     print_sql_result(return_dict, len(max(databases, key=len)) + 5, header=True)
 
