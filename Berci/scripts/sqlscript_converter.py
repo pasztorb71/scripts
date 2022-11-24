@@ -41,12 +41,12 @@ if __name__ == '__main__':
                 outf.write(line)
                 continue
             if 'x__insdate,' in line:
-                line = line.replace('x__insdate,', '')
+                line = line.replace('x__insdate, ', '').replace('x__moddate, ','').replace('x__moduser, ','').replace('x__version, ','')
             else:
-                if re.match('.*\(.*\).*', line):
+                if re.match('.*\(.*\).*', line) or re.match('.*VALUES\(.*', line):
                     arr = line.split(',')
                     del arr[1]
-                    arr[3] = arr[4] = 'null'
+                    del arr[2:5]
                     line = ','.join(arr)
             if ';TRUNCATE TABLE' in line:
                 line = line.replace(';TRUNCATE TABLE', ';/nTRUNCATE TABLE')

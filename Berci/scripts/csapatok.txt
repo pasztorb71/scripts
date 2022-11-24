@@ -6,11 +6,12 @@ mlff-core-template-postgredb                         KOMODO
 mlff-core-ticket-postgredb                           KOMODO 
 mlff-core-vehicle-postgredb                          KOMODO 
 
-mlff-enforcement-detection-alert-postgredb           N2O    
-mlff-enforcement-detection-image-postgredb           N2O    
-mlff-enforcement-detection-observation-postgredb     N2O    
-mlff-enforcement-detection-postgredb                 N2O    
-mlff-enforcement-visual-check-postgredb              N2O    
+mlff-enforcement-detection-alert-postgredb              N2O
+mlff-enforcement-detection-image-postgredb              N2O
+mlff-enforcement-detection-observation-postgredb        N2O
+mlff-enforcement-detection-postgredb                    N2O
+mlff-enforcement-detection-transit-identifier-postgredb N2O
+mlff-enforcement-visual-check-postgredb                 N2O
 
 mlff-core-customer-postgredb                         JAKARTA
 mlff-enforcement-exemption-postgredb                 JAKARTA

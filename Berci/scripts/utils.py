@@ -139,7 +139,13 @@ def whoami(  ):
     return f'--- {sys._getframe(1).f_code.co_name} ---'
 
 
-def get_ip_addresses_for_docker(repo, loc):
+def repo_in_newloc(repo, loc):
+    repos = """
+    """
+
+
+def get_ip_address_for_docker(repo, loc):
+    #oc = 'new_'+loc if repo_in_newloc(repo, loc) else loc
     if loc.startswith('new_'):
         inst = get_instance_from_repo_full_name(repo)
         return 'gateway.docker.internal:' + str(new_base[loc] + offset[inst])

@@ -20,7 +20,7 @@ class Test(TestCase):
 
     def test_get_tablename(self):
         tabname = utils_command.get_tablename_from_command('',
-            'ALTER TABLE account_info.payment_method ALTER COLUMN x__version TYPE int8 USING x__version::int8;')
+                                                           'ALTER TABLE account_info.payment_method ALTER COLUMN x__version TYPE int8 USING x__version::int8;')
         expected = 'payment_method'
         self.assertEqual(expected, tabname)
 
@@ -41,7 +41,8 @@ class Test(TestCase):
         self.assertEqual('mlffTitkosPassword123!', utils.password_from_file('dwh_read', 'localhost', '*'))
 
     def test_get_schema_from_command(self):
-        actual = utils_command.get_schema_from_command("ALTER SCHEMA notification_common RENAME TO notification_dispacther;")
+        actual = utils_command.get_schema_from_command(
+            "ALTER SCHEMA notification_common RENAME TO notification_dispacther;")
         self.assertEqual('notification_common', actual)
 
     def test_append_to_file_after_line_last_occurence_after_exists(self):
@@ -125,7 +126,8 @@ class Test(TestCase):
         self.assertEqual('trip', utils_command.get_tablename_from_command('', command))
 
     def test_get_indexname_from_command(self):
-        index = utils_command.get_indexname_from_command("ALTER INDEX tariff.ix_segsec_glied_id RENAME TO ix_section_glied_id;")
+        index = utils_command.get_indexname_from_command(
+            "ALTER INDEX tariff.ix_segsec_glied_id RENAME TO ix_section_glied_id;")
         self.assertEqual('ix_segsec_glied_id', index)
 
     def test_get_port1(self):
@@ -133,3 +135,10 @@ class Test(TestCase):
 
     def test_get_port2(self):
         self.assertEqual(5544, utils.get_port('new_dev', Repository('account-info').name))
+
+    def test_repo_in_newloc1(self):
+        self.assertTrue(utils.repo_in_newloc('mlff-core-customer-postgredb', 'sandbox'))
+
+    def test_repo_in_newloc2(self):
+        self.assertTrue(utils.repo_in_newloc('mlff-core-customer-postgredb', 'dev'))
+
