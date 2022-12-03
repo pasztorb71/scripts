@@ -1,12 +1,9 @@
-import re
-
 import psycopg2
 
 import utils
-from Cluster import Cluster
-from Repository import Repository
 from sql_runner.parallel_runner.main import parallel_run
-from utils import get_env
+from utils import get_cluster_databases
+
 
 def dwh_check(host, port, db, return_dict):
     v_user = 'dwh_read'
@@ -21,8 +18,8 @@ def dwh_check(host, port, db, return_dict):
         print(f'{port}|{db}: {e}')
         return
     cur = conn.cursor()
-    cur.execute("SELECT schemaname, tablename  FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema', 'public')"
-                "and tablename not like '%$hist'")
+    cur.execute("SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema NOT IN ('pg_catalog', 'information_schema', 'public')"
+                "and table_name not like '%$hist'")
     record = cur.fetchall()
     tables = []
     for rec in record:
@@ -78,11 +75,11 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5441
-    cluster = Cluster(host=host, port=port, passw=utils.password_from_file('postgres', host, 5433))
-    databases = cluster.databases[0:]
+    env = 'test'
+    databases = get_cluster_databases(env)
     #databases = Repository.get_db_names_by_group('JAKARTA')
-    #databases = ['eobu_tariff']
+    #databases = ['core_notification_wa']
+    port = utils.get_port(env)
     ports = list(range(port, port+1))
-    return_dict = parallel_run(host, ports, databases, service_user_check)
+    return_dict = parallel_run(ports, databases, dwh_check)
     utils.print_table_level_check(return_dict, filtered=True)

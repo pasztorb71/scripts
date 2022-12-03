@@ -44,6 +44,14 @@ def print_sql_result(d, maxlength, header=False):
                         print('  ' + value)
     print(f'Összesen: {len(d)} db repo')
 
+def print_one_result(d, maxlength):
+    for db, value in sorted(d.items()):
+        print(f"{db}:".ljust(maxlength), end='')
+        if value:
+            print(value)
+        else:
+            print()
+
 def get_port(env, repo_full_name=''):
     if env == 'sandbox':
         return 5433
@@ -53,16 +61,26 @@ def get_port(env, repo_full_name=''):
         return 5435
     elif env == 'perf':
         return 5436
-    elif env == 'cantas_train':
+    elif env == 'train':
         return 5437
-    elif env == 'cantas_test':
+    elif env == 'test':
         return 5438
     elif env == 'local':
         return 5432
     elif env.startswith('new_'):
         inst = get_instance_from_repo_full_name(repo_full_name)
         return new_base[env] + offset[inst]
-
+    else:
+        print(f"utils.get_port('{env}')\n" + """"Nem létező környezet:
+Lehetséges értékek:
+  sandbox
+  dev
+  fit
+  perf
+  train
+  test
+  new_""")
+        raise Exception("Nem létező környezet")
 
 def get_env(port):
     if port == 5433:
@@ -139,11 +157,6 @@ def whoami(  ):
     return f'--- {sys._getframe(1).f_code.co_name} ---'
 
 
-def repo_in_newloc(repo, loc):
-    repos = """
-    """
-
-
 def get_ip_address_for_docker(repo, loc):
     #oc = 'new_'+loc if repo_in_newloc(repo, loc) else loc
     if loc.startswith('new_'):
@@ -185,3 +198,7 @@ def get_conn_service_user(env, db):
         return None
 
 
+def get_cluster_databases(env):
+    host, port = 'localhost', get_port(env)
+    cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
+    return cluster.databases[0:]

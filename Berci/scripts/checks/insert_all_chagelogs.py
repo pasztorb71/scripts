@@ -75,7 +75,7 @@ def insert_proc_parallel():
     # databases = load_from_file('../databases.txt')
     databases = cluster.databases[0:]
     #databases = ['enforcement_eligibility_detection']
-    ports = list(range(5432, 5435))
+    ports = list(range(5438, 5439))
     return_dict = parallel_run_all_databases(host, ports, insert_changelog)
     utils.print_sql_result(return_dict, len(max(databases, key=len)) + 5)
 
@@ -93,7 +93,7 @@ def insert_filesystem_all_changelogs():
 
 if __name__ == '__main__':
     #insert_proc()
-    insert_filesystem_all_changelogs()
-    exit(0)
+    #insert_filesystem_all_changelogs()
+    #exit(0)
     insert_proc_parallel()
 

@@ -1,4 +1,5 @@
 import re
+from pprint import pprint
 
 import psycopg2
 from tabulate import tabulate
@@ -103,6 +104,15 @@ def print_changeset1(changeset_ids):
         pass
 
 if __name__ == '__main__':
+    repo_names = Repository().get_repo_names()
+    repos = [Repository(x) for x in repo_names]
+    out = []
+    for repo in repos:
+        out.append([repo.name, '_'+repo.env_ver, '_'+repo.last_component_ver if repo.last_component_ver else ' '])
+    header = ['név', 'env_ver', 'label']
+    print(out)
+    print(tabulate(out, headers=header))
+    exit(0)
     """
     release = 'R0.10'
     repos = get_repos_containing_release(release)
@@ -122,7 +132,7 @@ if __name__ == '__main__':
     for port in ports:
         header.append(get_env(port))
     host = 'localhost'
-    #version_files = get_version_filenames(databases, '0.08')
+    version_files = get_version_filenames(databases, '0.10')
     databases = ['core_vehicle']
     return_dict = parallel_run(host, ports, databases, get_changelogs)
     for key, data in return_dict.items():

@@ -28,7 +28,7 @@ if __name__ == '__main__':
     to_replace = [['core-customer', db],['core_customer', db_path]]
   #work
     #git_init(base)
-    #exit(0)
+    exit(0)
     #TODO loggert bevezetni, a dir és fájl másolásokat csak DEBUG szinten mutassa
     copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\.gitlab\\', base+'/.gitlab', delete_dir_if_exists=True)
     copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\docs\\', base+'/docs', delete_dir_if_exists=True)
@@ -47,6 +47,8 @@ if __name__ == '__main__':
     replace_in_file(path+'release.sh', to_replace)
     os.system('git -C '+base+' add '+path+'release.sh')
     os.system('git -C '+base+' update-index --chmod=+x '+path+'release.sh')
+    os.system('git -C ' + base + ' add ' + 'run.sh')
+    os.system('git -C ' + base + ' update-index --chmod=+x ' + 'run.sh')
     path = 'c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\'
     copy_file(path+'.gitignore', base+'/.gitignore')
     copy_file(path+'.gitlab-ci.yml', base+'/.gitlab-ci.yml')

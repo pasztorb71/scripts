@@ -48,7 +48,7 @@ class Runner:
 
     def get_dbs(self, repo):
             if repo == 'doc-postgredb':
-                return ['document']
+                return ['doc_document']
             t = repo.split('-')
             return ['_'.join(t[1:-1])]
 
@@ -66,7 +66,7 @@ class Runner:
     def run_for_repo(self, ip_address, repo, delete_changelog_only=False):
         print(f"Környezet IP: {ip_address}")
         print(f"Az alábbi repora lesz telepítve: {repo}")
-        print(Repository(repo).get_schema_version_content())
+        print(Repository(repo).get_schema_version_label_lines())
         if input("Mehet a telepítés? [y/n]") != "y":
             print('Telepítés megszakítva!')
             return

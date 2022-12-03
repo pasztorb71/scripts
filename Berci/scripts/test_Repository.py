@@ -34,5 +34,39 @@ class TestRepository(TestCase):
 
     def test_get_db_names_by_group(self):
         actual = Repository.get_db_names_by_group('K-Team')
-        expected = ['enforcement_eligibility_declaration', 'enforcement_eligibility']
+        expected = ['enforcement_eligibility', 'enforcement_onsite_alert_subscribe']
         self.assertListEqual(expected, actual)
+
+    def test_env_ver(self):
+        self.assertEqual('0.11', Repository('transit').env_ver)
+
+    def test_get_schema1(self):
+        r = Repository('mlff-core-customer-postgredb')
+        self.assertEqual('customer', r.get_schema())
+
+    def test_get_schema2(self):
+        r = Repository('mlff-enforcement-onsite-alert-subscribe-postgredb')
+        self.assertEqual('subscribe', r.get_schema())
+
+    def test_get_schema3(self):
+        r = Repository('detection-alert')
+        self.assertEqual('detection_alert', r.get_schema())
+
+    def test_get_schema_version_content(self):
+        r = Repository('-pn')
+        c = r.get_schema_version_label_lines()
+        self.assertTrue(len(c.splitlines()) == 0)
+
+    def test_get_tables_dir1(self):
+        r = Repository('customer')
+        tabdir = 'c:/GIT/MLFF/mlff-core-customer-postgredb/liquibase/core_customer/customer/tables'
+        self.assertEqual(tabdir, r.get_tables_dir())
+
+    def test_get_tables_dir2(self):
+        r = Repository('detection-alert')
+        tabdir = 'c:/GIT/MLFF/mlff-enforcement-detection-alert-postgredb/liquibase/enforcement_detection_alert/detection_alert/tables'
+        self.assertEqual(tabdir, r.get_tables_dir())
+
+    def test_last_component_ver(self):
+        r = Repository('mlff-core-notification-wa-postgredb')
+        self.assertEqual('0.10', r.last_component_ver)

@@ -7,7 +7,7 @@ def get_db_name(base):
     if m:
         return m.group(1)
     if 'doc-postgredb' in base:
-        return 'document'
+        return 'doc_document'
 
 
 def get_schema(base, db_path):

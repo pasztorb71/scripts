@@ -9,12 +9,12 @@ from utils_db_schema import get_sema_from_dbname
 
 
 class Repository():
-    base = 'c:\\GIT\\MLFF\\'
+    base = 'c:/GIT/MLFF/'
 
     def __init__(self, name='', schema=''):
         if name:
             self.name = self.find_name(name)
-            self.base_path = 'c:/GIT/MLFF/' + self.name + '/liquibase/'
+            self.base_path = self.base + self.name + '/liquibase/'
             self.dbname = self.get_db_name()
             self.db_path = self.dbname.replace('-', '_')
             self.schema = self.get_schema() if not schema else schema
@@ -44,18 +44,25 @@ class Repository():
     def get_repo_names(self):
         return os.listdir(self.__class__.base)
 
+    @property
+    def last_component_ver(self):
+        c = self.get_schema_version_label_lines().splitlines()
+        if len(c) == 0: return None
+        m = re.match('.*labels="(.*), .*', c[-1])
+        return m.group(1) if m else None
+
+    @property
+    def env_ver(self):
+        with open(f'{self.base}{self.name}/.env', 'r', encoding='utf8') as f:
+            ver = re.match('.*VERSION=(.*)\n', f.read(), flags=re.DOTALL).group(1)
+        return ver.rsplit('.', 1)[0]
+
 
     def get_schema(self):
-        line = ''
-        pattern = '.*property name="schema_name.*value="(.*)"/>'
-        p = self.base_path + self.db_path +'/' + get_sema_from_dbname(self.db_path)
-        with open(self.get_base_path() + self.db_path +'/' + get_sema_from_dbname(self.db_path) + '/liquibase-install-schema.xml', 'r', encoding='utf-8') as f:
-            text = f.read().splitlines()
-            for l in text:
-                m = re.match(pattern, l)
-                if m:
-                    return m.group(1)
-        return ''
+        files = os.listdir(self.base_path + self.db_path)
+        noneed = ['install-parameters-db1.xml', 'liquibase-install-db1-step-01.xml', 'liquibase-install-db1-step-02.xml',
+                  '_all-modules', '_create_dbs', '__init_dbs']
+        return list(set(files) - set(noneed))[0]
 
     @classmethod
     def _get_db_name(cls, base_path):
@@ -64,7 +71,7 @@ class Repository():
         if m:
             name = m.group(1)
         if 'doc-postgredb' in base_path:
-            name = 'document'
+            name = 'doc_document'
         return name.replace('-', '_')
 
     @classmethod
@@ -85,7 +92,7 @@ class Repository():
     def get_tables_dir(self):
         return '/'.join([self.base_path[:-1], self.db_path, self.schema, 'tables'])
 
-    def get_schema_version_content(self):
+    def get_schema_version_label_lines(self):
         with open(f'{self.get_tables_dir()}/schema-version-0.xml', 'r', encoding='utf8') as f:
             return ''.join([line for line in f.readlines() if 'labels=' in line])
 
@@ -106,7 +113,7 @@ class Repository():
         print(f"{fname} file created.")
 
 
-    def schema_version_xml(self, tab_name):
+    def modify_schema_version_xml(self, tab_name):
         dirname = self.get_tables_dir()
         ddl_line = f'<include file="{tab_name}/{tab_name}.sql" relativeToChangelogFile="true"/>'
         append_to_file_after_line_last_occurence(f"{dirname}/create-tables.xml", '<include file=', '  ' + ddl_line)

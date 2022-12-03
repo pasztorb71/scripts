@@ -30,12 +30,15 @@ class Test(TestCase):
         expected = 'x__version'
         self.assertEqual(expected, colname)
 
-    def test_password_from_file(self):
+    def test_password_from_file1(self):
         self.assertEqual('mlffTitkosPassword123!',
                          utils.password_from_file('notification_wa_service', 'localhost', 5433))
 
-    def test_password_from_file1(self):
+    def test_password_from_file2(self):
         self.assertEqual('mysecretpassword', utils.password_from_file('postgres', 'localhost', 5432))
+
+    def test_password_from_file_service(self):
+        self.assertEqual('mlffTitkosPassword123!', utils.password_from_file('detection_service', 'localhost', 5437))
 
     def test_password_from_file_all_hosts(self):
         self.assertEqual('mlffTitkosPassword123!', utils.password_from_file('dwh_read', 'localhost', '*'))
@@ -136,9 +139,4 @@ class Test(TestCase):
     def test_get_port2(self):
         self.assertEqual(5544, utils.get_port('new_dev', Repository('account-info').name))
 
-    def test_repo_in_newloc1(self):
-        self.assertTrue(utils.repo_in_newloc('mlff-core-customer-postgredb', 'sandbox'))
-
-    def test_repo_in_newloc2(self):
-        self.assertTrue(utils.repo_in_newloc('mlff-core-customer-postgredb', 'dev'))
 

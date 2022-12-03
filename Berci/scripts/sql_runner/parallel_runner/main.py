@@ -222,8 +222,10 @@ def mproc_grant_dwh_read(host, port, db, return_dict):
     record = cur.fetchall()
     for rec in record:
         cmd = "GRANT USAGE ON SCHEMA " + rec[0] + " TO dwh_read;"
+        print(cmd)
         cur.execute(cmd)
         cmd = "GRANT " + rec[0] + "_sel TO dwh_read;"
+        print(cmd)
         cur.execute(cmd)
     return_dict[db] = "OK"
 
@@ -271,8 +273,9 @@ def sum_counts(d):
     return sum
 
 
-def parallel_run(host, ports, databases, func):
+def parallel_run(ports, databases, func):
     global jobs
+    host = 'localhost'
     return_dict = get_return_dict()
     jobs = []
     for port in ports:
@@ -294,14 +297,14 @@ def parallel_run_all_databases(host, ports, func):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5432
+    host, port = 'localhost', 5438
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     #databases = load_from_file('../databases.txt')
     #databases = [x for x in cluster.databases[0:] if 'notification' in x]
     databases = cluster.databases[0:]
-    databases = ['settlement_tro_clearing']
+    databases = ['core_notification_wa']
     #ports = list(range(5433,5440))
-    ports = [5432]
-    return_dict = parallel_run(host, ports, databases, mproc_count_records)
+    ports = [port]
+    return_dict = parallel_run(ports, databases, mproc_grant_dwh_read)
     print_sql_result(return_dict, len(max(databases, key=len)) + 5, header=True)
 

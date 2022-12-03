@@ -14,7 +14,7 @@ class TestRunner(TestCase):
 
     def test_get_dbs1(self):
         self.assertListEqual(self.runner.get_dbs('doc-postgredb'),
-                             ['document', ])
+                             ['doc_document', ])
 
     def test_kill(self):
         pass
