@@ -1,6 +1,7 @@
 import psycopg2
 
 import utils
+import utils_sec
 from sql_runner.parallel_runner.main import parallel_run
 from utils import get_cluster_databases
 
@@ -13,7 +14,7 @@ def dwh_check(host, port, db, return_dict):
             port=port,
             database=db,
             user=v_user,
-            password=utils.password_from_file(v_user, host, '*'))
+            password=utils_sec.password_from_file(v_user, host, '*'))
     except Exception as e:
         print(f'{port}|{db}: {e}')
         return
@@ -37,7 +38,7 @@ def service_user_check(host, port, db, return_dict):
             port=port,
             database=db,
             user='postgres',
-            password=utils.password_from_file('postgres', host, port))
+            password=utils_sec.password_from_file('postgres', host, port))
     except Exception as e:
         print(f'{port}|{db}: {e}')
         return
@@ -54,7 +55,7 @@ def service_user_check(host, port, db, return_dict):
             port=port,
             database=db,
             user=schema+'_service',
-            password=utils.password_from_file(schema+'_service', host, '*'))
+            password=utils_sec.password_from_file(schema + '_service', host, '*'))
     except Exception as e:
         print(f'{port}|{db}: {e}')
         return
@@ -75,11 +76,12 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    env = 'test'
+    env = 'new_dev'
     databases = get_cluster_databases(env)
     #databases = Repository.get_db_names_by_group('JAKARTA')
     #databases = ['core_notification_wa']
     port = utils.get_port(env)
     ports = list(range(port, port+1))
-    return_dict = parallel_run(ports, databases, dwh_check)
+    #return_dict = parallel_run(ports, databases, dwh_check)
+    return_dict = parallel_run(ports, databases, service_user_check)
     utils.print_table_level_check(return_dict, filtered=True)

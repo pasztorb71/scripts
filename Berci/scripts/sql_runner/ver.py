@@ -1,5 +1,5 @@
 from Cluster import Cluster
-from utils import password_from_file
+from utils_sec import password_from_file
 
 host, port = 'localhost', 5433
 c = Cluster(host=host, port=port, passw=password_from_file(host, port))

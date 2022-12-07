@@ -4,6 +4,7 @@ from unittest import TestCase
 import utils
 import utils_command
 import utils_file
+import utils_sec
 from Repository import Repository
 from utils import get_login_from_file
 
@@ -32,16 +33,16 @@ class Test(TestCase):
 
     def test_password_from_file1(self):
         self.assertEqual('mlffTitkosPassword123!',
-                         utils.password_from_file('notification_wa_service', 'localhost', 5433))
+                         utils_sec.password_from_file('notification_wa_service', 'localhost', 5433))
 
     def test_password_from_file2(self):
-        self.assertEqual('mysecretpassword', utils.password_from_file('postgres', 'localhost', 5432))
+        self.assertEqual('mysecretpassword', utils_sec.password_from_file('postgres', 'localhost', 5432))
 
     def test_password_from_file_service(self):
-        self.assertEqual('mlffTitkosPassword123!', utils.password_from_file('detection_service', 'localhost', 5437))
+        self.assertEqual('mlffTitkosPassword123!', utils_sec.password_from_file('detection_service', 'localhost', 5437))
 
     def test_password_from_file_all_hosts(self):
-        self.assertEqual('mlffTitkosPassword123!', utils.password_from_file('dwh_read', 'localhost', '*'))
+        self.assertEqual('mlffTitkosPassword123!', utils_sec.password_from_file('dwh_read', 'localhost', '*'))
 
     def test_get_schema_from_command(self):
         actual = utils_command.get_schema_from_command(

@@ -4,8 +4,10 @@ import multiprocessing
 import psycopg2
 
 import utils
+import utils_sec
 from Cluster import Cluster
-from utils import password_from_file, print_sql_result
+from utils import print_sql_result
+from utils_sec import password_from_file
 
 
 def mproc_single_command_tmpl(host, port, db, return_dict):
@@ -77,7 +79,7 @@ def mproc_single_csabi(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=utils.password_from_file('postgres', host, port))
+        password=utils_sec.password_from_file('postgres', host, port))
     cur = conn.cursor()
     #cur.execute("Truncate table public.debezium_heartbeat")
     #cur.execute("update public.debezium_heartbeat set last_heartbeat_ts = now()")

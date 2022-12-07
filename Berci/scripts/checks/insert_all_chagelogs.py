@@ -1,6 +1,7 @@
 import psycopg2
 
 import utils
+import utils_sec
 from Cluster import Cluster
 from Database import Database
 from checks.db_changeset_status import get_changeset_ids_from_repos_release
@@ -46,7 +47,7 @@ def insert_changelog(host, port, db, return_dict):
                 port=port,
                 database=db,
                 user='postgres',
-                password=utils.password_from_file('postgres', host, port))
+                password=utils_sec.password_from_file('postgres', host, port))
         cur = from_conn.cursor()
         cur.execute(sql)
         records = cur.fetchall()
@@ -57,7 +58,7 @@ def insert_changelog(host, port, db, return_dict):
                 port=5432,
                 database='postgres',
                 user='postgres',
-                password=utils.password_from_file('postgres', host, 5432))
+                password=utils_sec.password_from_file('postgres', host, 5432))
         cur = to_conn.cursor()
         cur.execute(f"delete from public.all_changelogs where env='{env}' and database_name='{db}'")
         insert_query = """INSERT INTO public.all_changelogs (env, database_name, id, author, filename, dateexecuted, 
@@ -71,7 +72,7 @@ def insert_changelog(host, port, db, return_dict):
 
 def insert_proc_parallel():
     host, port = 'localhost', 5432
-    cluster = Cluster(host=host, port=port, passw=utils.password_from_file('postgres', host, port))
+    cluster = Cluster(host=host, port=port, passw=utils_sec.password_from_file('postgres', host, port))
     # databases = load_from_file('../databases.txt')
     databases = cluster.databases[0:]
     #databases = ['enforcement_eligibility_detection']

@@ -3,7 +3,8 @@ import re
 from Cluster import Cluster
 from checks.cmdlist import cmdlist
 from sql_runner.parallel_runner.main import parallel_run
-from utils import password_from_file, print_sql_result, get_conn_service_user
+from utils import print_sql_result, get_conn_service_user
+from utils_sec import password_from_file
 
 
 def runteszt(host, port, db, return_dict):

@@ -10,7 +10,7 @@ if __name__ == '__main__':
     repo = Repository()
     base = repo.get_base()
     repo_names = repo.get_repo_names()
-    repos = [Repository(x) for x in repo_names if x.startswith('mlff-core-')]
+    #repos = [Repository(x) for x in repo_names if x.startswith('doc-') == False]
     repos = repositories
     runner = Runner(base, repos)
     # TODO beletenni maga előtt teljes törlés opciót

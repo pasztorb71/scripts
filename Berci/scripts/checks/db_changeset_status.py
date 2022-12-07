@@ -5,6 +5,7 @@ import psycopg2
 from tabulate import tabulate
 
 import utils
+import utils_sec
 from Repository import Repository
 from sql_runner.parallel_runner.main import parallel_run
 from utils import get_env
@@ -18,7 +19,7 @@ def get_changelogs(host, port, db, return_dict):
             port=port,
             database=db,
             user="postgres",
-            password=utils.password_from_file('postgres', host, port)
+            password=utils_sec.password_from_file('postgres', host, port)
         )
     except psycopg2.OperationalError:
         return_dict[f'{db}|{port}'] = None

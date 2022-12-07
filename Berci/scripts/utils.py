@@ -7,7 +7,8 @@ from tabulate import tabulate
 from Cluster import Cluster
 from docker_ips import new_base, offset, base_ips
 from utils_db_schema import get_sema_from_dbname
-from utils_repo import get_instance_from_repo_full_name
+import utils_repo
+from utils_sec import password_from_file
 
 
 def move_upper_dir(path):
@@ -68,7 +69,7 @@ def get_port(env, repo_full_name=''):
     elif env == 'local':
         return 5432
     elif env.startswith('new_'):
-        inst = get_instance_from_repo_full_name(repo_full_name)
+        inst = utils_repo.get_instance_from_repo_full_name(repo_full_name)
         return new_base[env] + offset[inst]
     else:
         print(f"utils.get_port('{env}')\n" + """"Nem létező környezet:
@@ -102,22 +103,6 @@ def get_password(env, user):
     if user != 'postgres':
         return 'mlffTitkosPassword123!'
     return 'fLXyFS0RpmIX9uxGII4N' if env != 'local' else 'mysecretpassword'
-
-
-def password_from_file(puser, phost, pport):
-    pass_out = ''
-    with open(getfile(password_from_file).rsplit('\\',1)[0] + '/db_passw.txt', 'r') as f:
-        for line in f.read().split('\n'):
-            if line.startswith('#'):
-                continue
-            user, host, port, passw = line.split()
-            if '_service' in puser and '_service' in user:
-                pass_out = passw
-                break
-            if host == phost and port == str(pport) and user == puser:
-                pass_out = passw
-                break
-    return pass_out
 
 
 def get_login_from_file():
@@ -160,7 +145,7 @@ def whoami(  ):
 def get_ip_address_for_docker(repo, loc):
     #oc = 'new_'+loc if repo_in_newloc(repo, loc) else loc
     if loc.startswith('new_'):
-        inst = get_instance_from_repo_full_name(repo)
+        inst = utils_repo.get_instance_from_repo_full_name(repo)
         return 'gateway.docker.internal:' + str(new_base[loc] + offset[inst])
     else:
         return base_ips[loc]

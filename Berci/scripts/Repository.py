@@ -5,7 +5,6 @@ from inspect import getfile
 import utils
 from utils_file import append_to_file_after_line_last_occurence
 from Database import Database
-from utils_db_schema import get_sema_from_dbname
 
 
 class Repository():

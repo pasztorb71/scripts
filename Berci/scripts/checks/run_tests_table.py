@@ -2,7 +2,8 @@ import logging
 
 from Cluster import Cluster
 from Repository import Repository
-from utils import password_from_file, get_conn
+from utils import get_conn
+from utils_sec import password_from_file
 from utils_db_schema import get_sema_from_dbname
 
 

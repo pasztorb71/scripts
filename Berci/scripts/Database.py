@@ -2,7 +2,7 @@ import os
 
 import psycopg2
 
-import utils
+import utils_sec
 
 
 class Database:
@@ -24,7 +24,7 @@ class Database:
                 port=self.port,
                 database=self.name,
                 user=self.user,
-                password=utils.password_from_file(self.user, self.host, self.port))
+                password=utils_sec.password_from_file(self.user, self.host, self.port))
         return self.__conn
 
     def sql_exec(self, *args):
