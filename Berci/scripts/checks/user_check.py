@@ -76,11 +76,12 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    env = 'new_dev'
-    databases = get_cluster_databases(env)
+    env = 'new_sandbox'
+    databases = get_cluster_databases(env, 5442)
     #databases = Repository.get_db_names_by_group('JAKARTA')
     #databases = ['core_notification_wa']
-    port = utils.get_port(env)
+    #port = utils.get_port(env)
+    port = 5442
     ports = list(range(port, port+1))
     #return_dict = parallel_run(ports, databases, dwh_check)
     return_dict = parallel_run(ports, databases, service_user_check)

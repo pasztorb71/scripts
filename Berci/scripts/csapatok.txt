@@ -30,6 +30,7 @@ mlff-settlement-tro-clearing-postgredb               LIBRA
 
 mlff-enforcement-eligibility-postgredb               K-Team
 mlff-enforcement-onsite-alert-subscribe-postgredb    K-Team
+mlff-enforcement-sanctioning-sanction-postgredb      K-Team
 
 doc-postgredb                                        iCell belsős
 mlff-data-ingestion-meta-postgredb                   DWH   

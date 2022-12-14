@@ -66,6 +66,8 @@ def get_port(env, repo_full_name=''):
         return 5437
     elif env == 'test':
         return 5438
+    elif env == 'cron_test':
+        return 5555
     elif env == 'local':
         return 5432
     elif env.startswith('new_'):
@@ -183,7 +185,9 @@ def get_conn_service_user(env, db):
         return None
 
 
-def get_cluster_databases(env):
-    host, port = 'localhost', get_port(env)
+def get_cluster_databases(env, port=''):
+    if not port:
+        port = get_port(env)
+    host = 'localhost'
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     return cluster.databases[0:]

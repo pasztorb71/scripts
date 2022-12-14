@@ -21,14 +21,14 @@ def create_file(fname):
 
 if __name__ == '__main__':
   # prepare
-    repo = 'mlff-enforcement-detection-transit-identifier-postgredb'
+    repo = 'mlff-enforcement-sanctioning-sanction-postgredb'
     base = 'c:/GIT/MLFF/'+repo
     db = get_db_name(base)
     db_path = db.replace('-', '_')
     to_replace = [['core-customer', db],['core_customer', db_path]]
   #work
     #git_init(base)
-    exit(0)
+    #exit(0)
     #TODO loggert bevezetni, a dir és fájl másolásokat csak DEBUG szinten mutassa
     copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\.gitlab\\', base+'/.gitlab', delete_dir_if_exists=True)
     copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\docs\\', base+'/docs', delete_dir_if_exists=True)

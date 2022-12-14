@@ -3,6 +3,8 @@ import logging
 import os
 from datetime import datetime
 
+import utils
+import utils_sec
 from Repository import Repository
 from utils import get_ip_address_for_docker
 from utils_db_schema import get_dbname_from_project
@@ -70,7 +72,7 @@ class Runner:
         if input("Mehet a telepítés? [y/n]") != "y":
             print('Telepítés megszakítva!')
             return
-        logging.info(f"{repo} - {ip_address}")
+        logging.info(f"{repo} - {self.loc} - Delete_before:{self.delete_db_before} - Checkonly:{self.checkonly}")
         if self.delete_db_before:
             if self.loc != 'local':
                 exit('Nem local esetén nem dobható el az adatbázis!!!')
@@ -85,8 +87,8 @@ class Runner:
         self.delete_db_before = delete_db_before
         self.loc = loc
         self.checkonly = checkonly
-        self.password = 'fLXyFS0RpmIX9uxGII4N' if loc != 'local' else 'mysecretpassword'
         for repo in [repo.get_name() for repo in self.repos]:
+            self.password = utils_sec.password_from_file('postgres', 'localhost', utils.get_port(loc, repo))
             self.run_for_repo(get_ip_address_for_docker(repo, loc), repo, delete_changelog_only)
 
     def kill(self, param):
