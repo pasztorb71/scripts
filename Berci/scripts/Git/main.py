@@ -117,7 +117,7 @@ if __name__ == '__main__':
     repo_names = repo.get_repo_names()
     #repo_names = ['mlff-core-customer-postgredb', 'mlff-payment-invoice-postgredb']
     gitlist = [Git(base, name) for name in repo_names][0:]
-    #check_diff_and_synchronize()
-    synchronize_branch_in_multiple_repos(gitlist, branch='master')
+    check_diff_and_synchronize()
+    #synchronize_branch_in_multiple_repos(gitlist, branch='master')
     exit(0)
     #create_branch_multiple_repos(gitlist, 'feature/MLFFDEV-10170-ci-cd-folyamat-verzio-upgrade')

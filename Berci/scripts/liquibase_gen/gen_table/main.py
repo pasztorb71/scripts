@@ -119,7 +119,7 @@ def table_header(sema, tab_name, ticket_name, version):
     print("""--===============================================================================================--
 -- TABLE ==
 ---------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:!TABLE!-DDL-!!ticket!!-01 runOnChange:true
+--changeset bertalan.pasztor:!TABLE!-TBL-!!ticket!!-01 runOnChange:true
 --comment A !table! tábla létrehozása..
 --
 --preconditions onFail:MARK_RAN onError:HALT
@@ -129,9 +129,8 @@ SET search_path = ${schema_name};
 """.replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema).replace('!!version!!', version).replace('!!ticket!!',ticket_name))
 
 
-def table_history(tab_name, ticket_name, version):
+def table_history(sema, tab_name, ticket_name, version):
     t = tab_name.split('.')
-    sema = t[0]
     table = tab_name
     print("""--===============================================================================================--
 -- HISTORY ==
@@ -169,7 +168,7 @@ COMMIT;
 
 def table_indexes(tab_name, table, tab_short_name):
     for col in [row for row in table if is_row_needed(row[0])][1:]:
-        if col[0].lower().endswith('_id'):
+        if col[0].lower().endswith('_id') or col[0].lower().endswith('_refid'):
             print('CREATE INDEX ix_'+tab_short_name+'_'+col[0].lower()+' ON '+tab_name+' USING btree ('+col[0].lower()+');')
 
 
@@ -184,7 +183,7 @@ def print_table_script(tab_comment, schema_name, tab_name, table, history, ticke
     print()
     table_grants(tab_name, ticket_name, version)
     if history == 'y':
-        table_history(tab_name, ticket_name, version)
+        table_history(schema_name, tab_name, ticket_name, version)
 
 
 def create_tablefile(repo:Repository, tab_name):

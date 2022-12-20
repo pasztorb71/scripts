@@ -64,7 +64,7 @@ class Repository():
     def get_schema(self):
         files = os.listdir(self.base_path + self.db_path)
         noneed = ['install-parameters-db1.xml', 'liquibase-install-db1-step-01.xml', 'liquibase-install-db1-step-02.xml',
-                  '_all-modules', '_create_dbs', '__init_dbs', '_init_dbs', 'all-modules']
+                  '_all-modules', '_create_dbs', '__init_dbs', '_init_dbs', 'all-modules', 'partman', 'cron_jobs']
         return list(set(files) - set(noneed))[0]
 
     @classmethod

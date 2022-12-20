@@ -2,7 +2,14 @@ import utils
 from Database import Database
 from Repository import Repository
 
+
+def copy_fit():
+    Cluster
+
+
 if __name__ == '__main__':
+    copy_fit()
+    exit(0)
     repo = Repository()
     repo_names = repo.get_repo_names()
     repos = [Repository(x) for x in repo_names if x.startswith('')]

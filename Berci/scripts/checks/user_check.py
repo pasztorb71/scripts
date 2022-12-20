@@ -19,7 +19,7 @@ def dwh_check(host, port, db, return_dict):
         print(f'{port}|{db}: {e}')
         return
     cur = conn.cursor()
-    cur.execute("SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema NOT IN ('pg_catalog', 'information_schema', 'public')"
+    cur.execute("SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema NOT IN ('pg_catalog', 'information_schema', 'public', 'partman')"
                 "and table_name not like '%$hist'")
     record = cur.fetchall()
     tables = []
@@ -43,7 +43,7 @@ def service_user_check(host, port, db, return_dict):
         print(f'{port}|{db}: {e}')
         return
     cur = conn.cursor()
-    cur.execute("SELECT schema_name FROM information_schema.schemata s WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'public', 'pg_toast')")
+    cur.execute("SELECT schema_name FROM information_schema.schemata s WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'public', 'pg_toast', 'partman')")
     try:
         schema = cur.fetchone()[0]
     except Exception as e:
@@ -76,13 +76,13 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    env = 'new_sandbox'
-    databases = get_cluster_databases(env, 5442)
+    env = 'new_dev'
+    port = 5441
+    databases = get_cluster_databases(env, port)
     #databases = Repository.get_db_names_by_group('JAKARTA')
-    #databases = ['core_notification_wa']
+    #databases = ['core_customer']
     #port = utils.get_port(env)
-    port = 5442
     ports = list(range(port, port+1))
     #return_dict = parallel_run(ports, databases, dwh_check)
     return_dict = parallel_run(ports, databases, service_user_check)
-    utils.print_table_level_check(return_dict, filtered=True)
+    utils.print_table_level_check(return_dict, filtered=False)

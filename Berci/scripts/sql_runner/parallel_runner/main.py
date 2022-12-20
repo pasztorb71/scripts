@@ -299,14 +299,14 @@ def parallel_run_all_databases(host, ports, func):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5438
-    cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
+    #host, port = 'localhost', 5438
+    #cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     #databases = load_from_file('../databases.txt')
     #databases = [x for x in cluster.databases[0:] if 'notification' in x]
-    databases = cluster.databases[0:]
-    databases = ['core_notification_wa']
+    #databases = cluster.databases[0:]
+    databases = ['core_customer']
     #ports = list(range(5433,5440))
-    ports = [port]
-    return_dict = parallel_run(ports, databases, mproc_grant_dwh_read)
+    ports = [5432, 5441]
+    return_dict = parallel_run(ports, databases, mproc_count_records)
     print_sql_result(return_dict, len(max(databases, key=len)) + 5, header=True)
 
