@@ -1,11 +1,15 @@
 import utils
+from Cluster import Cluster
 from Database import Database
 from Repository import Repository
+from utils_sec import password_from_file
 
 
 def copy_fit():
-    Cluster
-
+    host, port = 'localhost', utils.get_port('fit')
+    cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
+    databases = cluster.databases[0:]
+    pass
 
 if __name__ == '__main__':
     copy_fit()
