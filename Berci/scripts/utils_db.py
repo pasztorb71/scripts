@@ -1,6 +1,8 @@
 import os
 import re
 
+import Repository
+
 
 def get_db_name(base):
     m = re.match('.*mlff-(.*)-postgredb', base)
@@ -49,3 +51,11 @@ def get_sema_from_dbname(db):
     if db == 'payment_transaction':
         return 'payment_transaction'
     return db.split('_', 1)[1]
+
+
+def get_repository_name_from_dbname(db_name):
+    repo_names = Repository.Repository().get_repo_names()
+    for repo in [Repository.Repository(x) for x in repo_names]:
+        if db_name == repo.get_db_name():
+            return repo.name
+    return None

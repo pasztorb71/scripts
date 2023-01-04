@@ -3,7 +3,7 @@ import os
 from Berci.scripts.utils import git_init, move_upper_dir, copy_file_and_replace, create_old_file, \
   replace_in_file, get_files_from_path_ext_filtered, load_from_file
 
-from utils_db_schema import get_schema
+from utils_db import get_schema
 
 
 def change_file(fname):

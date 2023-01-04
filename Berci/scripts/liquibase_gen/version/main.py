@@ -1,5 +1,5 @@
 import Repository
-import utils_db_schema
+import utils_db
 from Ticket import Ticket
 
 

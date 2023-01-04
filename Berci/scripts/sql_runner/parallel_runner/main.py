@@ -25,6 +25,25 @@ def mproc_single_command_tmpl(host, port, db, return_dict):
     conn.commit()
     conn.close()
 
+def mproc_grant_after_migr(host, port, db, return_dict):
+    conn = psycopg2.connect(
+        host=host,
+        port=port,
+        database=db,
+        user="postgres",
+        password=password_from_file('postgres', host, port))
+    cur = conn.cursor()
+    cur.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_owner = 'postgres';")
+    record = cur.fetchall()
+    for rec in record:
+        cur.execute(f"GRANT USAGE ON SCHEMA {rec[0]} TO  {rec[0]}_sel;")
+        cur.execute(f"GRANT USAGE ON SCHEMA {rec[0]} TO  {rec[0]}_tbl_own;")
+    return_dict[db] = "OK"
+
+    cur.close()
+    conn.commit()
+    conn.close()
+
 def mproc_single_command_test(host, port, db, return_dict):
     conn = psycopg2.connect(
         host=host,
@@ -299,14 +318,14 @@ def parallel_run_all_databases(host, ports, func):
 
 
 if __name__ == '__main__':
-    #host, port = 'localhost', 5438
-    #cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
+    host, port = 'localhost', 5645
+    cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     #databases = load_from_file('../databases.txt')
     #databases = [x for x in cluster.databases[0:] if 'notification' in x]
-    #databases = cluster.databases[0:]
-    databases = ['core_customer']
-    #ports = list(range(5433,5440))
-    ports = [5432, 5441]
-    return_dict = parallel_run(ports, databases, mproc_count_records)
+    databases = cluster.databases[0:]
+    #databases = ['core_customer']
+    #ports = list(range(5435,port))
+    ports = [port]
+    return_dict = parallel_run(ports, databases, mproc_grant_after_migr)
     print_sql_result(return_dict, len(max(databases, key=len)) + 5, header=True)
 

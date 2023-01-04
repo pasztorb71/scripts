@@ -7,17 +7,18 @@ import utils
 import utils_sec
 from Repository import Repository
 from utils import get_ip_address_for_docker
-from utils_db_schema import get_dbname_from_project
+from utils_db import get_dbname_from_project
 
 
 class Runner:
     repos = []
-    def __init__(self, base, repos=[]):
-        self.base = base
+    def __init__(self, repos=[]):
+        self.base = 'c:/GIT/MLFF/'
         self.password = ''
         self.loc = ''
         self.delete_db_before = False
         Runner.repos = repos
+        logging.basicConfig(level=logging.DEBUG, filename='liquibase_run.log', filemode='a', format='%(asctime)s - %(message)s')
 
     def _call_liquibase(self, project, env, postgrespass, db):
         print(project + ' : ' + db)
@@ -82,7 +83,7 @@ class Runner:
         for db in self.get_dbs(repo):
             self._call_liquibase(repo, ip_address, self.password, db)
 
-    def run(self, loc, delete_db_before, checkonly, delete_changelog_only=False, log=True):
+    def run_multiple_repos(self, loc, checkonly, delete_db_before=False, delete_changelog_only=False):
         if not checkonly and not self.confirm(loc): return
         self.delete_db_before = delete_db_before
         self.loc = loc

@@ -60,13 +60,14 @@ def service_user_check(host, port, db, return_dict):
         print(f'{port}|{db}: {e}')
         return
     cur = conn.cursor()
-    cur.execute("SELECT schemaname, tablename  FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema', 'public')"
+    cur.execute("SELECT schemaname, tablename  FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema', 'public', 'partman')"
                 " and tablename not like '%$hist' and tablename not in ('staging_done', 'staging_in_progress', 'staging_initial')")
     record = cur.fetchall()
     tables = []
     for rec in record:
         try:
             cur.execute(f"select count(*) from {rec[0]}.{rec[1]}")
+            a = cur.fetchone()
             tables.append({f'{rec[1]}': 'OK'})
         except Exception as e:
             tables.append({f'{rec[1]}': 'NOT OK'})
@@ -76,8 +77,8 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    env = 'new_dev'
-    port = 5441
+    env = 'new_fit'
+    port = 5646
     databases = get_cluster_databases(env, port)
     #databases = Repository.get_db_names_by_group('JAKARTA')
     #databases = ['core_customer']
@@ -85,4 +86,4 @@ if __name__ == '__main__':
     ports = list(range(port, port+1))
     #return_dict = parallel_run(ports, databases, dwh_check)
     return_dict = parallel_run(ports, databases, service_user_check)
-    utils.print_table_level_check(return_dict, filtered=False)
+    utils.print_table_level_check(return_dict, filtered=True)

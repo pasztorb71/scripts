@@ -2,7 +2,7 @@ import multiprocessing
 import os
 import subprocess
 
-from Repository import Repository
+import Repository
 
 from Git.Git_class import Git
 from Ticket import Ticket
@@ -112,7 +112,7 @@ def create_branch_multiple_repos(gitlist, branch):
 
 
 if __name__ == '__main__':
-    repo = Repository()
+    repo = Repository.Repository()
     base = repo.get_base()
     repo_names = repo.get_repo_names()
     #repo_names = ['mlff-core-customer-postgredb', 'mlff-payment-invoice-postgredb']

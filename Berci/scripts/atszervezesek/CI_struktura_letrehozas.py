@@ -1,7 +1,7 @@
 import os
 
 from utils import git_init
-from utils_db_schema import get_db_name
+from utils_db import get_db_name
 from utils_file import copy_dir, replace_in_file, copy_file
 
 

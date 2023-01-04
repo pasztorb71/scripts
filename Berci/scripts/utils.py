@@ -6,7 +6,7 @@ from tabulate import tabulate
 
 from Cluster import Cluster
 from docker_ips import new_base, offset, base_ips
-from utils_db_schema import get_sema_from_dbname
+import utils_db
 import utils_repo
 from utils_sec import password_from_file
 
@@ -53,7 +53,7 @@ def print_one_result(d, maxlength):
         else:
             print()
 
-def get_port(env, repo_full_name=''):
+def get_old_port(env, repo_full_name=''):
     if env == 'sandbox':
         return 5433
     elif env == 'dev':
@@ -70,9 +70,26 @@ def get_port(env, repo_full_name=''):
         return 5555
     elif env == 'local':
         return 5432
-    elif env.startswith('new_'):
+    else:
+        print(f"utils.get_port('{env}')\n" + """"Nem létező környezet:
+Lehetséges értékek:
+  sandbox
+  dev
+  fit
+  perf
+  train
+  test
+  new_""")
+        raise Exception("Nem létező környezet")
+
+def get_port(env, repo_full_name=''):
+    if env.startswith('new_'):
         inst = utils_repo.get_instance_from_repo_full_name(repo_full_name)
         return new_base[env] + offset[inst]
+    else:
+        port = get_old_port(env)
+    if port:
+        return port
     else:
         print(f"utils.get_port('{env}')\n" + """"Nem létező környezet:
 Lehetséges értékek:
@@ -145,7 +162,6 @@ def whoami(  ):
 
 
 def get_ip_address_for_docker(repo, loc):
-    #oc = 'new_'+loc if repo_in_newloc(repo, loc) else loc
     if loc.startswith('new_'):
         inst = utils_repo.get_instance_from_repo_full_name(repo)
         return 'gateway.docker.internal:' + str(new_base[loc] + offset[inst])
@@ -179,7 +195,7 @@ def get_conn_service_user(env, db):
             host='localhost',
             port=port,
             database=db,
-            user=get_sema_from_dbname(db) + '_service',
+            user=utils_db.get_sema_from_dbname(db) + '_service',
             password='mlffTitkosPassword123!')
     except:
         return None

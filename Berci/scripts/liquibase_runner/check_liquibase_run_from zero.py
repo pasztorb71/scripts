@@ -8,9 +8,9 @@ if __name__ == '__main__':
     base = repo.get_base()
     #repos = [Repository(name) for name in load_from_file('repos.txt')]
     #repos = [Repository(name) for name in repo.get_repo_names()]
-    repos = [Repository('observat')]
+    repos = [Repository('doc-')]
     runner = Runner(base, repos)
-    runner.run('local',
-               delete_db_before=True,
-               checkonly=False,
-               delete_changelog_only=False)
+    runner.run_multiple_repos('local',
+                              delete_db_before=True,
+                              checkonly=False,
+                              delete_changelog_only=False)

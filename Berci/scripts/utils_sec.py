@@ -7,7 +7,11 @@ def password_from_file(puser, phost, pport):
         for line in f.read().split('\n'):
             if line.startswith('#'):
                 continue
-            user, host, port, passw = line.split()
+            try:
+                user, host, port, passw = line.split()
+            except Exception as e:
+                print(line)
+                raise(e)
             if '_service' in puser and '_service' in user:
                 pass_out = passw
                 break

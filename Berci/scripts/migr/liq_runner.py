@@ -18,4 +18,4 @@ if __name__ == '__main__':
     repos = [Repository(x) for x in repo_names]
     #repos = repositories
     runner = Runner(base, repos)
-    runner.run(params['loc'], params['delete_db_before'], params['checkonly'], log=True)
+    runner.run_multiple_repos(params['loc'], params['delete_db_before'], params['checkonly'], log=True)

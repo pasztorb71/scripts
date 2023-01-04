@@ -13,11 +13,11 @@ new_base = {'new_sandbox'   : 5440,
             'new_cantas_dev': 5840,
             }
 
-offset = {'pg-doc-mqid': 0,
-          'pg-core-mqid': 1,
-          'pg-enforcement-mqid': 2,
-          'pg-eobu-mqid': 3,
-          'pg-payment-mqid': 4,
-          'pg-settlement-mqid': 5,
-          'pg-data-mqid': 6,
+offset = {'pg-doc': 0,
+          'pg-core': 1,
+          'pg-enforcement': 2,
+          'pg-eobu': 3,
+          'pg-payment': 4,
+          'pg-settlement': 5,
+          'pg-data': 6,
           }

@@ -1,7 +1,7 @@
 import os
 
 import utils
-import utils_db_schema
+import utils_db
 import utils_file
 from Repository import Repository
 

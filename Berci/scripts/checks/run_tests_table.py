@@ -4,7 +4,7 @@ from Cluster import Cluster
 from Repository import Repository
 from utils import get_conn
 from utils_sec import password_from_file
-from utils_db_schema import get_sema_from_dbname
+from utils_db import get_sema_from_dbname
 
 
 def runteszt(env, db, user, cmd_list):

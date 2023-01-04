@@ -2,10 +2,22 @@ import os
 
 import psycopg2
 
+import utils_db
 import utils_sec
+import Repository
 
 
 class Database:
+    @staticmethod
+    def get_repositories_from_dbs(databases):
+        repos = []
+        for db in databases:
+            reponame = utils_db.get_repository_name_from_dbname(db)
+            repo = Repository.Repository(utils_db.get_repository_name_from_dbname(db))
+            repos.append(repo)
+        return repos
+
+
     def __init__(self, name, host, port):
         self.name = name
         self.host = host
@@ -138,6 +150,5 @@ class Database:
 
     def dump_database(self):
         os.system(f"pg_dump -p 5433 -U postgres -Fc --verbose core_customer >core_customer.dump")
-
 
 

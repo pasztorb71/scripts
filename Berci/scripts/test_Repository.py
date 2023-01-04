@@ -15,9 +15,13 @@ class TestRepository(TestCase):
             repo = r.find_name('enforcement')
         self.assertEqual("Nem egyértelmű a repository név!", str(e.exception))
 
-    def test_get_db_name(self):
+    def test_get_db_name1(self):
         r = Repository('mlff-payment-psp-proxy-postgredb')
         self.assertEqual('payment_psp_proxy', r.get_db_name())
+
+    def test_get_db_name2(self):
+        r = Repository('doc-postgredb')
+        self.assertEqual('doc_document', r.get_db_name())
 
     def test_is_table_file_exists_true(self):
         repo = Repository('trip-postg')
@@ -77,5 +81,5 @@ class TestRepository(TestCase):
         self.assertEqual(tabdir, r.get_tables_dir())
 
     def test_last_component_ver(self):
-        r = Repository('mlff-core-notification-wa-postgredb')
+        r = Repository('doc-postgredb')
         self.assertEqual('0.10', r.last_component_ver)

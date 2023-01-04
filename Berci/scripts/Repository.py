@@ -3,7 +3,6 @@ import re
 from inspect import getfile
 
 import utils
-from utils_file import append_to_file_after_line_last_occurence
 from Database import Database
 
 
@@ -44,8 +43,9 @@ class Repository():
             raise Exception("Nem egyértelmű a repository név!")
         return a[0]
 
-    def get_repo_names(self):
-        return os.listdir(self.__class__.base)
+    @staticmethod
+    def get_repo_names():
+        return os.listdir(__class__.base)
 
     @property
     def last_component_ver(self):
