@@ -12,7 +12,6 @@ class Database:
     def get_repositories_from_dbs(databases):
         repos = []
         for db in databases:
-            reponame = utils_db.get_repository_name_from_dbname(db)
             repo = Repository.Repository(utils_db.get_repository_name_from_dbname(db))
             repos.append(repo)
         return repos

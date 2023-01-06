@@ -239,7 +239,7 @@ def mproc_grant_dwh_read(host, port, db, return_dict):
         password=password_from_file('postgres', host, port))
     cur = conn.cursor()
     #cur.execute("CREATE USER dwh_read WITH PASSWORD 'mlffTitkosPassword123!';")
-    cur.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_owner = 'postgres';")
+    cur.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_owner = 'postgres' and schema_name != 'partman_sel';")
     record = cur.fetchall()
     for rec in record:
         cmd = "GRANT USAGE ON SCHEMA " + rec[0] + " TO dwh_read;"
@@ -271,38 +271,25 @@ def mproc_grant_dwh_read_databasechangelog(host, port, db, return_dict):
     except:
         return_dict[f'{port}|{db}'] = "Database not exists"
 
-def start_process(target, host, port, db, return_dict):
-    p = multiprocessing.Process(target=target, args=(host, port, db, return_dict))
-    jobs.append(p)
-    p.start()
-
-
-def wait_until_end(jobs):
-    for job in jobs:
-        job.join()
-
-
-def get_return_dict():
-    manager = multiprocessing.Manager()
-    return manager.dict()
-
-
 def sum_counts(d):
     sum = 0
     for db, records in d.items():
         sum += records[1][0]
     return sum
 
-
 def parallel_run(ports, databases, func):
     global jobs
     host = 'localhost'
-    return_dict = get_return_dict()
+    return_dict = multiprocessing.Manager().dict()
     jobs = []
     for port in ports:
         for db in databases[0:]:
-            start_process(func, host, port, db, return_dict)
-    wait_until_end(jobs)
+            p = multiprocessing.Process(target=func, args=(host, port, db, return_dict))
+            jobs.append(p)
+            p.start()
+    # Wait until all process finish
+    for job in jobs:
+        job.join()
     return return_dict
 
 def parallel_run_all_databases(host, ports, func):
@@ -318,14 +305,15 @@ def parallel_run_all_databases(host, ports, func):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', 5645
-    cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
-    #databases = load_from_file('../databases.txt')
-    #databases = [x for x in cluster.databases[0:] if 'notification' in x]
-    databases = cluster.databases[0:]
-    #databases = ['core_customer']
-    #ports = list(range(5435,port))
-    ports = [port]
-    return_dict = parallel_run(ports, databases, mproc_grant_after_migr)
-    print_sql_result(return_dict, len(max(databases, key=len)) + 5, header=True)
+    for v_port in range(5640, 5647):
+        host, port = 'localhost', v_port
+        cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
+        #databases = load_from_file('../databases.txt')
+        #databases = [x for x in cluster.databases[0:] if 'notification' in x]
+        databases = cluster.databases[0:]
+        #databases = ['core_customer']
+        #ports = list(range(5435,port))
+        ports = [port]
+        return_dict = parallel_run(ports, databases, mproc_count_tables)
+        print_sql_result(return_dict, len(max(databases, key=len)) + 5, header=True)
 

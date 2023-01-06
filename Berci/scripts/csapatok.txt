@@ -17,14 +17,12 @@ mlff-core-customer-postgredb                         JAKARTA
 mlff-enforcement-exemption-postgredb                 JAKARTA
 mlff-eobu-tariff-postgredb                           JAKARTA
 mlff-eobu-trip-postgredb                             JAKARTA
-mlff-eobu-trip-track-postgredb                       JAKARTA
 
 mlff-core-genos-postgredb                            LIBRA  
 mlff-payment-account-info-postgredb                  LIBRA  
 mlff-payment-invoice-postgredb                       LIBRA  
 mlff-payment-psp-proxy-postgredb                     LIBRA  
-mlff-payment-retry-postgredb                         LIBRA  
-mlff-payment-transaction-postgredb                   LIBRA  
+mlff-payment-transaction-postgredb                   LIBRA
 mlff-settlement-psp-clearing-postgredb               LIBRA  
 mlff-settlement-tro-clearing-postgredb               LIBRA  
 

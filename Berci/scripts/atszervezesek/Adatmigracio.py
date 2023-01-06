@@ -1,6 +1,7 @@
 import utils
 from Cluster import Cluster
 from Repository import Repository
+from docker_ips import offset
 from utils_db import get_sema_from_dbname
 from utils_sec import password_from_file
 
@@ -27,29 +28,40 @@ def print_grants_databases(port, databases):
         print(f'GRANT USAGE ON SCHEMA {sema} TO {sema}_sel;')
         print(f'GRANT USAGE ON SCHEMA {sema} TO {sema}_tbl_own;')
 
-def copy_fit():
-    host, port = 'localhost', utils.get_port('fit')
-    for port in list(range(5640, 5647)):
-        cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
-        databases = cluster.databases[0:]
-        #print_create_databases(port, databases)
-        #print_dump_databases(port, databases)
-        print_grants_databases(port, databases)
+
+def get_instance_name_from(port, base_port):
+    for i in offset.items():
+        if port-base_port == i[1]:
+            return i[0]
+
+
+def is_database_in_instance(db, instance_name):
+    if db == 'document' and instance_name == 'pg-doc':
+        return True
+    if db.split('_')[0] == instance_name.split('-')[1]:
+        return True
+    return False
+
+
+def copy_db(from_env, to_range):
+    host, port = 'localhost', utils.get_port(from_env)
+    cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
+    databases = cluster.databases[0:]
+    base_port = min(list(to_range))
+    for port in list(to_range):
+        instance_name = get_instance_name_from(port, base_port)
+        dblist = [db for db in databases if is_database_in_instance(db, instance_name)]
+        print_create_databases(port, dblist)
+    for port in list(to_range):
+        instance_name = get_instance_name_from(port, base_port)
+        dblist = [db for db in databases if is_database_in_instance(db, instance_name)]
+        print_dump_databases(port, dblist)
+    for port in list(to_range):
+        instance_name = get_instance_name_from(port, base_port)
+        dblist = [db for db in databases if is_database_in_instance(db, instance_name)]
+        print_grants_databases(port, dblist)
 
 
 if __name__ == '__main__':
-    copy_fit()
-    exit(0)
-    repo = Repository()
-    repo_names = repo.get_repo_names()
-    repos = [Repository(x) for x in repo_names if x.startswith('')]
-    for repo in repos:
-        db_to = Database(repo.get_db_name(), 'localhost', utils.get_port('new_sandbox', repo.name))
-        db_to = Database(repo.get_db_name(), 'localhost', utils.get_port('new_sandbox', repo.name))
-        print(f'{db.name} adatbázis az {db.port} porton')
-        db.dump_database()
-        triggers = db.triggers
-        db.remove_all_hist_triggers()
-        if input("Kész a migráció?[y/n]") == "y":
-            pass
-        db.put_triggers(triggers)
+    copy_db(from_env='test',
+            to_range=range(5840, 5847))

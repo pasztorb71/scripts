@@ -4,12 +4,14 @@ base_ips = {'local':'gateway.docker.internal',
             'fit': 'gateway.docker.internal:5435',
             'perf': 'gateway.docker.internal:5436',
             'train': 'gateway.docker.internal:5437',
+            'test': 'gateway.docker.internal:5438',
             'cron_test': 'gateway.docker.internal:5555'}
 
 new_base = {'new_sandbox'   : 5440,
             'new_dev'       : 5540,
             'new_fit'       : 5640,
             'new_train'     : 5740,
+            'new_test'     : 5740,
             'new_cantas_dev': 5840,
             }
 

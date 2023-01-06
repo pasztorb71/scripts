@@ -12,11 +12,12 @@ from utils_db import get_dbname_from_project
 
 class Runner:
     repos = []
-    def __init__(self, repos=[]):
+    def __init__(self, repos=[], confirm=True):
         self.base = 'c:/GIT/MLFF/'
         self.password = ''
         self.loc = ''
         self.delete_db_before = False
+        self.confirm_one_run = confirm
         Runner.repos = repos
         logging.basicConfig(level=logging.DEBUG, filename='liquibase_run.log', filemode='a', format='%(asctime)s - %(message)s')
 
@@ -70,14 +71,15 @@ class Runner:
         print(f"Környezet IP: {ip_address}")
         print(f"Az alábbi repora lesz telepítve: {repo}")
         print(Repository(repo).get_schema_version_label_lines())
-        if input("Mehet a telepítés? [y/n]") != "y":
-            print('Telepítés megszakítva!')
-            return
+        if self.confirm_one_run == True:
+            if input("Mehet a telepítés? [y/n]") != "y":
+                print('Telepítés megszakítva!')
+                return
         logging.info(f"{repo} - {self.loc} - Delete_before:{self.delete_db_before} - Checkonly:{self.checkonly}")
         if self.delete_db_before:
             if self.loc != 'local':
                 exit('Nem local esetén nem dobható el az adatbázis!!!')
-            if not Repository(repo).clear_repo(delete_changelog_only):
+            if not Repository(repo).clear_repo(delete_changelog_only, self.confirm_one_run):
                 return
         self._call_liquibase(repo, ip_address, self.password, 'postgres')
         for db in self.get_dbs(repo):

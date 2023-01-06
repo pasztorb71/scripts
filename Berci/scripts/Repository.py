@@ -47,6 +47,12 @@ class Repository():
     def get_repo_names():
         return os.listdir(__class__.base)
 
+    @classmethod
+    def get_repo_names_by_group(cls, groupname):
+        with open(getfile(cls.get_db_names_by_group).rsplit('\\', 1)[0] + '/csapatok.txt', 'r', encoding='utf8') as f:
+            lines = f.readlines()
+        return [line.split()[0] for line in lines if groupname in line]
+
     @property
     def last_component_ver(self):
         c = self.get_schema_version_label_lines().splitlines()
@@ -134,7 +140,7 @@ class Repository():
         conn.close()
         return tabname
 
-    def clear_repo(self, delete_changelog_only=False):
+    def clear_repo(self, delete_changelog_only=False, confirm=True):
         #if input("Main repo-t kézi eldobása megtörtént? [y/n]") != "y":
         #    return
         if delete_changelog_only:
@@ -143,6 +149,8 @@ class Repository():
             self.drop_database()
             self.drop_roles()
             self.drop_main_changelog()
+        if confirm == False:
+            return True
         if input("Mehet a telepítés? [y/n]") == "y":
             return True
 
