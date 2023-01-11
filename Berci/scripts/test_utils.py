@@ -36,13 +36,16 @@ class Test(TestCase):
                          utils_sec.password_from_file('notification_wa_service', 'localhost', 5433))
 
     def test_password_from_file2(self):
-        self.assertEqual('mysecretpassword', utils_sec.password_from_file('postgres', 'localhost', 5432))
+        self.assertEqual('mysecretpassword', utils_sec.password_from_file('postgres', 5432))
+
+    def test_password_from_file3(self):
+        self.assertEqual('mysecretpassword', utils_sec.password_from_file('postgres', 5432))
 
     def test_password_from_file_service(self):
-        self.assertEqual('mlffTitkosPassword123!', utils_sec.password_from_file('detection_service', 'localhost', 5437))
+        self.assertEqual('mlffTitkosPassword123!', utils_sec.password_from_file('detection_service', 5437))
 
     def test_password_from_file_all_hosts(self):
-        self.assertEqual('mlffTitkosPassword123!', utils_sec.password_from_file('dwh_read', 'localhost', '*'))
+        self.assertEqual('mlffTitkosPassword123!', utils_sec.password_from_file('dwh_read', '*'))
 
     def test_get_schema_from_command(self):
         actual = utils_command.get_schema_from_command(
@@ -140,4 +143,8 @@ class Test(TestCase):
     def test_get_port2(self):
         self.assertEqual(5544, utils.get_port('new_dev', Repository('account-info').name))
 
+    def test_get_instance_from_db_name(self):
+        self.assertEqual('pg-doc', utils.get_instance_from_db_name('doc_document'))
 
+    def test_get_ports_from_env(self):
+        self.assertEqual(5432, utils.get_ports_from_env('local'))

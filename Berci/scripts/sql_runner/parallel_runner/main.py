@@ -6,7 +6,7 @@ import psycopg2
 import utils
 import utils_sec
 from Cluster import Cluster
-from utils import print_sql_result
+import utils
 from utils_sec import password_from_file
 
 
@@ -21,6 +21,21 @@ def mproc_single_command_tmpl(host, port, db, return_dict):
     cur.execute("SELECT schemaname, tablename, tableowner FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
     record = cur.fetchall()
     return_dict[db] = [[desc[0].upper() for desc in cur.description]] + record
+    cur.close()
+    conn.commit()
+    conn.close()
+
+def mproc_get_dabase_names(host, port, db, return_dict):
+    conn = psycopg2.connect(
+        host=host,
+        port=port,
+        database=db,
+        user="postgres",
+        password=password_from_file('postgres', port))
+    cur = conn.cursor()
+    cur.execute("SELECT datname FROM pg_database WHERE datname NOT IN ('cloudsqladmin', 'postgres', 'template0', 'template1')")
+    record = cur.fetchall()
+    return_dict[f'{port}|{db}'] = record
     cur.close()
     conn.commit()
     conn.close()
@@ -178,7 +193,7 @@ def mproc_count_tables(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', host, port))
+        password=password_from_file('postgres', port))
     cur = conn.cursor()
     cur.execute("SELECT count(*) cnt FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
     record = cur.fetchall()
@@ -277,16 +292,15 @@ def sum_counts(d):
         sum += records[1][0]
     return sum
 
-def parallel_run(ports, databases, func):
+def parallel_run(ports_dbs, func):
     global jobs
     host = 'localhost'
     return_dict = multiprocessing.Manager().dict()
     jobs = []
-    for port in ports:
-        for db in databases[0:]:
-            p = multiprocessing.Process(target=func, args=(host, port, db, return_dict))
-            jobs.append(p)
-            p.start()
+    for port_db in ports_dbs:
+        p = multiprocessing.Process(target=func, args=(host, port_db[0], port_db[1], return_dict))
+        jobs.append(p)
+        p.start()
     # Wait until all process finish
     for job in jobs:
         job.join()
@@ -304,16 +318,30 @@ def parallel_run_all_databases(host, ports, func):
     return return_dict
 
 
+def gen_port_databases_from_env_db(env, databases):
+    out = []
+    for db in databases:
+        out.append([utils.get_port_from_env_inst(env, utils.get_instance_from_db_name(db)), db])
+    return out
+
+def gen_port_databases_from_env(env):
+    ports_databases = []
+    a = utils.get_ports_from_env(env)
+    for port in a:
+        ports_databases.append([port, 'postgres'])
+    return_dict = parallel_run(ports_databases, mproc_get_dabase_names)
+    ports_databases = []
+    for db, records in sorted(return_dict.items()):
+        for rec in records:
+            ports_databases.append([db.split('|')[0], rec[0]])
+    return ports_databases
+
 if __name__ == '__main__':
-    for v_port in range(5640, 5647):
-        host, port = 'localhost', v_port
-        cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
-        #databases = load_from_file('../databases.txt')
-        #databases = [x for x in cluster.databases[0:] if 'notification' in x]
-        databases = cluster.databases[0:]
-        #databases = ['core_customer']
-        #ports = list(range(5435,port))
-        ports = [port]
-        return_dict = parallel_run(ports, databases, mproc_count_tables)
-        print_sql_result(return_dict, len(max(databases, key=len)) + 5, header=True)
+    env = 'new_train'
+    #databases = load_from_file('../databases.txt')
+    #databases = ['core_customer']
+    ports_databases = gen_port_databases_from_env(env)[0:]
+    #ports_databases = [[5741, 'postgres']]
+    return_dict = parallel_run(ports_databases, mproc_get_dabase_names)
+    utils.print_sql_result(return_dict, 50, header=True)
 

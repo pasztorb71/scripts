@@ -5,9 +5,10 @@ import psycopg2
 from tabulate import tabulate
 
 from Cluster import Cluster
-from docker_ips import new_base, offset, base_ips
+from docker_ips import new_base, offset, base_ips, env_inst_end
 import utils_db
 import utils_repo
+from sql_runner.parallel_runner.main import parallel_run, mproc_get_dabase_names
 from utils_sec import password_from_file
 
 
@@ -118,6 +119,31 @@ def get_env(port):
     elif port == 5432:
         return 'local'
 
+def get_instance_from_db_name(dbname):
+    if dbname == 'document':
+        return 'pg-doc'
+    return 'pg-' + dbname.split('_')[0]
+
+def get_port_from_env_inst(env, inst):
+    if env.startswith('new_'):
+        return new_base[env] + offset[inst]
+    else:
+        port = get_old_port(env)
+    if port:
+        return port
+    else:
+        print(f"utils.get_port_from_env_inst('{env}')\n" + """"Nem létező környezet:
+    Lehetséges értékek:
+      sandbox
+      dev
+      fit
+      perf
+      train
+      test
+      new_""")
+        raise Exception("Nem létező környezet")
+
+
 def get_password(env, user):
     if user != 'postgres':
         return 'mlffTitkosPassword123!'
@@ -139,14 +165,14 @@ def has_history_table(db, schema, table):
 
 def get_conn(env, db, user):
     port = get_port(env)
-    p = password_from_file(user, 'localhost', port)
+    p = password_from_file(user, port)
     try:
         return psycopg2.connect(
             host='localhost',
             port=port,
             database=db,
             user=user,
-            password=password_from_file(user, 'localhost', port))
+            password=password_from_file(user, port))
     except Exception as e:
         print(e)
 
@@ -205,7 +231,7 @@ def get_cluster_databases(env, port=''):
     if not port:
         port = get_port(env)
     host = 'localhost'
-    cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
+    cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', port))
     return cluster.databases[0:]
 
 
@@ -214,3 +240,14 @@ def get_last_nth_occurence_of_list_element(plist, pelem, nth):
     if not index_after:
         return None
     return index_after[-nth] + 1
+
+
+def get_ports_from_env(env):
+    ports = []
+    if env.startswith('new_'):
+        for idx, _ in enumerate(offset):
+            ports.append(new_base[env] + idx)
+    else:
+        return [int(base_ips[env].split(':')[1])]
+    return ports
+

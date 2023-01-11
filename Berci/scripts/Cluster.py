@@ -2,7 +2,7 @@ import psycopg2 as psycopg2
 
 
 class Cluster:
-    def __init__(self, host, port, passw):
+    def __init__(self, port, passw, host='localhost'):
         self.host = host
         self.port = port
         self.passw = passw
@@ -12,10 +12,10 @@ class Cluster:
             database="postgres",
             user="postgres",
             password=passw)
-        self.databases = self.get_databases()
-        self.conn.close()
+        #self.conn.close()
 
-    def get_databases(self):
+    @property
+    def databases(self):
         cur = self.conn.cursor()
         cur.execute("SELECT datname from pg_database WHERE datistemplate IS FALSE AND datname NOT IN "
                     "('cloudsqladmin', 'postgres', 'sb-managed-db', 'sandbox', 'demo', 'payment_psp_clearing') ORDER BY datname")

@@ -11,7 +11,6 @@ def get_db_name(base):
     if 'doc-postgredb' in base:
         return 'doc_document'
 
-
 def get_schema(base, db_path):
     line = ''
     pattern = '.*property name="schema_name.*value="(.*)"/>'

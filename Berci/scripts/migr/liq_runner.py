@@ -5,11 +5,10 @@ import utils
 from Cluster import Cluster
 from Repository import Repository
 from liquibase_runner.Runner import Runner
-from liquibase_runner.params import repositories, params
 from utils_sec import password_from_file
 
 if __name__ == '__main__':
-    host, port = 'localhost', utils.get_port('new_fit')
+    host, port = 'localhost', utils.get_port('test')
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     databases = cluster.databases[0:]
     repo = Repository()

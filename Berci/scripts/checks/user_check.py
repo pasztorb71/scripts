@@ -2,7 +2,7 @@ import psycopg2
 
 import utils
 import utils_sec
-from sql_runner.parallel_runner.main import parallel_run
+from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_env
 from utils import get_cluster_databases
 
 
@@ -38,12 +38,13 @@ def service_user_check(host, port, db, return_dict):
             port=port,
             database=db,
             user='postgres',
-            password=utils_sec.password_from_file('postgres', host, port))
+            password=utils_sec.password_from_file('postgres', port))
     except Exception as e:
         print(f'{port}|{db}: {e}')
         return
     cur = conn.cursor()
-    cur.execute("SELECT schema_name FROM information_schema.schemata s WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'public', 'pg_toast', 'partman')")
+    cur.execute(f"SELECT schema_name FROM information_schema.schemata s WHERE schema_name "
+                f"NOT IN ('pg_catalog', 'information_schema', 'public', 'pg_toast', 'partman', 'airflow_meta')")
     try:
         schema = cur.fetchone()[0]
     except Exception as e:
@@ -77,13 +78,9 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    env = 'new_fit'
-    port = 5646
-    databases = get_cluster_databases(env, port)
-    #databases = Repository.get_db_names_by_group('JAKARTA')
-    #databases = ['core_customer']
-    #port = utils.get_port(env)
-    ports = list(range(port, port+1))
-    #return_dict = parallel_run(ports, databases, dwh_check)
-    return_dict = parallel_run(ports, databases, service_user_check)
+    env = 'new_test'
+    ports_databases = gen_port_databases_from_env(env)
+    print('db listed')
+    # ports_databases = [[5741, 'postgres']]
+    return_dict = parallel_run(ports_databases, service_user_check)
     utils.print_table_level_check(return_dict, filtered=True)

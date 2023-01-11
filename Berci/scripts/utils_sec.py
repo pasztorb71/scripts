@@ -1,7 +1,7 @@
 from inspect import getfile
 
 
-def password_from_file(puser, phost, pport):
+def password_from_file(puser, pport, phost='localhost'):
     pass_out = ''
     with open(getfile(password_from_file).rsplit('\\',1)[0] + '/db_passw.txt', 'r') as f:
         for line in f.read().split('\n'):
