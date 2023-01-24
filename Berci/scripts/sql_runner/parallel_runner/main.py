@@ -20,7 +20,7 @@ def mproc_single_command_tmpl(host, port, db, return_dict):
     cur = conn.cursor()
     cur.execute("SELECT schemaname, tablename, tableowner FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
     record = cur.fetchall()
-    return_dict[db] = [[desc[0].upper() for desc in cur.description]] + record
+    return_dict[f'{port}|{db}'] = [[desc[0].upper() for desc in cur.description]] + record
     cur.close()
     conn.commit()
     conn.close()
@@ -55,22 +55,6 @@ def mproc_grant_after_migr(host, port, db, return_dict):
         cur.execute(f"GRANT USAGE ON SCHEMA {rec[0]} TO  {rec[0]}_tbl_own;")
     return_dict[db] = "OK"
 
-    cur.close()
-    conn.commit()
-    conn.close()
-
-def mproc_single_command_test(host, port, db, return_dict):
-    conn = psycopg2.connect(
-        host=host,
-        port=port,
-        database=db,
-        user="postgres",
-        password=password_from_file('postgres', host, port))
-    cur = conn.cursor()
-    cur.execute("SELECT count(*) FROM pg_roles WHERE rolname in ('read', 'dwh_read')")
-    record = cur.fetchall()
-    #return_dict[db] = [[desc[0].upper() for desc in cur.description]] + record
-    return_dict[db] = record
     cur.close()
     conn.commit()
     conn.close()
@@ -276,7 +260,7 @@ def mproc_grant_dwh_read_databasechangelog(host, port, db, return_dict):
             port=port,
             database=db,
             user="postgres",
-            password=password_from_file('postgres', host, port))
+            password=password_from_file('postgres',port))
         cur = conn.cursor()
         cur.execute("GRANT SELECT ON public.databasechangelog TO dwh_read")
         return_dict[f'{port}|{db}'] = "OK"
@@ -337,11 +321,11 @@ def gen_port_databases_from_env(env):
     return ports_databases
 
 if __name__ == '__main__':
-    env = 'new_train'
+    env = 'train'
     #databases = load_from_file('../databases.txt')
     #databases = ['core_customer']
     ports_databases = gen_port_databases_from_env(env)[0:]
     #ports_databases = [[5741, 'postgres']]
-    return_dict = parallel_run(ports_databases, mproc_get_dabase_names)
+    return_dict = parallel_run(ports_databases, mproc_grant_dwh_read)
     utils.print_sql_result(return_dict, 50, header=True)
 

@@ -1,18 +1,12 @@
 base_ips = {'local':'gateway.docker.internal:5432',
-            'sandbox': 'gateway.docker.internal:5433',
-            'dev': 'gateway.docker.internal:5434',
-            'fit': 'gateway.docker.internal:5435',
             'perf': 'gateway.docker.internal:5436',
-            'train': 'gateway.docker.internal:5437',
-            'test': 'gateway.docker.internal:5438',
             'cron_test': 'gateway.docker.internal:5555'}
 
-new_base = {'new_sandbox'   : 5440,
-            'new_dev'       : 5540,
-            'new_fit'       : 5640,
-            'new_train'     : 5740,
-            'new_test'      : 5840,
-            'new_cantas_dev': 5940,
+new_base = {'sandbox'   : 5440,
+            'dev'       : 5540,
+            'fit'       : 5640,
+            'train'     : 5740,
+            'test'      : 5840,
             }
 
 offset = {'pg-doc': 0,
@@ -24,10 +18,9 @@ offset = {'pg-doc': 0,
           'pg-data': 6,
          }
 
-env_inst_end = {'new_sandbox'   : 'mqid',
-                'new_dev'       : 'mskl',
-                'new_fit'       : 'eldm',
-                'new_train'     : '97nz',
-                'new_test'      : 'oksl',
-                'new_cantas_dev': 'wbcv',
+env_inst_end = {'sandbox'   : 'mqid',
+                'dev'       : 'mskl',
+                'fit'       : 'eldm',
+                'train'     : '97nz',
+                'test'      : 'oksl',
                }

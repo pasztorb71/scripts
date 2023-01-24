@@ -58,7 +58,7 @@ class Repository():
         c = self.get_schema_version_label_lines().splitlines()
         if len(c) == 0: return None
         m = re.match('.*labels="(.*), .*', c[-1])
-        return m.group(1) if m else None
+        return m.group(1).replace('.0', '.') if m else None
 
     @property
     def env_ver(self):

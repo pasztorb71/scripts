@@ -146,5 +146,10 @@ class Test(TestCase):
     def test_get_instance_from_db_name(self):
         self.assertEqual('pg-doc', utils.get_instance_from_db_name('doc_document'))
 
-    def test_get_ports_from_env(self):
-        self.assertEqual(5432, utils.get_ports_from_env('local'))
+    def test_get_ports_from_env1(self):
+        self.assertEqual([5432], utils.get_ports_from_env('local'))
+
+    def test_get_ports_from_env2(self):
+        self.assertEqual([5440, 5441, 5442, 5443, 5444, 5445, 5446], utils.get_ports_from_env('sandbox'))
+
+

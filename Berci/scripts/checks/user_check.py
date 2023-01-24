@@ -78,9 +78,9 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    env = 'new_test'
+    env = 'train'
     ports_databases = gen_port_databases_from_env(env)
     print('db listed')
     # ports_databases = [[5741, 'postgres']]
-    return_dict = parallel_run(ports_databases, service_user_check)
+    return_dict = parallel_run(ports_databases, dwh_check)
     utils.print_table_level_check(return_dict, filtered=True)

@@ -103,6 +103,16 @@ Lehetséges értékek:
   new_""")
         raise Exception("Nem létező környezet")
 
+def get_ports_from_env(env):
+    ports = []
+    if env.startswith('new_'):
+        for idx, _ in enumerate(offset):
+            ports.append(new_base[env] + idx)
+    else:
+        return [int(base_ips[env].split(':')[1])]
+    return ports
+
+
 def get_env(port):
     if port == 5433:
         return 'sandbox'
@@ -188,11 +198,10 @@ def whoami(  ):
 
 
 def get_ip_address_for_docker(repo, loc):
-    if loc.startswith('new_'):
-        inst = utils_repo.get_instance_from_repo_full_name(repo)
-        return 'gateway.docker.internal:' + str(new_base[loc] + offset[inst])
-    else:
-        return base_ips[loc]
+    if loc == 'local':
+        return 'gateway.docker.internal'
+    inst = utils_repo.get_instance_from_repo_full_name(repo)
+    return 'gateway.docker.internal:' + str(new_base[loc] + offset[inst])
 
 
 def print_table_level_check(return_dict, filtered=False):
@@ -241,13 +250,4 @@ def get_last_nth_occurence_of_list_element(plist, pelem, nth):
         return None
     return index_after[-nth] + 1
 
-
-def get_ports_from_env(env):
-    ports = []
-    if env.startswith('new_'):
-        for idx, _ in enumerate(offset):
-            ports.append(new_base[env] + idx)
-    else:
-        return [int(base_ips[env].split(':')[1])]
-    return ports
 
