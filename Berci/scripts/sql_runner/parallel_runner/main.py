@@ -16,7 +16,7 @@ def mproc_single_command_tmpl(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', host, port))
+        password=password_from_file('postgres', port))
     cur = conn.cursor()
     cur.execute("SELECT schemaname, tablename, tableowner FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
     record = cur.fetchall()
@@ -25,7 +25,7 @@ def mproc_single_command_tmpl(host, port, db, return_dict):
     conn.commit()
     conn.close()
 
-def mproc_get_dabase_names(host, port, db, return_dict):
+def mproc_check_user(host, port, db, return_dict):
     conn = psycopg2.connect(
         host=host,
         port=port,
@@ -33,12 +33,33 @@ def mproc_get_dabase_names(host, port, db, return_dict):
         user="postgres",
         password=password_from_file('postgres', port))
     cur = conn.cursor()
-    cur.execute("SELECT datname FROM pg_database WHERE datname NOT IN ('cloudsqladmin', 'postgres', 'template0', 'template1')")
+    cur.execute("SELECT count(*) FROM pg_roles WHERE rolname = 'dwh_stream'")
+    #cur.execute("SELECT count(*) FROM information_schema.tables t WHERE table_name = 'dbz_signal'")
+    #cur.execute("CREATE TABLE IF NOT EXISTS public.dbz_signal (id varchar(100) PRIMARY KEY, type varchar(32), data varchar(2048));")
     record = cur.fetchall()
-    return_dict[f'{port}|{db}'] = record
+    #return_dict[f'{port}|{db}'] = 'ok'
+    return_dict[f'{port}|{db}'] = [[desc[0].upper() for desc in cur.description]] + record
     cur.close()
     conn.commit()
     conn.close()
+
+def mproc_get_dabase_names(host, port, db, return_dict):
+    try:
+        conn = psycopg2.connect(
+            host=host,
+            port=port,
+            database=db,
+            user="postgres",
+            password=password_from_file('postgres', port))
+        cur = conn.cursor()
+        cur.execute("SELECT datname FROM pg_database WHERE datname NOT IN ('cloudsqladmin', 'postgres', 'template0', 'template1')")
+        record = cur.fetchall()
+        return_dict[f'{port}|{db}'] = record
+        cur.close()
+        conn.commit()
+        conn.close()
+    except:
+        return_dict[f'{port}|{db}'] = ("Database not exists")
 
 def mproc_grant_after_migr(host, port, db, return_dict):
     conn = psycopg2.connect(
@@ -46,7 +67,7 @@ def mproc_grant_after_migr(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', host, port))
+        password=password_from_file('postgres', port))
     cur = conn.cursor()
     cur.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_owner = 'postgres';")
     record = cur.fetchall()
@@ -65,7 +86,7 @@ def mproc_get_missing_column_comments(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', host, port))
+        password=password_from_file('postgres', port))
     cur = conn.cursor()
     cur.execute("""select
     c.table_schema,
@@ -97,7 +118,7 @@ def mproc_single_csabi(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=utils_sec.password_from_file('postgres', host, port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     #cur.execute("Truncate table public.debezium_heartbeat")
     #cur.execute("update public.debezium_heartbeat set last_heartbeat_ts = now()")
@@ -118,7 +139,7 @@ def mproc_multiple_commands_tmpl(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', host, port))
+        password=password_from_file('postgres', port))
     cur = conn.cursor()
     recout = []
     cur.execute("SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
@@ -140,7 +161,7 @@ def mproc_get_missing_table_comments(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', host, port))
+        password=password_from_file('postgres', port))
     cur = conn.cursor()
     recout = []
     cur.execute("SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
@@ -162,7 +183,7 @@ def mproc_get_tables(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', host, port))
+        password=password_from_file('postgres', port))
     cur = conn.cursor()
     cur.execute("SELECT schemaname, tablename, tableowner FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public') and tablename not like '%$hist'")
     record = cur.fetchall()
@@ -192,7 +213,7 @@ def mproc_count_records(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', host, port))
+        password=password_from_file('postgres', port))
     cur = conn.cursor()
     recout = []
     cur.execute("SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public', 'information_schema', 'pg_catalog') "
@@ -215,7 +236,7 @@ def mproc_revoke_rights(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', host, port))
+        password=password_from_file('postgres', port))
     cur = conn.cursor()
     recout = []
     cur.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_owner = 'postgres';")
@@ -235,9 +256,12 @@ def mproc_grant_dwh_read(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', host, port))
+        password=password_from_file('postgres', port))
     cur = conn.cursor()
-    #cur.execute("CREATE USER dwh_read WITH PASSWORD 'mlffTitkosPassword123!';")
+    try:
+        cur.execute("CREATE USER dwh_read WITH PASSWORD 'mlffTitkosPassword123!';")
+    except:
+        conn.rollback()
     cur.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_owner = 'postgres' and schema_name != 'partman_sel';")
     record = cur.fetchall()
     for rec in record:
@@ -245,6 +269,33 @@ def mproc_grant_dwh_read(host, port, db, return_dict):
         print(cmd)
         cur.execute(cmd)
         cmd = "GRANT " + rec[0] + "_sel TO dwh_read;"
+        print(cmd)
+        cur.execute(cmd)
+    return_dict[db] = "OK"
+
+    cur.close()
+    conn.commit()
+    conn.close()
+
+def mproc_grant_hendi_read(host, port, db, return_dict):
+    conn = psycopg2.connect(
+        host=host,
+        port=port,
+        database=db,
+        user="postgres",
+        password=password_from_file('postgres', port))
+    cur = conn.cursor()
+    try:
+        cur.execute("CREATE USER hendipradana WITH PASSWORD 'nHY0JBGeYpQ!ayuhV';")
+    except:
+        conn.rollback()
+    cur.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_owner = 'postgres' and schema_name != 'partman_sel';")
+    record = cur.fetchall()
+    for rec in record:
+        cmd = "GRANT USAGE ON SCHEMA " + rec[0] + " TO hendipradana;"
+        print(cmd)
+        cur.execute(cmd)
+        cmd = "GRANT " + rec[0] + "_sel TO hendipradana;"
         print(cmd)
         cur.execute(cmd)
     return_dict[db] = "OK"
@@ -263,6 +314,23 @@ def mproc_grant_dwh_read_databasechangelog(host, port, db, return_dict):
             password=password_from_file('postgres',port))
         cur = conn.cursor()
         cur.execute("GRANT SELECT ON public.databasechangelog TO dwh_read")
+        return_dict[f'{port}|{db}'] = "OK"
+        cur.close()
+        conn.commit()
+        conn.close()
+    except:
+        return_dict[f'{port}|{db}'] = "Database not exists"
+
+def mproc_grant_dwh_stream_databasechangelog(host, port, db, return_dict):
+    try:
+        conn = psycopg2.connect(
+            host=host,
+            port=port,
+            database=db,
+            user="postgres",
+            password=password_from_file('postgres',port))
+        cur = conn.cursor()
+        cur.execute("GRANT SELECT ON public.databasechangelog TO dwh_stream")
         return_dict[f'{port}|{db}'] = "OK"
         cur.close()
         conn.commit()
@@ -317,15 +385,17 @@ def gen_port_databases_from_env(env):
     ports_databases = []
     for db, records in sorted(return_dict.items()):
         for rec in records:
-            ports_databases.append([db.split('|')[0], rec[0]])
+            if rec[0] != "Database not exists":
+                ports_databases.append([db.split('|')[0], rec[0]])
     return ports_databases
 
 if __name__ == '__main__':
-    env = 'train'
+    env = 'fit'
     #databases = load_from_file('../databases.txt')
     #databases = ['core_customer']
     ports_databases = gen_port_databases_from_env(env)[0:]
     #ports_databases = [[5741, 'postgres']]
-    return_dict = parallel_run(ports_databases, mproc_grant_dwh_read)
-    utils.print_sql_result(return_dict, 50, header=True)
+    return_dict = parallel_run(ports_databases, mproc_grant_dwh_stream_databasechangelog)
+    #utils.print_sql_result(return_dict, 50, header=True)
+    utils.print_one_result(return_dict, 50)
 

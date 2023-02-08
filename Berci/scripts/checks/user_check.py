@@ -14,7 +14,7 @@ def dwh_check(host, port, db, return_dict):
             port=port,
             database=db,
             user=v_user,
-            password=utils_sec.password_from_file(v_user, host, '*'))
+            password=utils_sec.password_from_file(v_user, '*'))
     except Exception as e:
         print(f'{port}|{db}: {e}')
         return
@@ -78,9 +78,8 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    env = 'train'
-    ports_databases = gen_port_databases_from_env(env)
-    print('db listed')
+    env = 'dev'
+    ports_databases = gen_port_databases_from_env(env)[0:]
     # ports_databases = [[5741, 'postgres']]
     return_dict = parallel_run(ports_databases, dwh_check)
     utils.print_table_level_check(return_dict, filtered=True)

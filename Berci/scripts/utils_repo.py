@@ -1,7 +1,7 @@
 import Repository
 from Cluster import Cluster
 from Database import Database
-from utils_file import file_contains
+import utils_file
 from utils_sec import password_from_file
 
 

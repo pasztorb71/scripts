@@ -137,11 +137,8 @@ class Test(TestCase):
             "ALTER INDEX tariff.ix_segsec_glied_id RENAME TO ix_section_glied_id;")
         self.assertEqual('ix_segsec_glied_id', index)
 
-    def test_get_port1(self):
-        self.assertEqual(5433, utils.get_port('sandbox'))
-
-    def test_get_port2(self):
-        self.assertEqual(5544, utils.get_port('new_dev', Repository('account-info').name))
+    def test_get_port(self):
+        self.assertEqual(5544, utils.get_port('dev', Repository('account-info').name))
 
     def test_get_instance_from_db_name(self):
         self.assertEqual('pg-doc', utils.get_instance_from_db_name('doc_document'))

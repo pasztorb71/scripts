@@ -14,6 +14,7 @@ def mproc_search_in_changelog(host, port, db, return_dict):
     cur = conn.cursor()
     try:
         cur.execute("SELECT dateexecuted FROM public.databasechangelog d WHERE upper(id) LIKE '%DWH_STREAM%' AND dateexecuted >= '2023-01-09'")
+        #cur.execute("SELECT dateexecuted FROM public.databasechangelog d WHERE upper(id) LIKE '%DBZ_SIGNAL%' AND dateexecuted >= '2023-01-09'")
         record = cur.fetchall()
         return_dict[f'{port}|{db}'] = record
         cur.close()
@@ -25,7 +26,7 @@ def mproc_search_in_changelog(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    env = 'local'
+    env = 'dev'
     ports_databases = gen_port_databases_from_env(env)
     print(f'databases\n{ports_databases}')
     # ports_databases = [[5741, 'postgres']]

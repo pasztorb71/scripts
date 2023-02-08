@@ -42,7 +42,7 @@ class TestRepository(TestCase):
         self.assertListEqual(expected, actual)
 
     def test_env_ver(self):
-        self.assertEqual('0.12', Repository('transit').env_ver)
+        self.assertEqual('0.13', Repository('transit-').env_ver)
 
     def test_get_schema1(self):
         r = Repository('mlff-core-customer-postgredb')

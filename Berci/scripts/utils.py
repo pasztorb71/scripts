@@ -83,33 +83,20 @@ Lehetséges értékek:
   new_""")
         raise Exception("Nem létező környezet")
 
-def get_port(env, repo_full_name=''):
-    if env.startswith('new_'):
-        inst = utils_repo.get_instance_from_repo_full_name(repo_full_name)
-        return new_base[env] + offset[inst]
-    else:
-        port = get_old_port(env)
-    if port:
-        return port
-    else:
-        print(f"utils.get_port('{env}')\n" + """"Nem létező környezet:
-Lehetséges értékek:
-  sandbox
-  dev
-  fit
-  perf
-  train
-  test
-  new_""")
-        raise Exception("Nem létező környezet")
+def get_port(env, repo_full_name):
+    if env == 'local':
+        return 5432
+    if env == 'mlff-test':
+        return 5555
+    inst = utils_repo.get_instance_from_repo_full_name(repo_full_name)
+    return new_base[env] + offset[inst]
 
 def get_ports_from_env(env):
+    if env == 'local':
+        return [5432]
     ports = []
-    if env.startswith('new_'):
-        for idx, _ in enumerate(offset):
-            ports.append(new_base[env] + idx)
-    else:
-        return [int(base_ips[env].split(':')[1])]
+    for idx, _ in enumerate(offset):
+        ports.append(new_base[env] + idx)
     return ports
 
 
@@ -174,7 +161,7 @@ def has_history_table(db, schema, table):
 
 
 def get_conn(env, db, user):
-    port = get_port(env)
+    port = get_port(env, utils_db.get_repository_name_from_dbname(db))
     p = password_from_file(user, port)
     try:
         return psycopg2.connect(
@@ -200,6 +187,8 @@ def whoami(  ):
 def get_ip_address_for_docker(repo, loc):
     if loc == 'local':
         return 'gateway.docker.internal'
+    if loc == 'mlff-test':
+        return 'gateway.docker.internal:5555'
     inst = utils_repo.get_instance_from_repo_full_name(repo)
     return 'gateway.docker.internal:' + str(new_base[loc] + offset[inst])
 
@@ -224,7 +213,7 @@ def print_table_level_check(return_dict, filtered=False):
 
 
 def get_conn_service_user(env, db):
-    port = get_port(env)
+    port = get_port(env, utils_db.get_repository_name_from_dbname(db))
     try:
         return psycopg2.connect(
             host='localhost',

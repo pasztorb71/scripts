@@ -19,10 +19,7 @@ class TestRunner(TestCase):
     def test_kill(self):
         pass
 
-    def test_get_ip_addresses_for_docker1(self):
-        self.assertEqual('gateway.docker.internal:5434', get_ip_address_for_docker('mlff-core-customer-postgredb', 'dev'))
-
-    def test_get_ip_addresses_for_docker_new_instances1(self):
-        self.assertEqual('gateway.docker.internal:5641', get_ip_address_for_docker('mlff-core-customer-postgredb', 'new_fit'))
+    def test_get_ip_addresses_for_docker(self):
+        self.assertEqual('gateway.docker.internal:5541', get_ip_address_for_docker('mlff-core-customer-postgredb', 'dev'))
 
 

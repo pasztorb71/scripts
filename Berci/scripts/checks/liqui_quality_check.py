@@ -27,7 +27,8 @@ def ddl_file_name_not_match_v_table_name():
 def schemaname_in_comments():
     """Azt nézi, hogy as sémanév benne van -e a COMMENT parancsban"""
     print(utils.whoami())
-    files = utils_file.get_files_from_path_fname_filtered('c:/GIT/MLFF/', '-DDL-')
+    files_tmp = utils_file.get_files_from_path_fname_filtered('c:/GIT/MLFF/', '-DDL-')
+    files = [f for f in files_tmp if '\\save\\' not in f]
     prev_file = ''
     for file in files:
         #if not any(x in file for x in ['0.08.0', '0.09.0']):
@@ -46,9 +47,9 @@ def schemaname_in_comments():
 
 def check_table_creator_changeset_ids():
     """Azt ellenőrzi, hogy az ID megfelel -e az alábbi konvenciónak:
-    <táblanév>-MLFFDEV-<ticket>-01"""
+    <táblanév>-TBL-MLFFDEV-<ticket>-01"""
     print(utils.whoami())
-    files = utils_file.get_files_from_path_fname_filtered('c:/GIT/MLFF', '-DDL-000.sql')
+    files = utils_file.get_files_from_path_fname_filtered('c:/GIT/MLFF', '-TBL-000.sql')
     for file in files[0:]:
         with open(file, 'r', encoding='utf8') as f:
             lines = f.readlines()
@@ -68,13 +69,13 @@ def check_table_creator_searchpaths():
     files = utils_file.get_files_from_path_fname_filtered('c:/GIT/MLFF', '-DDL-000.sql')
     for file in files[0:]:
         with open(file, 'r', encoding='utf8') as f:
-            if 'SET search_path = ${schema_name};' not in f.readlines():
+            if 'SET search_path = ${schema_name};' not in f.read().split('\n'):
                 print(file)
 
 
 if __name__ == '__main__':
-    #ddl_file_name_not_match_v_table_name()
+    ddl_file_name_not_match_v_table_name()
     #schemaname_in_comments()
-    #check_table_creator_changeset_ids()
+    check_table_creator_changeset_ids()
     check_table_creator_searchpaths()
 

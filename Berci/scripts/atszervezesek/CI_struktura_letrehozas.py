@@ -21,7 +21,7 @@ def create_file(fname):
 
 if __name__ == '__main__':
   # prepare
-    repo = 'mlff-enforcement-detection-transition-postgredb'
+    repo = 'mlff-enforcement-onsite-alert-postgredb'
     base = 'c:/GIT/MLFF/'+repo
     db = get_db_name(base)
     db_path = db.replace('-', '_')
@@ -47,15 +47,17 @@ if __name__ == '__main__':
     replace_in_file(path+'release.sh', to_replace)
     os.system('git -C '+base+' add '+path+'release.sh')
     os.system('git -C '+base+' update-index --chmod=+x '+path+'release.sh')
+    path = 'c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\'
+    copy_file(path+'run.sh', base+'/run.sh')
     os.system('git -C ' + base + ' add ' + 'run.sh')
     os.system('git -C ' + base + ' update-index --chmod=+x ' + 'run.sh')
-    path = 'c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\'
     copy_file(path+'.gitignore', base+'/.gitignore')
     copy_file(path+'.gitlab-ci.yml', base+'/.gitlab-ci.yml')
     copy_file(path+'.env', base+'/.env')
     replace_in_file(base+'/.env', to_replace)
   #readme file
-    #os.rename(base+'/README.md', base+'/OLD-README.md')
+    copy_file(r'c:\GIT\MLFF\mlff-core-customer-postgredb\OLD-README.md', base+'/OLD-README.md')
+    replace_in_file(base+'/OLD-README.md', to_replace)
     copy_file(r'c:\GIT\MLFF\mlff-core-customer-postgredb\README.adoc', base+'/README.adoc')
     replace_in_file(base+'/README.adoc', to_replace)
   #post

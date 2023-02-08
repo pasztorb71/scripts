@@ -78,7 +78,6 @@ def move_dir(src, dst):
         print('  '+src)
         shutil.move(src, dst)
 
-
 def get_files_from_path_ext_filtered(path, ext, cont):
     out = []
     for root, dirs, files in os.walk(path):

@@ -119,7 +119,7 @@ def table_header(sema, tab_name, ticket_name, version):
     print("""--===============================================================================================--
 -- TABLE ==
 ---------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:!TABLE!-TBL-!!ticket!!-01 runOnChange:true
+--changeset bertalan.pasztor:!TABLE!-TBL-!!ticket!!-01 runOnChange:false
 --comment A !table! tábla létrehozása..
 --
 --preconditions onFail:MARK_RAN onError:HALT
@@ -169,7 +169,7 @@ COMMIT;
 def table_indexes(tab_name, table, tab_short_name):
     for col in [row for row in table if is_row_needed(row[0])][1:]:
         if col[0].lower().endswith('_id') or col[0].lower().endswith('_refid'):
-            print('CREATE INDEX ix_'+tab_short_name+'_'+col[0].lower()+' ON '+tab_name+' USING hash ('+col[0].lower()+');')
+            print('CREATE INDEX ix_'+tab_short_name+'_'+col[0].lower()+' ON '+tab_name+' USING btree ('+col[0].lower()+');')
 
 
 def print_table_script(tab_comment, schema_name, tab_name, table, history, ticket_name, version):
