@@ -114,7 +114,6 @@ if __name__ == '__main__':
     print(out)
     print(tabulate(out, headers=header))
     exit(0)
-    """
     release = 'R0.10'
     repos = get_repos_containing_release(release)
     changeset_ids = get_changeset_ids_from_repos_release(repos, release)
@@ -122,7 +121,6 @@ if __name__ == '__main__':
     #print_changeset1(changeset_ids)
     #check_
     exit(0)
-    """
     version_files = {}
     result_d = {}
     result_l = []

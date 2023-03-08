@@ -21,7 +21,7 @@ def create_file(fname):
 
 if __name__ == '__main__':
   # prepare
-    repo = 'mlff-enforcement-onsite-alert-postgredb'
+    repo = 'mlff-core-privateuser-postgredb'
     base = 'c:/GIT/MLFF/'+repo
     db = get_db_name(base)
     db_path = db.replace('-', '_')

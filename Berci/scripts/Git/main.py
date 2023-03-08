@@ -115,9 +115,9 @@ if __name__ == '__main__':
     repo = Repository.Repository()
     base = repo.get_base()
     repo_names = repo.get_repo_names()
-    #gitlist = [Git(base, name) for name in repo_names if name != 'mlff-data-ingestion-meta-postgredb'][0:]
+    #gitlist = [Git(base, name) for name in repo_names if name != 'mlff-core-customer-postgredb'][0:]
     gitlist = [Git(base, name) for name in repo_names]
     check_diff_and_synchronize()
     #synchronize_branch_in_multiple_repos(gitlist, branch='master')
     exit(0)
-    create_branch_multiple_repos(gitlist, 'feature/MLFFDEV-9888-debezium-vezerlo-tabla-letrehozasa-a-forras-db-kben')
+    create_branch_multiple_repos(gitlist, 'feature/MLFFDEV-14556-replica-identity-parameter-full-ertekre-allitasa-a-forras-adatbazisokban')

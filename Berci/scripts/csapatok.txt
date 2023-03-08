@@ -11,25 +11,29 @@ mlff-enforcement-detection-image-postgredb              N2O
 mlff-enforcement-detection-observation-postgredb        N2O
 mlff-enforcement-detection-postgredb                    N2O
 mlff-enforcement-detection-transit-identifier-postgredb N2O
+mlff-enforcement-detection-transition-postgredb         N2O
 mlff-enforcement-visual-check-postgredb                 N2O
 
 mlff-core-customer-postgredb                         JAKARTA
-mlff-enforcement-exemption-postgredb                 JAKARTA
+mlff-core-privateuser-postgredb                      JAKARTA
+lff-enforcement-exemption-postgredb                  JAKARTA
 mlff-eobu-tariff-postgredb                           JAKARTA
 mlff-eobu-trip-postgredb                             JAKARTA
+mlff-obu-obuprovider-postgredb                       JAKARTA
 
 mlff-core-genos-postgredb                            LIBRA  
 mlff-payment-account-info-postgredb                  LIBRA  
 mlff-payment-invoice-postgredb                       LIBRA  
 mlff-payment-psp-proxy-postgredb                     LIBRA  
 mlff-payment-transaction-postgredb                   LIBRA
-mlff-settlement-psp-clearing-postgredb               LIBRA  
-mlff-settlement-tro-clearing-postgredb               LIBRA  
+mlff-settlement-psp-clearing-postgredb               LIBRA
+mlff-settlement-tro-clearing-postgredb               LIBRA
 
 mlff-enforcement-eligibility-postgredb               K-Team
+mlff-enforcement-onsite-alert-postgredb              K-Team
 mlff-enforcement-onsite-alert-subscribe-postgredb    K-Team
+mlff-enforcement-sanctioning-presumption-postgredb   K-Team
 mlff-enforcement-sanctioning-sanction-postgredb      K-Team
 
 doc-postgredb                                        iCell belsős
-mlff-data-ingestion-meta-postgredb                   DWH   
-
+mlff-data-ingestion-meta-postgredb                   DWH

@@ -7,6 +7,7 @@ import utils
 import utils_sec
 from Cluster import Cluster
 import utils
+from sql_runner.parallel_runner.sql_commands import hash_in_fk
 from utils_sec import password_from_file
 
 
@@ -21,6 +22,21 @@ def mproc_single_command_tmpl(host, port, db, return_dict):
     cur.execute("SELECT schemaname, tablename, tableowner FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
     record = cur.fetchall()
     return_dict[f'{port}|{db}'] = [[desc[0].upper() for desc in cur.description]] + record
+    cur.close()
+    conn.commit()
+    conn.close()
+
+def mproc_single_sql(host, port, db, return_dict, sql):
+    conn = psycopg2.connect(
+        host=host,
+        port=port,
+        database=db,
+        user="postgres",
+        password=password_from_file('postgres', port))
+    cur = conn.cursor()
+    cur.execute(sql)
+    record = cur.fetchall()
+    return_dict[f'{port}|{db}'] = record
     cur.close()
     conn.commit()
     conn.close()
@@ -330,7 +346,7 @@ def mproc_grant_dwh_stream_databasechangelog(host, port, db, return_dict):
             user="postgres",
             password=password_from_file('postgres',port))
         cur = conn.cursor()
-        cur.execute("GRANT SELECT ON public.databasechangelog TO dwh_stream")
+        cur.execute("GRANT SELECT ON public.dbz_signal TO dwh_stream")
         return_dict[f'{port}|{db}'] = "OK"
         cur.close()
         conn.commit()
@@ -351,6 +367,20 @@ def parallel_run(ports_dbs, func):
     jobs = []
     for port_db in ports_dbs:
         p = multiprocessing.Process(target=func, args=(host, port_db[0], port_db[1], return_dict))
+        jobs.append(p)
+        p.start()
+    # Wait until all process finish
+    for job in jobs:
+        job.join()
+    return return_dict
+
+def parallel_run_sql(ports_dbs, sql, func):
+    global jobs
+    host = 'localhost'
+    return_dict = multiprocessing.Manager().dict()
+    jobs = []
+    for port_db in ports_dbs:
+        p = multiprocessing.Process(target=func, args=(host, port_db[0], port_db[1], return_dict, sql))
         jobs.append(p)
         p.start()
     # Wait until all process finish
@@ -390,12 +420,13 @@ def gen_port_databases_from_env(env):
     return ports_databases
 
 if __name__ == '__main__':
-    env = 'fit'
+    env = 'sandbox'
     #databases = load_from_file('../databases.txt')
     #databases = ['core_customer']
     ports_databases = gen_port_databases_from_env(env)[0:]
     #ports_databases = [[5741, 'postgres']]
     return_dict = parallel_run(ports_databases, mproc_grant_dwh_stream_databasechangelog)
-    #utils.print_sql_result(return_dict, 50, header=True)
-    utils.print_one_result(return_dict, 50)
+    #return_dict = parallel_run_sql(ports_databases, hash_in_fk,  mproc_single_sql)
+    utils.print_sql_result(return_dict, 50, header=True)
+    #utils.print_one_result(return_dict, 50)
 

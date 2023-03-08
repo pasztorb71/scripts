@@ -18,7 +18,8 @@ offset = {'pg-doc': 0,
           'pg-payment': 4,
           'pg-settlement': 5,
           'pg-data': 6,
-         }
+          'pg-obu': 7,
+          }
 
 env_inst_end = {'sandbox'   : 'mqid',
                 'dev'       : 'mskl',

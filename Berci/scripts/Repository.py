@@ -103,7 +103,10 @@ class Repository():
 
     def get_schema_version_label_lines(self):
         with open(f'{self.get_tables_dir()}/schema-version-0.xml', 'r', encoding='utf8') as f:
-            return ''.join([line for line in f.readlines() if 'labels=' in line])
+            lines = [line for line in f.readlines() if 'labels=' in line]
+            if len(lines) > 10:
+                lines = lines[-10:]
+            return ''.join(lines)
 
     def is_table_file_exists(self, tablename):
         dirname = self.get_tables_dir()
