@@ -6,7 +6,7 @@ import Repository
 
 from Git.Git_class import Git
 from Ticket import Ticket
-from utils import print_sql_result
+import utils
 
 
 def _mproc_ck_branch(git, return_dict, branch):
@@ -96,7 +96,7 @@ def check_diff_and_synchronize():
         ret_dict = is_branch_synchronized_in_multiple_repos(gitlist, branch='master', filtered='y')
         if ret_dict:
             print('Differencia:')
-            print_sql_result(ret_dict, 52)
+            utils.print_sql_result(ret_dict, 52)
             if input("Mehet a frissítés? [y/n]") == "y":
                 synchronize_branch_in_multiple_repos(gitlist, branch='master')
             else:
@@ -104,6 +104,11 @@ def check_diff_and_synchronize():
         else:
             print('Nincsen differencia')
             break
+
+
+def delete_branch_multiple_repos(gitlist, branch):
+    commands = [f'branch -d {branch}' ]
+    ret_dict = parallel_run(gitlist, _mproc_multiple_commands, commands)
 
 
 def create_branch_multiple_repos(gitlist, branch):
@@ -115,9 +120,10 @@ if __name__ == '__main__':
     repo = Repository.Repository()
     base = repo.get_base()
     repo_names = repo.get_repo_names()
-    #gitlist = [Git(base, name) for name in repo_names if name != 'mlff-core-customer-postgredb'][0:]
+    #gitlist = [Git(base, name) for name in repo_names if name != 'mlff-enforcement-onsite-alert-subscribe-postgredb'][0:]
     gitlist = [Git(base, name) for name in repo_names]
     check_diff_and_synchronize()
     #synchronize_branch_in_multiple_repos(gitlist, branch='master')
     exit(0)
-    create_branch_multiple_repos(gitlist, 'feature/MLFFDEV-14556-replica-identity-parameter-full-ertekre-allitasa-a-forras-adatbazisokban')
+    #delete_branch_multiple_repos(gitlist, 'feature/MLFFDEV-14649-dwh_stream-user-select-jog-javitasa')
+    #create_branch_multiple_repos(gitlist, 'feature/MLFFDEV-14649-dwh_stream-user-select-jog-javitasa')

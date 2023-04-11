@@ -17,7 +17,7 @@ class Database:
         return repos
 
 
-    def __init__(self, name, host, port):
+    def __init__(self, name: str, host: str, port: str):
         self.name = name
         self.host = host
         self.port = port

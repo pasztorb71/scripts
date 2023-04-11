@@ -38,11 +38,10 @@ class TestRepository(TestCase):
 
     def test_get_db_names_by_group(self):
         actual = Repository.get_db_names_by_group('K-Team')
-        expected = ['enforcement_eligibility', 'enforcement_onsite_alert_subscribe', 'enforcement_sanctioning_sanction']
-        self.assertListEqual(expected, actual)
+        self.assertEqual(5, len(actual))
 
     def test_env_ver(self):
-        self.assertEqual('0.13', Repository('transit-').env_ver)
+        self.assertEqual('1.8', Repository('doc-').env_ver)
 
     def test_get_schema1(self):
         r = Repository('mlff-core-customer-postgredb')
@@ -61,9 +60,9 @@ class TestRepository(TestCase):
         self.assertEqual('eligibility', r.get_schema())
 
     def test_get_schema_version_content(self):
-        r = Repository('-pn')
+        r = Repository('doc-')
         c = r.get_schema_version_label_lines()
-        self.assertTrue(len(c.splitlines()) == 0)
+        self.assertTrue(len(c.splitlines()) == 2)
 
     def test_get_tables_dir1(self):
         r = Repository('customer')

@@ -47,6 +47,10 @@ class Repository():
     def get_repo_names():
         return os.listdir(__class__.base)
 
+    @staticmethod
+    def get_repo_names_exclude(excludelist):
+        return [name for name in os.listdir(__class__.base) if not any (x in name for x in excludelist)]
+
     @classmethod
     def get_repo_names_by_group(cls, groupname):
         with open(getfile(cls.get_db_names_by_group).rsplit('\\', 1)[0] + '/csapatok.txt', 'r', encoding='utf8') as f:
@@ -54,7 +58,7 @@ class Repository():
         return [line.split()[0] for line in lines if groupname in line]
 
     @property
-    def last_component_ver(self):
+    def last_component_ver(self) -> str:
         c = self.get_schema_version_label_lines().splitlines()
         if len(c) == 0: return None
         m = re.match('.*labels="(.*), .*', c[-1])
@@ -70,7 +74,8 @@ class Repository():
     def get_schema(self):
         files = os.listdir(self.base_path + self.db_path)
         noneed = ['install-parameters-db1.xml', 'liquibase-install-db1-step-01.xml', 'liquibase-install-db1-step-02.xml',
-                  '_all-modules', '_create_dbs', '__init_dbs', '_init_dbs', 'all-modules', 'partman', 'cron_jobs']
+                  '_all-modules', '_create_dbs', '__init_dbs', '_init_dbs', 'all-modules', 'partman', 'cron_jobs',
+                  'create_publication.sql']
         return list(set(files) - set(noneed))[0]
 
     @classmethod

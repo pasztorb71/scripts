@@ -5,7 +5,7 @@ import utils_sec
 from Cluster import Cluster
 from Database import Database
 from checks.db_changeset_status import get_changeset_ids_from_repos_release
-from sql_runner.parallel_runner.main import parallel_run, parallel_run_all_databases
+from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_env
 from utils import get_conn, get_all_databases
 from utils_repo import get_repos_containing_release
 
@@ -22,7 +22,7 @@ def insert_proc():
     env = 'local'
     to_db = Database('postgres', 'localhost', utils.get_port(env))
     for port in range(5432, 5434):
-        env = utils.get_env(port)
+        env = utils.get_env_old(port)
         print(env)
         for db in get_all_databases(env)[0:]:
             print('  ', db)
@@ -37,7 +37,7 @@ def insert_proc():
                 pass
 
 def insert_changelog(host, port, db, return_dict):
-    env = utils.get_env(port)
+    env = utils.get_env_old(port)
     sql = f"select '{env}', '{db}', id, author, filename, to_char(dateexecuted, 'YYYY-MM-DD HH24:MI:SS.MS'), orderexecuted, " \
           f"exectype, md5sum, description, comments, tag, liquibase, contexts, labels, deployment_id " \
           f"from public.databasechangelog t"
@@ -70,15 +70,10 @@ def insert_changelog(host, port, db, return_dict):
     except:
         pass
 
-def insert_proc_parallel():
-    host, port = 'localhost', 5432
-    cluster = Cluster(host=host, port=port, passw=utils_sec.password_from_file('postgres', host, port))
-    # databases = load_from_file('../databases.txt')
-    databases = cluster.databases[0:]
-    #databases = ['enforcement_eligibility_detection']
-    ports = list(range(5438, 5439))
-    return_dict = parallel_run_all_databases(host, ports, insert_changelog)
-    utils.print_sql_result(return_dict, len(max(databases, key=len)) + 5)
+def insert_proc_parallel(env):
+    ports_databases = gen_port_databases_from_env(env)[0:1]
+    return_dict = parallel_run(ports_databases, insert_changelog)
+    utils.print_sql_result(return_dict, 50)
 
 
 
@@ -96,5 +91,5 @@ if __name__ == '__main__':
     #insert_proc()
     #insert_filesystem_all_changelogs()
     #exit(0)
-    insert_proc_parallel()
+    insert_proc_parallel('sandbox')
 

@@ -1,4 +1,8 @@
+from tabulate import tabulate
+
 import utils_repo
 
+l = []
 for repo in utils_repo.get_all_repos():
-    print(repo.name, repo.last_component_ver)
+    l.append([repo.name, repo.last_component_ver])
+print(tabulate(l, floatfmt=".2f"))

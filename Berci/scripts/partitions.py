@@ -5,6 +5,7 @@ from dateutil.utils import today
 
 import Database
 import utils
+from docker_ips import new_base
 
 
 def daterange(start_date, end_date):
@@ -116,12 +117,9 @@ def pr_attach_single_partitions(day, schema_table):
     print()
 
 
-if __name__ == '__main__':
-    port = 5642
-    schema_table = 'eligibility.detection_minilog_record'
-    partkey = 'event_time'
+def remove_default_part_data(port, schema_table):
     db = Database.Database('enforcement_eligibility', 'localhost', port)
-    print(f"""@SET PGPASSWORD={utils.password_from_file('postgres',port)}
+    print(f"""@SET PGPASSWORD={utils.password_from_file('postgres', port)}
 psql -p {db.port} -U postgres -d {db.name}
 """)
     days_records = get_record_per_days_from_table(db, schema_table)
@@ -136,14 +134,31 @@ psql -p {db.port} -U postgres -d {db.name}
         pr_attach_single_partitions(day, schema_table)
         print('commit;')
         print(f'-- End of {day[0]} ---\n\n')
-
     print('-- End of single operations\n')
     pr_create_partitions(days_records, schema_table)
     pr_create_future_partitions(days_records, schema_table)
     pr_insert_partitions(days_records, schema_table)
-    #pr_count_part_records(days_records, schema_table)
+    # pr_count_part_records(days_records, schema_table)
     pr_count_default_ranges(days_records, schema_table)
     pr_delete_default_partitions(days_records, schema_table)
-    #print(f"select count(*) from {schema_table}_default;")
+    # print(f"select count(*) from {schema_table}_default;")
     print()
     pr_attach_partitions(days_records, schema_table)
+
+
+def check_default_partitions():
+    pass
+
+
+def check_eligibility_partitions_in_all_env():
+    for env in utils.get_envs(exclude=['local'])[0:1]:
+        print(utils.get_ports_from_env(env))
+        #check_default_partitions()
+
+
+if __name__ == '__main__':
+    partkey = 'event_time'
+    port = utils.get_port_from_env_inst('test', 'pg-enforcement')
+    remove_default_part_data(port, 'eligibility.detection_minilog_record')
+    #check_eligibility_partitions_in_all_env()
+

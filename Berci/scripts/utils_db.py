@@ -7,7 +7,7 @@ import Repository
 def get_db_name(base):
     m = re.match('.*mlff-(.*)-postgredb', base)
     if m:
-        return m.group(1)
+        return m.group(1).replace('-','_')
     if 'doc-postgredb' in base:
         return 'doc_document'
 

@@ -3,13 +3,13 @@ import json
 import requests
 from requests.auth import HTTPBasicAuth
 
-from utils import get_login_from_file
+import utils
 
 
 class Ticket:
     def __init__(self, ticket):
         self.name = ticket
-        user_pass = get_login_from_file()
+        user_pass = utils.get_login_from_file()
         url = 'https://jira.icellmobilsoft.hu/rest/api/2/issue/'+ticket
         page = requests.get(url, auth=HTTPBasicAuth(user_pass[0], user_pass[1]))
         self.content = json.loads(str(page.content, 'utf-8'))

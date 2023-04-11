@@ -137,12 +137,10 @@ COMMIT;
 /\n"""
 
 if __name__ == '__main__':
-    ticket = Ticket(params['ticket'])
+    ticket = Ticket('MLFFDEV-9595')
     repo = Repository(params['repository'], params['schema'])
     print('Repository name: ' + repo.get_name())
     version1 = ticket.get_version()
-    #version1 = '0.08.0'
-    #version.check_schema_version_file(version1, repo)
     g = Changelog_header_generator(author='bertalan.pasztor', jira=ticket.name, version=version1, serial=0)
     commands = command_list(repo)[0].replace('\n','').split(';')
     #process_commands(repo)

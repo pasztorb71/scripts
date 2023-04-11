@@ -147,6 +147,7 @@ class Test(TestCase):
         self.assertEqual([5432], utils.get_ports_from_env('local'))
 
     def test_get_ports_from_env2(self):
-        self.assertEqual([5440, 5441, 5442, 5443, 5444, 5445, 5446], utils.get_ports_from_env('sandbox'))
+        self.assertEqual([5440, 5441, 5442, 5443, 5444, 5445, 5446, 5447], utils.get_ports_from_env('sandbox'))
 
-
+    def test_get_env(self):
+        self.assertEqual('fit', utils.get_env(5641))

@@ -1,13 +1,11 @@
 import json
 import multiprocessing
 
+import pandas as pd
 import psycopg2
 
-import utils
 import utils_sec
-from Cluster import Cluster
 import utils
-from sql_runner.parallel_runner.sql_commands import hash_in_fk
 from utils_sec import password_from_file
 
 
@@ -232,14 +230,46 @@ def mproc_count_records(host, port, db, return_dict):
         password=password_from_file('postgres', port))
     cur = conn.cursor()
     recout = []
-    cur.execute("SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public', 'information_schema', 'pg_catalog') "
-                " order by 1,2")
+    cur.execute(f"SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') "
+                f"AND schemaname NOT IN ('public', 'information_schema', 'pg_catalog', 'airflow_meta', 'ingestion_meta') "
+                f"AND tablename not like '%\_p\_%' order by 1,2")
     record = cur.fetchall()
     for rec in record:
-        cur.execute("select '" + rec[0] + '.' + rec[1] + "' table_name, count(*) from " + rec[0] + '.' + rec[1])
-        header = [[desc[0].upper() for desc in cur.description]]
-        record1 = cur.fetchall()
-        recout = recout + record1
+        try:
+            cur.execute(f"select '{rec[0]}' schema_name, '{rec[1]}' table_name, count(*) from {rec[0]}.{rec[1]}")
+            header = [[desc[0].upper() for desc in cur.description]]
+            record1 = cur.fetchall()
+            recout = recout + record1
+        except Exception as e:
+            print(rec[0] + '.' + rec[1])
+            raise e
+    return_dict[f'{port}|{db}'] = header + recout if record else []
+
+    cur.close()
+    conn.commit()
+    conn.close()
+
+def mproc_count_records_dataframe(host, port, db, return_dict):
+    conn = psycopg2.connect(
+        host=host,
+        port=port,
+        database=db,
+        user="postgres",
+        password=password_from_file('postgres', port))
+    cur = conn.cursor()
+    cur.execute(f"SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') "
+                f"AND schemaname NOT IN ('public', 'information_schema', 'pg_catalog', 'airflow_meta', 'ingestion_meta') "
+                f"AND tablename not like '%\_p\_%' order by 1,2")
+    record = cur.fetchall()
+    for rec in record:
+        try:
+            cur.execute("select '" + rec[0] + '.' + rec[1] + "' table_name, count(*) from " + rec[0] + '.' + rec[1])
+            header = [[desc[0].upper() for desc in cur.description]]
+            record1 = cur.fetchall()
+            recout = recout + record1
+        except Exception as e:
+            print(rec[0] + '.' + rec[1])
+            raise e
     return_dict[f'{port}|{db}'] = header + recout if record else []
 
     cur.close()
@@ -346,7 +376,7 @@ def mproc_grant_dwh_stream_databasechangelog(host, port, db, return_dict):
             user="postgres",
             password=password_from_file('postgres',port))
         cur = conn.cursor()
-        cur.execute("GRANT SELECT ON public.dbz_signal TO dwh_stream")
+        cur.execute("GRANT SELECT ON public.databasechangelog TO dwh_stream")
         return_dict[f'{port}|{db}'] = "OK"
         cur.close()
         conn.commit()
@@ -361,12 +391,24 @@ def sum_counts(d):
     return sum
 
 def parallel_run(ports_dbs, func):
-    global jobs
     host = 'localhost'
     return_dict = multiprocessing.Manager().dict()
     jobs = []
     for port_db in ports_dbs:
         p = multiprocessing.Process(target=func, args=(host, port_db[0], port_db[1], return_dict))
+        jobs.append(p)
+        p.start()
+    # Wait until all process finish
+    for job in jobs:
+        job.join()
+    return return_dict
+
+def parallel_run_args(ports_dbs, func, *args):
+    host = 'localhost'
+    return_dict = multiprocessing.Manager().dict()
+    jobs = []
+    for port_db in ports_dbs:
+        p = multiprocessing.Process(target=func, args=(host, port_db[0], port_db[1], return_dict, *args))
         jobs.append(p)
         p.start()
     # Wait until all process finish
@@ -388,23 +430,13 @@ def parallel_run_sql(ports_dbs, sql, func):
         job.join()
     return return_dict
 
-def parallel_run_all_databases(host, ports, func):
-    global jobs
-    return_dict = get_return_dict()
-    jobs = []
-    for port in ports:
-        env = utils.get_env(port)
-        for db in utils.get_all_databases(env)[0:]:
-            start_process(func, host, port, db, return_dict)
-    wait_until_end(jobs)
-    return return_dict
-
 
 def gen_port_databases_from_env_db(env, databases):
     out = []
     for db in databases:
         out.append([utils.get_port_from_env_inst(env, utils.get_instance_from_db_name(db)), db])
     return out
+
 
 def gen_port_databases_from_env(env):
     ports_databases = []
@@ -419,14 +451,40 @@ def gen_port_databases_from_env(env):
                 ports_databases.append([db.split('|')[0], rec[0]])
     return ports_databases
 
+
+def return_dict_to_dataframe(dictproxy):
+    a = list(dictproxy.keys())
+    header = ['ENV', 'DB'] + dictproxy[list(dictproxy.keys())[0]][0]
+    l = []
+    for db, records in sorted(dictproxy.items()):
+        env_db = db.split('|')
+        env = utils.get_env(int(env_db[0]))
+        db = env_db[1]
+        for rec in records[1:]:
+            l.append([env, db] + list(rec))
+    df = pd.DataFrame(l, columns=header)
+    return df
+
+
+def print_dataframe(df):
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.width', None)
+    pd.set_option('display.max_colwidth', None)
+    print(df)
+
+
 if __name__ == '__main__':
-    env = 'sandbox'
+    env = 'train'
     #databases = load_from_file('../databases.txt')
     #databases = ['core_customer']
     ports_databases = gen_port_databases_from_env(env)[0:]
     #ports_databases = [[5741, 'postgres']]
-    return_dict = parallel_run(ports_databases, mproc_grant_dwh_stream_databasechangelog)
-    #return_dict = parallel_run_sql(ports_databases, hash_in_fk,  mproc_single_sql)
-    utils.print_sql_result(return_dict, 50, header=True)
+    #return_dict = parallel_run(ports_databases, mproc_count_records)
+    return_dict = parallel_run_sql(ports_databases, hash_in_fk,  mproc_single_sql)
+    df = return_dict_to_dataframe(return_dict)
+    df_sorted = df.sort_values(by='COUNT', ascending=False)
+    print_dataframe(df_sorted)
+    #utils.print_sql_result(return_dict, 50, header=True)
     #utils.print_one_result(return_dict, 50)
 

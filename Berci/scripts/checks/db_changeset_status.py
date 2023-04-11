@@ -8,7 +8,7 @@ import utils
 import utils_sec
 from Repository import Repository
 from sql_runner.parallel_runner.main import parallel_run
-from utils import get_env
+from utils import get_env_old
 from utils_repo import get_repos_containing_release
 
 
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     ports = range(5433, 5434)
     header = []
     for port in ports:
-        header.append(get_env(port))
+        header.append(get_env_old(port))
     host = 'localhost'
     version_files = get_version_filenames(databases, '0.10')
     databases = ['core_vehicle']
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     for key, data in return_dict.items():
         print(f'{key} {data}')
     exit(0)
-    print(f"{get_env(port)}: OK")
+    print(f"{get_env_old(port)}: OK")
     """
     for i in result_d.items():
         result_l.append([i[0]])

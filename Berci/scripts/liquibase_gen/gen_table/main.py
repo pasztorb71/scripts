@@ -116,14 +116,8 @@ COMMIT;
 def table_header(sema, tab_name, ticket_name, version):
     t = tab_name.split('.')
     table = tab_name
-    print("""--===============================================================================================--
--- TABLE ==
----------------------------------------------------------------------------------------------------
---changeset bertalan.pasztor:!TABLE!-TBL-!!ticket!!-01 runOnChange:false
+    print("""--changeset bertalan.pasztor:!TABLE!-TBL-!!ticket!!-01
 --comment A !table! tábla létrehozása..
---
---preconditions onFail:MARK_RAN onError:HALT
---precondition-sql-check expectedResult:0 SELECT count(*) FROM pg_tables WHERE schemaname = '!sema!' AND tablename = '!table!';
 ---------------------------------------------------------------------------------------------------
 SET search_path = ${schema_name};
 """.replace('!table!', table).replace('!TABLE!', table.upper()).replace('!sema!', sema).replace('!!version!!', version).replace('!!ticket!!',ticket_name))

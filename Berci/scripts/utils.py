@@ -29,7 +29,6 @@ def git_init_from_path(path):
 def has_header(l):
     return isinstance([0], list)
 
-
 def print_sql_result(d, maxlength, header=False):
     for db, records in sorted(d.items()):
         print(f"{db}:".ljust(maxlength))
@@ -100,7 +99,7 @@ def get_ports_from_env(env):
     return ports
 
 
-def get_env(port):
+def get_env_old(port):
     if port == 5433:
         return 'sandbox'
     elif port == 5434:
@@ -116,18 +115,27 @@ def get_env(port):
     elif port == 5432:
         return 'local'
 
+def get_env(port):
+    prevkey = ''
+    for env, p in new_base.items():
+        if port < p:
+            return prevkey
+        prevkey = env
+    return None
+
 def get_instance_from_db_name(dbname):
     if dbname == 'document':
         return 'pg-doc'
     return 'pg-' + dbname.split('_')[0]
 
 def get_port_from_env_inst(env, inst):
-    if env.startswith('new_'):
-        return new_base[env] + offset[inst]
-    else:
-        port = get_old_port(env)
-    if port:
-        return port
+    if env in new_base:
+        if inst in offset:
+            return new_base[env] + offset[inst]
+        else:
+            print("Lehetséges instance-ok:")
+            print('\n'.join([x for x in offset.keys()]))
+            raise Exception("Nem létező instance")
     else:
         print(f"utils.get_port_from_env_inst('{env}')\n" + """"Nem létező környezet:
     Lehetséges értékek:
@@ -239,4 +247,5 @@ def get_last_nth_occurence_of_list_element(plist, pelem, nth):
         return None
     return index_after[-nth] + 1
 
-
+def get_envs(exclude=['']) -> list[str]:
+    return [env for env in new_base if env not in exclude]
