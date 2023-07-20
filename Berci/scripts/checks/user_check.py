@@ -2,12 +2,12 @@ import psycopg2
 
 import utils
 import utils_sec
-from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_env
+from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_envs
 from utils import get_cluster_databases
 
 
 def dwh_check(host, port, db, return_dict):
-    v_user = 'dwh_read'
+    v_user = 'dwh_stream'
     try:
         conn = psycopg2.connect(
             host=host,
@@ -78,8 +78,8 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    env = 'dev'
-    ports_databases = gen_port_databases_from_env(env)[0:]
+    envs = ['c_dev']
+    ports_databases = gen_port_databases_from_envs(envs)[0:]
     # ports_databases = [[5741, 'postgres']]
     return_dict = parallel_run(ports_databases, dwh_check)
     utils.print_table_level_check(return_dict, filtered=True)

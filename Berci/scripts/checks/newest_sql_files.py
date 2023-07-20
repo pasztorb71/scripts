@@ -30,16 +30,46 @@ def get_important_commands_from_file(file):
     return out
 
 
+def get_schema_xml_files_labels(lines: list[str]) -> list[str, str]:
+    filelist = []
+    for line in lines:
+        m = re.match(".*(schema-version-.*.xml).*",line)
+        if m:
+           m_label = re.match('.*labels=.*,\s(.*)"/>.*', line)
+           label = m_label.group(1) if m_label else None
+           filelist.append([m.group(1), label])
+    return filelist
+
+
+def get_label_advanced(file, xml_files:list[str, str]):
+    file_name = file.rsplit('\\', 1)[1]
+    for xml_f in xml_files:
+        if not os.path.exists(file.rsplit('\\', 2)[0] + '/schema-version-0.xml'):
+            return None
+        try:
+            lines = []
+            with open(file.rsplit('\\', 2)[0] + f'/{xml_f[0]}', 'r', encoding='utf8') as f:
+                lines = f.readlines()
+                for line in lines:
+                    return xml_f[1]
+        except Exception as e:
+            print(file)
+            raise e
+
+
 def get_label(file):
     file_name = file.rsplit('\\', 1)[1]
     if not os.path.exists(file.rsplit('\\', 2)[0] + '/schema-version-0.xml'):
         return None
     try:
+        lines = []
         with open(file.rsplit('\\', 2)[0] + '/schema-version-0.xml', 'r', encoding='utf8') as f:
-            for line in f.readlines():
+            lines = f.readlines()
+            for line in lines:
                 if file_name in line:
                     m = re.match('.*labels=.*,\s(.*)"/>.*', line)
-                    return re.match('.*labels=.*,\s(.*)"/>.*', line).group(1) if m else None
+                    return m.group(1) if m else None
+            return get_label_advanced(file, get_schema_xml_files_labels(lines))
     except Exception as e:
         print(file)
         raise e
@@ -51,10 +81,14 @@ def get_modification_time(filename):
     repo = f_arr[0]
     command = f'cmd /u /c git -C {repo} log -1 --format="%ad" --date=format:"%Y-%m-%d %H:%M:%S" {fname}'
     date_str = os.popen(command).read().replace('\n','')
-    a = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+    if not date_str:
+        date_str = '2999-01-01 00:00:00'
+    try:
+        a = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+    except Exception as e:
+        print(f'{fname}: {date_str}')
+        raise e
     return a
-    # os time
-    #return mtime_to_datetime(os.path.getmtime(filename))
 
 
 def file_modtime_greater(filename: str, mtime: datetime) -> bool:
@@ -63,8 +97,10 @@ def file_modtime_greater(filename: str, mtime: datetime) -> bool:
 
 if __name__ == '__main__':
     prev_db_name = ''
-    modtime = datetime.strptime('03/24/23 15:05:00', '%m/%d/%y %H:%M:%S')
+    modtime = datetime.strptime('23/07/04 15:41:00', '%y/%m/%d %H:%M:%S')
     for file in utils_file.get_files_from_path_fname_filtered('c:/GIT/MLFF/', '.sql'):
+        if 'ddl_changes_module' in file:
+            continue
         if not file_modtime_greater(file, modtime):
             continue
         commands = get_important_commands_from_file(file)

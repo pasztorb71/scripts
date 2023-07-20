@@ -47,6 +47,9 @@ class Test(TestCase):
     def test_password_from_file_all_hosts(self):
         self.assertEqual('mlffTitkosPassword123!', utils_sec.password_from_file('dwh_read', '*'))
 
+    def test_password_from_file_all_hosts_stream(self):
+        self.assertEqual('mlffTitkosPassword123!', utils_sec.password_from_file('dwh_stream', '*'))
+
     def test_get_schema_from_command(self):
         actual = utils_command.get_schema_from_command(
             "ALTER SCHEMA notification_common RENAME TO notification_dispacther;")
@@ -147,7 +150,7 @@ class Test(TestCase):
         self.assertEqual([5432], utils.get_ports_from_env('local'))
 
     def test_get_ports_from_env2(self):
-        self.assertEqual([5440, 5441, 5442, 5443, 5444, 5445, 5446, 5447], utils.get_ports_from_env('sandbox'))
+        self.assertEqual([5440, 5441, 5442, 5443, 5444, 5445, 5447], utils.get_ports_from_env('sandbox'))
 
     def test_get_env(self):
         self.assertEqual('fit', utils.get_env(5641))

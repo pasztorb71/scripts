@@ -79,6 +79,11 @@ class TestRepository(TestCase):
         tabdir = 'c:/GIT/MLFF/mlff-enforcement-eligibility-postgredb/liquibase/enforcement_eligibility/eligibility/tables'
         self.assertEqual(tabdir, r.get_tables_dir())
 
+    def test_get_tables_dir4(self):
+        r = Repository('mlff-enforcement-onsite-inspection-postgredb')
+        tabdir = 'c:/GIT/MLFF/mlff-enforcement-onsite-inspection-postgredb/liquibase/enforcement_onsite_inspection/template/tables'
+        self.assertEqual(tabdir, r.get_tables_dir())
+
     def test_last_component_ver(self):
         r = Repository('doc-postgredb')
         self.assertEqual('0.10', r.last_component_ver)

@@ -1,12 +1,29 @@
 import os
 import subprocess
+import Repository
 
 
 class Git:
-    def __init__(self, base, repo):
+    @staticmethod
+    def get_gitlist():
+        repo = Repository.Repository()
+        base = repo.get_base()
+        repo_names = repo.get_repo_names()
+        return [Git(base, name) for name in repo_names[0:]]
+
+    @staticmethod
+    def gen_clone_commands_for_all():
+        gitlist = Git.get_gitlist()
+        urls = [git.get_remote_url() for git in gitlist]
+        return 'git clone ' + '\ngit clone '.join(urls)
+
+    def __init__(self, base=None, repo=None):
         self.base = base
         self.repo = repo
         self.synced = ''
+
+    def __repr__(self):
+        return self.repo
 
     def print_log(self):
         os.system('git -C ' + self.repo + ' log --oneline')
@@ -29,6 +46,9 @@ class Git:
     def get_current_branch(self):
         return os.popen('cmd /u /c git -C ' + self.base + '/' + self.repo + ' branch --show-current ').read().replace('\n','')
 
+    def get_remote_url(self):
+        return os.popen('cmd /u /c git -C ' + self.base + '/' + self.repo + ' config --get remote.origin.url ').read().replace('\n','')
+
     def checkout_branch(self, branch):
         self._run_command('checkout ' + branch, ['Already on', 'Switched to branch'])
 
@@ -42,5 +62,14 @@ class Git:
         if stderr and not any([x in stderr for x in acceptable_err]):
             raise Exception(stderr)
 
+    def init(self):
+        os.system(f'git -C {self.base}/{self.repo} restore --staged etc/release/release.sh')
+        os.system(f'git -C {self.base}/{self.repo} restore .')
+        os.system(f'git -C {self.base}/{self.repo} clean -f -d')
 
 
+def git_init_from_path(path):
+    a = path.split('\\', 2)
+    repo = a[0] + '/' + a[1]
+    g = Git(repo)
+    g.init()

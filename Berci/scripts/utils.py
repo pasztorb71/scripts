@@ -1,30 +1,18 @@
-import os
 from inspect import getfile
 
 import psycopg2
 from tabulate import tabulate
 
 from Cluster import Cluster
-from docker_ips import new_base, offset, base_ips, env_inst_end
+from docker_ips import new_base, offset
 import utils_db
 import utils_repo
-from sql_runner.parallel_runner.main import parallel_run, mproc_get_dabase_names
 from utils_sec import password_from_file
 
 
 def move_upper_dir(path):
     return path.rsplit('/',1)[0] if path[-1] != '/' else path.rsplit('/',2)[0]
 
-
-def git_init(base):
-    os.system('git -C '+base+' restore --staged etc/release/release.sh')
-    os.system('git -C '+base+' restore .')
-    os.system('git -C '+base+' clean -f -d')
-
-def git_init_from_path(path):
-    a = path.split('\\', 2)
-    repo = a[0] + '/' + a[1]
-    git_init(repo)
 
 def has_header(l):
     return isinstance([0], list)
@@ -85,16 +73,18 @@ Lehetséges értékek:
 def get_port(env, repo_full_name):
     if env == 'local':
         return 5432
-    if env == 'mlff-test':
+    elif env == 'mlff-test':
         return 5555
+    elif env == 'anonymizer-test':
+        return 5556
     inst = utils_repo.get_instance_from_repo_full_name(repo_full_name)
     return new_base[env] + offset[inst]
 
-def get_ports_from_env(env):
+def get_ports_from_env(env) -> list[int]:
     if env == 'local':
         return [5432]
     ports = []
-    for idx, _ in enumerate(offset):
+    for idx in offset.values():
         ports.append(new_base[env] + idx)
     return ports
 
@@ -195,8 +185,10 @@ def whoami(  ):
 def get_ip_address_for_docker(repo, loc):
     if loc == 'local':
         return 'gateway.docker.internal'
-    if loc == 'mlff-test':
+    elif loc == 'mlff-test':
         return 'gateway.docker.internal:5555'
+    elif loc == 'anonymizer-test':
+        return 'gateway.docker.internal:5556'
     inst = utils_repo.get_instance_from_repo_full_name(repo)
     return 'gateway.docker.internal:' + str(new_base[loc] + offset[inst])
 

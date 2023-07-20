@@ -11,11 +11,12 @@ from utils import get_login_from_file
 
 class Confluence:
     def get_table_from_url(self, url):
-        page = requests.get(url, auth=HTTPBasicAuth('bertalan.pasztor@icellmobilsoft.hu', 'ATATT3xFfGF0A1oSri6POQVqhVIvquW92TD7gBUh2jkdEkLi6AlOSMCbN1I73j6sdD8taiV0V9DwO3aSNCLvgX'))
+        token = 'ATATT3xFfGF0syQvBtTArocAo21QTU-oCYHmEkaABGDXWASB4U-cGvjnSd8iEYC8icEQz-h-Qwy9Al5kwsVenQPj0jC8DJFS6S6eQE1oE4cufXYGQo2uQQA5FR4ZAKKNM_73g4X9XK7tIX3Ulam-xfHWHe8yJmVKK-zcMrrx3VgtbbYwJIUxZZg=0BBDC6E7'
+        page = requests.get(url, auth=HTTPBasicAuth('bertalan.pasztor@icellmobilsoft.hu', token))
         cont = page.text
         page_id = url.split('/pages/')[1].split('/',1)[0]
         url = 'https://icellmobilsoft-int.atlassian.net/wiki/rest/api/content/' + str(page_id) + '?expand=body.storage'
-        self.page = requests.get(url, auth=HTTPBasicAuth('bertalan.pasztor@icellmobilsoft.hu', 'ATATT3xFfGF0A1oSri6POQVqhVIvquW92TD7gBUh2jkdEkLi6AlOSMCbN1I73j6sdD8taiV0V9DwO3aSNCLvgX-lpLQeZ4Doo0DnYwAF89OQrSvjWapstluT7QP3xwFDRd88x8vtNwXsJeeVIqbS9uJYrmG3_je6AuTT-YOB62aWKkKbb2B3pRs=F591E37B'))
+        self.page = requests.get(url, auth=HTTPBasicAuth('bertalan.pasztor@icellmobilsoft.hu', token))
         return self.page.text.replace('\\"','\"')
 
     def get_table_comment(self):

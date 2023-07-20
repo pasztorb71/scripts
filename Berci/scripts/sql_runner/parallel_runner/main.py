@@ -1,13 +1,10 @@
-import json
 import multiprocessing
 
 import pandas as pd
 import psycopg2
 
-import utils_sec
 import utils
-from utils_sec import password_from_file
-
+import utils_sec
 
 def mproc_single_command_tmpl(host, port, db, return_dict):
     conn = psycopg2.connect(
@@ -15,7 +12,7 @@ def mproc_single_command_tmpl(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     cur.execute("SELECT schemaname, tablename, tableowner FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
     record = cur.fetchall()
@@ -30,7 +27,7 @@ def mproc_single_sql(host, port, db, return_dict, sql):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     cur.execute(sql)
     record = cur.fetchall()
@@ -40,15 +37,19 @@ def mproc_single_sql(host, port, db, return_dict, sql):
     conn.close()
 
 def mproc_check_user(host, port, db, return_dict):
-    conn = psycopg2.connect(
-        host=host,
-        port=port,
-        database=db,
-        user="postgres",
-        password=password_from_file('postgres', port))
+    try:
+        conn = psycopg2.connect(
+            host=host,
+            port=port,
+            database=db,
+            user="postgres",
+            password=utils_sec.password_from_file('postgres', port))
+    except Exception as e:
+        return_dict[f'{port}|{db}'] = str(e)
+        return
     cur = conn.cursor()
-    cur.execute("SELECT count(*) FROM pg_roles WHERE rolname = 'dwh_stream'")
-    #cur.execute("SELECT count(*) FROM information_schema.tables t WHERE table_name = 'dbz_signal'")
+    #cur.execute("SELECT count(*) FROM pg_roles WHERE rolname = 'dwh_stream'")
+    cur.execute("SELECT count(*) FROM public.databasechangelog")
     #cur.execute("CREATE TABLE IF NOT EXISTS public.dbz_signal (id varchar(100) PRIMARY KEY, type varchar(32), data varchar(2048));")
     record = cur.fetchall()
     #return_dict[f'{port}|{db}'] = 'ok'
@@ -64,7 +65,7 @@ def mproc_get_dabase_names(host, port, db, return_dict):
             port=port,
             database=db,
             user="postgres",
-            password=password_from_file('postgres', port))
+            password=utils_sec.password_from_file('postgres', port))
         cur = conn.cursor()
         cur.execute("SELECT datname FROM pg_database WHERE datname NOT IN ('cloudsqladmin', 'postgres', 'template0', 'template1')")
         record = cur.fetchall()
@@ -81,7 +82,7 @@ def mproc_grant_after_migr(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     cur.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_owner = 'postgres';")
     record = cur.fetchall()
@@ -100,7 +101,7 @@ def mproc_get_missing_column_comments(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     cur.execute("""select
     c.table_schema,
@@ -153,7 +154,7 @@ def mproc_multiple_commands_tmpl(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     recout = []
     cur.execute("SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
@@ -175,7 +176,7 @@ def mproc_get_missing_table_comments(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     recout = []
     cur.execute("SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
@@ -197,7 +198,7 @@ def mproc_get_tables(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     cur.execute("SELECT schemaname, tablename, tableowner FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public') and tablename not like '%$hist'")
     record = cur.fetchall()
@@ -212,7 +213,7 @@ def mproc_count_tables(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     cur.execute("SELECT count(*) cnt FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public')")
     record = cur.fetchall()
@@ -227,7 +228,7 @@ def mproc_count_records(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     recout = []
     cur.execute(f"SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') "
@@ -249,13 +250,37 @@ def mproc_count_records(host, port, db, return_dict):
     conn.commit()
     conn.close()
 
+def truncate_table(host, port, db, return_dict):
+    conn = psycopg2.connect(
+        host=host,
+        port=port,
+        database=db,
+        user="postgres",
+        password=utils_sec.password_from_file('postgres', port))
+    cur = conn.cursor()
+    cur.execute(f"SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') "
+                f"AND schemaname NOT IN ('public', 'information_schema', 'pg_catalog', 'airflow_meta', 'ingestion_meta') "
+                f"AND tablename not like '%\_p\_%' order by 1,2")
+    record = cur.fetchall()
+    for rec in record:
+        try:
+            cur.execute(f"truncate table {rec[0]}.{rec[1]} cascade")
+        except Exception as e:
+            print(rec[0] + '.' + rec[1])
+            raise e
+        return_dict[f'{port}|{db}'] = f" {rec[0]}.{rec[1]} truncated"
+
+    cur.close()
+    conn.commit()
+    conn.close()
+
 def mproc_count_records_dataframe(host, port, db, return_dict):
     conn = psycopg2.connect(
         host=host,
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     cur.execute(f"SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') "
                 f"AND schemaname NOT IN ('public', 'information_schema', 'pg_catalog', 'airflow_meta', 'ingestion_meta') "
@@ -282,7 +307,7 @@ def mproc_revoke_rights(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     recout = []
     cur.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_owner = 'postgres';")
@@ -302,7 +327,7 @@ def mproc_grant_dwh_read(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     try:
         cur.execute("CREATE USER dwh_read WITH PASSWORD 'mlffTitkosPassword123!';")
@@ -329,7 +354,7 @@ def mproc_grant_hendi_read(host, port, db, return_dict):
         port=port,
         database=db,
         user="postgres",
-        password=password_from_file('postgres', port))
+        password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
     try:
         cur.execute("CREATE USER hendipradana WITH PASSWORD 'nHY0JBGeYpQ!ayuhV';")
@@ -357,7 +382,7 @@ def mproc_grant_dwh_read_databasechangelog(host, port, db, return_dict):
             port=port,
             database=db,
             user="postgres",
-            password=password_from_file('postgres',port))
+            password=utils_sec.password_from_file('postgres',port))
         cur = conn.cursor()
         cur.execute("GRANT SELECT ON public.databasechangelog TO dwh_read")
         return_dict[f'{port}|{db}'] = "OK"
@@ -374,7 +399,7 @@ def mproc_grant_dwh_stream_databasechangelog(host, port, db, return_dict):
             port=port,
             database=db,
             user="postgres",
-            password=password_from_file('postgres',port))
+            password=utils_sec.password_from_file('postgres',port))
         cur = conn.cursor()
         cur.execute("GRANT SELECT ON public.databasechangelog TO dwh_stream")
         return_dict[f'{port}|{db}'] = "OK"
@@ -438,9 +463,11 @@ def gen_port_databases_from_env_db(env, databases):
     return out
 
 
-def gen_port_databases_from_env(env):
+def gen_port_databases_from_envs(envlist: list[str]):
     ports_databases = []
-    a = utils.get_ports_from_env(env)
+    a = []
+    for env in envlist:
+        a += utils.get_ports_from_env(env)
     for port in a:
         ports_databases.append([port, 'postgres'])
     return_dict = parallel_run(ports_databases, mproc_get_dabase_names)
@@ -475,16 +502,18 @@ def print_dataframe(df):
 
 
 if __name__ == '__main__':
-    env = 'train'
+    envs = ['c_dev']
+    #envs = utils.get_envs()
     #databases = load_from_file('../databases.txt')
     #databases = ['core_customer']
-    ports_databases = gen_port_databases_from_env(env)[0:]
-    #ports_databases = [[5741, 'postgres']]
-    #return_dict = parallel_run(ports_databases, mproc_count_records)
-    return_dict = parallel_run_sql(ports_databases, hash_in_fk,  mproc_single_sql)
-    df = return_dict_to_dataframe(return_dict)
-    df_sorted = df.sort_values(by='COUNT', ascending=False)
-    print_dataframe(df_sorted)
-    #utils.print_sql_result(return_dict, 50, header=True)
+    #ports_databases = gen_port_databases_from_envs(envs)[0:]
+    ports_databases = [[6041, 'core_customer']]
+    #return_dict = parallel_run(ports_databases, truncate_table)
+    return_dict = parallel_run(ports_databases, mproc_count_records)
+    #return_dict = parallel_run_sql(ports_databases, 'select now()',  mproc_single_sql)
+    #df = return_dict_to_dataframe(return_dict)
+    #df_sorted = df.sort_values(by='COUNT', ascending=False)
+    #print_dataframe(df_sorted)
+    utils.print_sql_result(return_dict, 50, header=True)
     #utils.print_one_result(return_dict, 50)
 

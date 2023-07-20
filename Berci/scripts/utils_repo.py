@@ -24,7 +24,7 @@ def get_repos_from_port(port):
     dbs = cluster.databases
     return Database.get_repositories_from_dbs(dbs)
 
-def get_all_repos():
+def get_all_repos() -> list[Repository]:
     return [Repository.Repository(x) for x in Repository.Repository.get_repo_names()]
 
 def get_all_repos_by_group(group):

@@ -5,7 +5,7 @@ import utils_sec
 from Cluster import Cluster
 from Database import Database
 from checks.db_changeset_status import get_changeset_ids_from_repos_release
-from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_env
+from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_envs
 from utils import get_conn, get_all_databases
 from utils_repo import get_repos_containing_release
 
@@ -71,7 +71,7 @@ def insert_changelog(host, port, db, return_dict):
         pass
 
 def insert_proc_parallel(env):
-    ports_databases = gen_port_databases_from_env(env)[0:1]
+    ports_databases = gen_port_databases_from_envs(env)[0:1]
     return_dict = parallel_run(ports_databases, insert_changelog)
     utils.print_sql_result(return_dict, 50)
 
@@ -88,8 +88,5 @@ def insert_filesystem_all_changelogs():
     pass
 
 if __name__ == '__main__':
-    #insert_proc()
-    #insert_filesystem_all_changelogs()
-    #exit(0)
-    insert_proc_parallel('sandbox')
+    insert_proc_parallel('fit')
 

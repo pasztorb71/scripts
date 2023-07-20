@@ -1,6 +1,6 @@
 import os
 
-from utils import git_init
+from Git.Git_class import git_init
 from utils_db import get_db_name
 from utils_file import copy_dir, replace_in_file, copy_file
 
@@ -21,8 +21,9 @@ def create_file(fname):
 
 if __name__ == '__main__':
   # prepare
-    repo = 'mlff-core-privateuser-postgredb'
-    base = 'c:/GIT/MLFF/'+repo
+    repo = 'mlff-liquibase-common-postgredb'
+    base = 'c:/GIT/'+repo
+    #base = 'c:/GIT/MLFF/'+repo
     db = get_db_name(base)
     db_path = db.replace('-', '_')
     to_replace = [['core-customer', db],['core_customer', db_path]]

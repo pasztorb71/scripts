@@ -2,7 +2,7 @@ import psycopg2
 
 import utils
 import utils_sec
-from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_env, parallel_run_args
+from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_envs, parallel_run_args
 
 
 def mproc_search_in_changelog(host, port, db, return_dict, id_list):
@@ -28,7 +28,7 @@ def mproc_search_in_changelog(host, port, db, return_dict, id_list):
 
 if __name__ == '__main__':
     env = 'sandbox'
-    ports_databases = gen_port_databases_from_env(env)[0:]
+    ports_databases = gen_port_databases_from_envs(env)[0:]
     # ports_databases = [[5741, 'postgres']]
     id_list = ['MLFFDEV-14556', 'MLFFDEV-14649', 'MLFFDEV-14817', 'MLFFDEV-14914']
     return_dict = parallel_run_args(ports_databases, mproc_search_in_changelog, id_list)

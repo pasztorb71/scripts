@@ -3,7 +3,7 @@ import re
 from inspect import getfile
 
 import utils
-from Database import Database
+import Database
 
 
 class Repository():
@@ -39,8 +39,12 @@ class Repository():
         repos = os.listdir(__class__.base)
         a = [repo for repo in repos if name in repo]
         if len(a) > 1:
-            print(a)
-            raise Exception("Nem egyértelmű a repository név!")
+            print("Nem egyértelmű a repository név!")
+            print("Melyiket választod?")
+            for idx, value in enumerate(a):
+                print(f'{idx}: {value}')
+            i = int(input())
+            a = [a[i]]
         return a[0]
 
     @staticmethod
@@ -74,7 +78,8 @@ class Repository():
     def get_schema(self):
         files = os.listdir(self.base_path + self.db_path)
         noneed = ['install-parameters-db1.xml', 'liquibase-install-db1-step-01.xml', 'liquibase-install-db1-step-02.xml',
-                  '_all-modules', '_create_dbs', '__init_dbs', '_init_dbs', 'all-modules', 'partman', 'cron_jobs',
+                  'liquibase-install-db-step-01.xml', 'liquibase-install-schema-step-02.xml', 'install-parameters.xml',
+                  '_all-modules', '_create_dbs', '__init_dbs', 'init_dbs', '_init_dbs', 'all-modules', 'partman', 'cron_jobs',
                   'create_publication.sql']
         return list(set(files) - set(noneed))[0]
 
@@ -164,21 +169,21 @@ class Repository():
 
 
     def drop_database(self):
-        clus = Database('postgres', 'localhost', '5432')
+        clus = Database.Database('postgres', 'localhost', '5432')
         clus.sql_exec(f'drop database if exists {self.dbname}')
         print(f'{self.dbname} database dropped.')
 
     def drop_roles(self):
-        clus = Database('postgres', 'localhost', '5432')
+        clus = Database.Database('postgres', 'localhost', '5432')
         clus.drop_roles(self.schema)
 
     def drop_main_changelog(self):
-        clus = Database('postgres', 'localhost', '5432')
+        clus = Database.Database('postgres', 'localhost', '5432')
         clus.sql_exec(f'drop table if exists public.databasechangelog')
         print(f'public.databasechangelog dropped.')
 
     def drop_db_changelog(self):
-        clus = Database(self.dbname, 'localhost', '5432')
+        clus = Database.Database(self.dbname, 'localhost', '5432')
         clus.sql_exec(f'drop table if exists public.databasechangelog')
         print(f'databasechangelog dropped from {self.dbname} database.')
 

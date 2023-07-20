@@ -8,7 +8,7 @@ from utils_file import load_from_file
 from utils_repo import get_repos_from_port
 
 if __name__ == '__main__':
-    e = Env('test')
-    x = e.database_names[18:-1]
+    e = Env('dev')
+    x = e.database_names[23:]
     repos = Database.get_repositories_from_dbs(x)
-    Runner(repos, confirm=False).run_multiple_repos(loc = 'test', checkonly = False)
+    Runner(repos, confirm=False).run_multiple_repos(loc = 'new', checkonly = False)

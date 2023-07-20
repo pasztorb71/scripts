@@ -45,7 +45,10 @@ class Runner:
 
     def get_changelog(self, db, project):
         db_name = get_dbname_from_project(project)
-        return  db_name+'\liquibase-install-db1-step-01.xml' if db == 'postgres' else db_name+'\liquibase-install-db1-step-02.xml'
+        if db_name in ['enforcement_onsite_inspection']:
+            return  db_name+'\liquibase-install-db-step-01.xml' if db == 'postgres' else db_name+'\liquibase-install-schema-step-02.xml'
+        else:
+            return db_name + '\liquibase-install-db1-step-01.xml' if db == 'postgres' else db_name + '\liquibase-install-db1-step-02.xml'
 
     def get_context(self):
         return '--contexts=sand' if self.loc=='sandbox' else ''
@@ -70,7 +73,11 @@ class Runner:
     def run_for_repo(self, ip_address, repo, delete_changelog_only=False):
         print(f"Környezet IP: {ip_address}")
         print(f"Az alábbi repora lesz telepítve: {repo}")
-        print(Repository(repo).get_schema_version_label_lines())
+        if not self.checkonly:
+            try:
+                print(Repository(repo).get_schema_version_label_lines())
+            except FileNotFoundError:
+                pass
         if self.confirm_one_run == True:
             if input("Mehet a telepítés? [y/n]") != "y":
                 print('Telepítés megszakítva!')
@@ -86,7 +93,10 @@ class Runner:
             self._call_liquibase(repo, ip_address, self.password, db)
 
     def run_multiple_repos(self, loc, checkonly, delete_db_before=False, delete_changelog_only=False):
-        if not checkonly and not self.confirm(loc): return
+        if not checkonly:
+            if not self.confirm(loc): return
+        else:
+            self.confirm_one_run = False
         self.delete_db_before = delete_db_before
         self.loc = loc
         self.checkonly = checkonly

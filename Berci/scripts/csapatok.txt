@@ -5,7 +5,6 @@ mlff-core-template-postgredb                         KOMODO
 mlff-core-ticket-postgredb                           KOMODO 
 mlff-core-vehicle-postgredb                          KOMODO 
 
-mlff-core-notification-pn-postgredb                     N2O
 mlff-enforcement-detection-alert-postgredb              N2O
 mlff-enforcement-detection-image-postgredb              N2O
 mlff-enforcement-detection-observation-postgredb        N2O
@@ -16,7 +15,7 @@ mlff-enforcement-visual-check-postgredb                 N2O
 
 mlff-core-customer-postgredb                         JAKARTA
 mlff-core-privateuser-postgredb                      JAKARTA
-lff-enforcement-exemption-postgredb                  JAKARTA
+mlff-enforcement-exemption-postgredb                 JAKARTA
 mlff-eobu-tariff-postgredb                           JAKARTA
 mlff-eobu-trip-postgredb                             JAKARTA
 mlff-obu-obuprovider-postgredb                       JAKARTA
@@ -32,6 +31,7 @@ mlff-settlement-tro-clearing-postgredb               LIBRA
 mlff-enforcement-eligibility-postgredb               K-Team
 mlff-enforcement-onsite-alert-postgredb              K-Team
 mlff-enforcement-onsite-alert-subscribe-postgredb    K-Team
+mlff-enforcement-onsite-inspection-postgredb         K-Team
 mlff-enforcement-sanctioning-presumption-postgredb   K-Team
 mlff-enforcement-sanctioning-sanction-postgredb      K-Team
 

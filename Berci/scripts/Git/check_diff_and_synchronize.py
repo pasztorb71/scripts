@@ -1,11 +1,10 @@
-import multiprocessing
 import os
 import subprocess
 
 import Repository
 
 from Git.Git_class import Git
-from Ticket import Ticket
+from Git.utils_parallel_runner import parallel_run, _mproc_multiple_commands
 import utils
 
 
@@ -24,38 +23,6 @@ def _mproc_ck_branch(git, return_dict, branch):
 
     proc.kill()
     return_dict[git.repo] = git.synced
-
-def _mproc_multiple_commands(git, return_dict, commands):
-    out = []
-    err = []
-    for cmd in commands:
-        proc=subprocess.Popen('cmd /u /c git -C ' + git.base +'/' + git.repo +' '+cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out.append(proc.stdout.read().decode('utf-8'))
-        e = proc.stderr.read().decode('utf-8')
-        if any(x in e for x in ['error:', 'Aborting']):
-            err.append(e)
-    return_dict[git.repo] = {'stdout': out, 'stderr': err}
-
-
-def wait_until_end(jobs):
-    for job in jobs:
-        job.join()
-
-
-def get_return_dict():
-    manager = multiprocessing.Manager()
-    return manager.dict()
-
-
-def parallel_run(gitlist, proc_to_run, *args):
-    return_dict = get_return_dict()
-    jobs = []
-    for git in gitlist:
-        p = multiprocessing.Process(target=proc_to_run, args=(git, return_dict, *args))
-        jobs.append(p)
-        p.start()
-    wait_until_end(jobs)
-    return return_dict
 
 
 def is_branch_synchronized_in_multiple_repos(gitlist, branch, filtered='n'):
@@ -115,15 +82,26 @@ def create_branch_multiple_repos(gitlist, branch):
     commands = ['checkout -b ' + branch]
     ret_dict = parallel_run(gitlist, _mproc_multiple_commands, commands)
 
+def create_stage_and_commit(gitlist, message):
+    commands = [f'commit -a -m "{message}"' ]
+    ret_dict = parallel_run(gitlist, _mproc_multiple_commands, commands)
+
+
+def push_branch(gitlist, branch):
+    commands = [f'push origin {branch}' ]
+    ret_dict = parallel_run(gitlist, _mproc_multiple_commands, commands)
+
 
 if __name__ == '__main__':
     repo = Repository.Repository()
     base = repo.get_base()
     repo_names = repo.get_repo_names()
-    #gitlist = [Git(base, name) for name in repo_names if name != 'mlff-enforcement-onsite-alert-subscribe-postgredb'][0:]
-    gitlist = [Git(base, name) for name in repo_names]
+    #gitlist = [Git(base, name) for name in repo_names if name != 'doc-postgredb'][0:]
+    gitlist = Git.get_gitlist()
     check_diff_and_synchronize()
-    #synchronize_branch_in_multiple_repos(gitlist, branch='master')
     exit(0)
-    #delete_branch_multiple_repos(gitlist, 'feature/MLFFDEV-14649-dwh_stream-user-select-jog-javitasa')
-    #create_branch_multiple_repos(gitlist, 'feature/MLFFDEV-14649-dwh_stream-user-select-jog-javitasa')
+    #synchronize_branch_in_multiple_repos(gitlist, branch='master')
+    #create_branch_multiple_repos(gitlist, 'feature/MLFFDEV-15855-liquibase-hez-a-service-user-jelszava-erkezzen-kornyezeti-valtozoban')
+    #create_stage_and_commit(gitlist, 'MLFFDEV-15855  rollback')
+    #push_branch(gitlist, 'feature/MLFFDEV-15855-liquibase-hez-a-service-user-jelszava-erkezzen-kornyezeti-valtozoban')
+    delete_branch_multiple_repos(gitlist, 'feature/MLFFDEV-15855-liquibase-hez-a-service-user-jelszava-erkezzen-kornyezeti-valtozoban')

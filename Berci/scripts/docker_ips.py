@@ -10,6 +10,7 @@ new_base = {'local'     : 5432,
             'test'      : 5840,
             'perf'      : 5940,
             'c_dev'     : 6040,
+            'new'       : 7440
             }
 
 offset = {'pg-doc': 0,

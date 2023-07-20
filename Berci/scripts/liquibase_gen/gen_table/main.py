@@ -11,10 +11,13 @@ def modify_type(col):
         return 'varchar(30)'
     return col.lower().replace('varchar2', 'varchar')\
         .replace('timestamp_with_timezone', 'timestamptz(6)')\
+        .replace('timestamptz(nan)', 'timestamptz(6)')\
         .replace('decimal', 'numeric')\
         .replace('double', 'numeric')\
         .replace('smallint', 'int2')\
-        .replace('blob', 'bytea').replace('number', 'numeric')
+        .replace('blob', 'bytea')\
+        .replace('number', 'numeric')\
+        .replace('int(nan)', 'int')
 
 
 def get_table_from_confluence(table, url):
@@ -26,7 +29,9 @@ def get_table_from_confluence(table, url):
     #parsed_html = bs.BeautifulSoup(html)
     #enums = get_enums(parsed_html)
     df = tab[0]
+    df = df.astype(str)
     a = list(df.columns)
+    b = df.values.tolist()
     return table_comment, [list(df.columns)] + df.values.tolist()
 
 
@@ -68,14 +73,19 @@ def table_columns(tab_name, table, tab_short_name):
         if colnames[3].upper() == 'DEFAULT':
             default = ' DEFAULT ' + ("'"+str(col[3])+"'") if not is_nan_or_none(col[3]) else ''
             null = ' NULL' if any(col[2].lower() == x for x in ['nullable', 'yes']) else ' NOT NULL'
+        elif colnames[3].upper() == 'NOT NULL':
+            default = ''
+            null = ' NULL' if is_nullable(col) else ' NOT NULL'
         else:
             default = ' DEFAULT ' + get_default_colval(str(col[2]), col[1]) if not is_nan_or_none(col[2]) else ''
-            null = ' NULL' if is_nan_or_none(col[3]) or col[3].lower() == 'nullable' else ' NOT NULL'
+            null = ' NULL' if is_nullable(col) else ' NOT NULL'
+        if colnames[3] == 'NOT NULL':
+            col[1] = f"{col[1]}({col[2].split('.')[0]})"
         check_type(col[0], col[1])
         type = modify_type(col[1])
         print('\t' + col[0].lower() + ' ' + type + null + default + ',')
         if col[0].lower().endswith('_id'):
-            constraints.append('CONSTRAINT fk_'+tab_short_name+'_'+col[0].lower()+' FOREIGN KEY ('+col[0].lower()+') REFERENCES '+col[0].lower().split('_id')[0]+'(x__id) DEFERRABLE')
+            constraints.append('CONSTRAINT fk_'+tab_short_name+'_'+col[0].lower()+' FOREIGN KEY ('+col[0].lower()+') REFERENCES '+col[0].lower().split('_id')[0]+'(x__id)')
         if 'enum' in col[1].lower():
             constraints.append('CONSTRAINT ck_'+tab_short_name+'_'+col[0].lower()+f" CHECK ((({col[0].lower()})::text = ANY (ARRAY[('{col[1].split('enum')[1]}'::character varying)::text]))),")
         if any([x  in col[1].lower() for x in ('check(','check (')]):
@@ -84,6 +94,11 @@ def table_columns(tab_name, table, tab_short_name):
     if constraints:
         print(',\n\t' + ',\n\t'.join(constraints))
     print(');')
+
+
+def is_nullable(col):
+    return is_nan_or_none(col[3]) or col[3].lower() in ('nullable', 'false')
+
 
 def table_comments(tab_comment, tab_name, table):
     print("COMMENT ON TABLE " + tab_name + " IS '" + tab_comment + "';\n")
@@ -192,7 +207,7 @@ def create_tablefile(repo:Repository, tab_name):
 
 
 if __name__ == '__main__':
-    #TODO könyvtár és fájl létrehozása, esetleg beírás a create_table.sql-be is
+    #TODO Az új fájlnév használata és a max sorszám meghatározása
     params = gen_table_params
     ticket = Ticket(params['ticket'])
     repo = Repository(params['repo'])

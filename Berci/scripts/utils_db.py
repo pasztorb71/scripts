@@ -45,7 +45,7 @@ def get_dbname_from_project(project):
 
 
 def get_sema_from_dbname(db):
-    if db == 'document':
+    if db == 'doc_document':
         return 'document_meta'
     if db == 'payment_transaction':
         return 'payment_transaction'
