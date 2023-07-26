@@ -2,3 +2,4 @@ db_passw.txt
 icell_passw.txt
 **/*.log
 **/__pycache__
+.idea/

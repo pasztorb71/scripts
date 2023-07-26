@@ -145,8 +145,8 @@ def get_password(env, user):
     return 'fLXyFS0RpmIX9uxGII4N' if env != 'local' else 'mysecretpassword'
 
 
-def get_login_from_file():
-    with open(getfile(get_login_from_file).rsplit('\\',1)[0] + '/icell_passw.txt', 'r') as f:
+def get_atlassian_login_from_file():
+    with open(getfile(get_atlassian_login_from_file).rsplit('\\', 1)[0] + '/icell_passw.txt', 'r') as f:
         return f.read().split()
 
 

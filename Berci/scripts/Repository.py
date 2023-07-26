@@ -1,3 +1,4 @@
+import glob
 import os
 import re
 from inspect import getfile
@@ -190,6 +191,9 @@ class Repository():
     def _get_instance(self):
         if self.dbname.startswith('core_'):
             return 'pg-core-mqid'
+
+    def is_new_type_sql_numbering(self):
+        return len(glob.glob(f'{self.get_tables_dir()}/*.xml')) > 1
 
 
 

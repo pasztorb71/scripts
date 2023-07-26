@@ -1,3 +1,5 @@
-s = 'SS Ciawi Selatan – Ciawi selatan'
-print(s.split('–')[0])
-print(s.split('–')[1])
+
+def something(my_var):
+    print(my_var)
+
+something('a')

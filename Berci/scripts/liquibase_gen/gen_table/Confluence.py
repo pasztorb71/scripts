@@ -6,17 +6,19 @@ from bs4 import BeautifulSoup
 
 from requests.auth import HTTPBasicAuth
 
-from utils import get_login_from_file
+import utils
+from utils import get_atlassian_login_from_file
 
 
 class Confluence:
     def get_table_from_url(self, url):
-        token = 'ATATT3xFfGF0syQvBtTArocAo21QTU-oCYHmEkaABGDXWASB4U-cGvjnSd8iEYC8icEQz-h-Qwy9Al5kwsVenQPj0jC8DJFS6S6eQE1oE4cufXYGQo2uQQA5FR4ZAKKNM_73g4X9XK7tIX3Ulam-xfHWHe8yJmVKK-zcMrrx3VgtbbYwJIUxZZg=0BBDC6E7'
-        page = requests.get(url, auth=HTTPBasicAuth('bertalan.pasztor@icellmobilsoft.hu', token))
+        user_pass = utils.get_atlassian_login_from_file()
+        page = requests.get(url, auth=HTTPBasicAuth(user_pass[0], user_pass[1]))
         cont = page.text
         page_id = url.split('/pages/')[1].split('/',1)[0]
-        url = 'https://icellmobilsoft-int.atlassian.net/wiki/rest/api/content/' + str(page_id) + '?expand=body.storage'
-        self.page = requests.get(url, auth=HTTPBasicAuth('bertalan.pasztor@icellmobilsoft.hu', token))
+        baseurl = 'https://icellmobilsoft-int.atlassian.net'
+        url = f'{baseurl}/wiki/rest/api/content/{str(page_id)}?expand=body.storage'
+        self.page = requests.get(url, auth=HTTPBasicAuth(user_pass[0], user_pass[1]))
         return self.page.text.replace('\\"','\"')
 
     def get_table_comment(self):

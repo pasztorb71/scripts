@@ -14,3 +14,14 @@ class TestTicket(TestCase):
         version = ticket.get_version()
         self.assertEqual('0.09.0', version)
 
+    def test_branch(self):
+        t = Ticket('MLFFDEV-21725')
+        self.assertEqual('feature/MLFFDEV-21725_DB_Genos_mustache', t.branch)
+
+    def test_release(self):
+        t = Ticket('MLFFDEV-21725')
+        self.assertEqual('MLFF 0.19', t.release)
+
+    def test_release_missing(self):
+        t = Ticket('MLFFDEV-21701')
+        self.assertEqual('MLFF 0.17.1', t.release)

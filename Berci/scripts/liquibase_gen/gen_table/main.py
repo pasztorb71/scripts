@@ -25,20 +25,11 @@ def get_table_from_confluence(table, url):
     html = conf.get_table_from_url(url)
     table_comment = conf.get_table_comment()
     tab = pd.read_html(html)
-    #TODO enum keresés
-    #parsed_html = bs.BeautifulSoup(html)
-    #enums = get_enums(parsed_html)
     df = tab[0]
     df = df.astype(str)
     a = list(df.columns)
     b = df.values.tolist()
     return table_comment, [list(df.columns)] + df.values.tolist()
-
-
-def get_enums(parsed_html):
-    for div in parsed_html.find_all(class_="confluenceTd"):
-        a = div.text
-    return None
 
 
 def is_row_needed(name):
@@ -196,6 +187,8 @@ def print_table_script(tab_comment, schema_name, tab_name, table, history, ticke
 
 
 def create_tablefile(repo:Repository, tab_name):
+    new_type_repo = repo.is_new_type_sql_numbering()
+    #TODO új típust megcsinálni
     if not repo.is_table_file_exists(tab_name):
         print(f"DDL file: {repo.get_tables_dir()}/{tab_name}/{tab_name}-DDL-000.sql")
         if input("Create DDL file? [y/n]") == "y":
@@ -207,7 +200,6 @@ def create_tablefile(repo:Repository, tab_name):
 
 
 if __name__ == '__main__':
-    #TODO Az új fájlnév használata és a max sorszám meghatározása
     params = gen_table_params
     ticket = Ticket(params['ticket'])
     repo = Repository(params['repo'])
