@@ -1,5 +1,6 @@
 import psycopg2
 
+import Environment
 import utils
 import utils_sec
 from sql_runner.parallel_runner.main import parallel_run
@@ -38,7 +39,7 @@ if __name__ == '__main__':
     databases = get_cluster_databases(env)[0:]
     #databases = Repository.get_db_names_by_group('JAKARTA')
     #databases = ['enforcement_detection']
-    port = utils.get_port(env)
+    port = Environment.get_port_from_env_repo(env)
     ports = list(range(port, port+1))
     return_dict = parallel_run(ports, databases, max_labels)
     utils.print_one_result(return_dict, len(max(databases, key=len)) + 7)

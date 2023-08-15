@@ -4,12 +4,12 @@ from pprint import pprint
 import psycopg2
 from tabulate import tabulate
 
+import Environment
 import utils
 import utils_sec
-from Repository import Repository
+from Repository import Repository, get_repos_containing_release
 from sql_runner.parallel_runner.main import parallel_run
 from utils import get_env_old
-from utils_repo import get_repos_containing_release
 
 
 def get_changelogs(host, port, db, return_dict):
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     version_files = {}
     result_d = {}
     result_l = []
-    databases = utils.get_all_databases('sandbox')
+    databases = Environment.get_all_databases('sandbox')
     result_arr = [[None] * 3] * 10
     ports = range(5433, 5434)
     header = []

@@ -1,9 +1,11 @@
+import Environment
 import utils
 import utils_sec
 from Cluster import Cluster
 from Database import Database
-from gcloud import list_sql_databases, get_instance_email, set_project, list_sql_instances
-from utils_db import get_repository_name_from_dbname, get_sema_from_dbname
+from Gcloud import list_sql_databases, get_instance_email, set_project, list_sql_instances
+from utils_db import get_sema_from_dbname
+from Repository import get_repository_name_from_dbname
 
 
 def gen_bucket_write_rights(project, instances) -> list:
@@ -76,8 +78,8 @@ if __name__ == '__main__':
     project = 'mlff-dev'
     password = 'fLXyFS0RpmIX9uxGII4N'
     new_password = 'zsxQ4RUkdOTev8k7bxgU'
-    from_ports = utils.get_ports_from_env('dev')
-    to_ports = utils.get_ports_from_env('new')
+    from_ports = Environment.get_ports('dev')
+    to_ports = Environment.get_ports('new')
     write_main_bat(to_ports)
     write_psql_files(from_ports, to_ports)
     write_main_privileges_bat(to_ports)

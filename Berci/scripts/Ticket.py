@@ -33,6 +33,7 @@ class Ticket:
                .replace('[','')
                .replace(']','')
                .replace('/','_')
+               .replace(':','')
                )
 
     @property
@@ -43,9 +44,14 @@ class Ticket:
     def release(self):
         fv = self.content['fields']['fixVersions']
         if fv:
+            print('Release from ticket')
             return self.content['fields']['fixVersions'][0]['name']
         else:
-            t = Ticket(self.content['fields']['parent']['key'])
-            return t.release
+            if 'parent' in self.content['fields']:
+                t = Ticket(self.content['fields']['parent']['key'])
+                print('Release from parent')
+                return t.release
+            else:
+                print('There is no parent ticket')
 
 

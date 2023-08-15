@@ -1,5 +1,7 @@
 import psycopg2 as psycopg2
 
+import Environment
+
 
 class Cluster:
     def __init__(self, port, passw, host='localhost'):
@@ -25,4 +27,12 @@ class Cluster:
 
     def db_command_all_db(self, stmt):
         pass
-    
+
+def cluster_selector() -> Cluster:
+    print('Válassz instance-t!')
+    for idx, instance in enumerate(Environment.offset):
+        print(f'{idx}: {instance.split("-")[1]}')
+    idx = int(input('Írd be a sorszámát:'))
+    env_name = list(Environment.new_base.keys())[idx]
+    return Env(env_name)
+

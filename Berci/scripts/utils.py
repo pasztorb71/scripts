@@ -1,12 +1,10 @@
 from inspect import getfile
 
-import psycopg2
 from tabulate import tabulate
 
+import Repository
 from Cluster import Cluster
-from docker_ips import new_base, offset
-import utils_db
-import utils_repo
+import Environment
 from utils_sec import password_from_file
 
 
@@ -41,53 +39,6 @@ def print_one_result(d, maxlength):
         else:
             print()
 
-def get_old_port(env, repo_full_name=''):
-    if env == 'sandbox':
-        return 5433
-    elif env == 'dev':
-        return 5434
-    elif env == 'fit':
-        return 5435
-    elif env == 'perf':
-        return 5436
-    elif env == 'train':
-        return 5437
-    elif env == 'test':
-        return 5438
-    elif env == 'cron_test':
-        return 5555
-    elif env == 'local':
-        return 5432
-    else:
-        print(f"utils.get_port('{env}')\n" + """"Nem létező környezet:
-Lehetséges értékek:
-  sandbox
-  dev
-  fit
-  perf
-  train
-  test
-  new_""")
-        raise Exception("Nem létező környezet")
-
-def get_port(env, repo_full_name):
-    if env == 'local':
-        return 5432
-    elif env == 'mlff-test':
-        return 5555
-    elif env == 'anonymizer-test':
-        return 5556
-    inst = utils_repo.get_instance_from_repo_full_name(repo_full_name)
-    return new_base[env] + offset[inst]
-
-def get_ports_from_env(env) -> list[int]:
-    if env == 'local':
-        return [5432]
-    ports = []
-    for idx in offset.values():
-        ports.append(new_base[env] + idx)
-    return ports
-
 
 def get_env_old(port):
     if port == 5433:
@@ -105,77 +56,17 @@ def get_env_old(port):
     elif port == 5432:
         return 'local'
 
-def get_env(port):
-    prevkey = ''
-    for env, p in new_base.items():
-        if port < p:
-            return prevkey
-        prevkey = env
-    return None
 
 def get_instance_from_db_name(dbname):
     if dbname == 'document':
         return 'pg-doc'
     return 'pg-' + dbname.split('_')[0]
 
-def get_port_from_env_inst(env, inst):
-    if env in new_base:
-        if inst in offset:
-            return new_base[env] + offset[inst]
-        else:
-            print("Lehetséges instance-ok:")
-            print('\n'.join([x for x in offset.keys()]))
-            raise Exception("Nem létező instance")
-    else:
-        print(f"utils.get_port_from_env_inst('{env}')\n" + """"Nem létező környezet:
-    Lehetséges értékek:
-      sandbox
-      dev
-      fit
-      perf
-      train
-      test
-      new_""")
-        raise Exception("Nem létező környezet")
-
-
-def get_password(env, user):
-    if user != 'postgres':
-        return 'mlffTitkosPassword123!'
-    return 'fLXyFS0RpmIX9uxGII4N' if env != 'local' else 'mysecretpassword'
-
 
 def get_atlassian_login_from_file():
     with open(getfile(get_atlassian_login_from_file).rsplit('\\', 1)[0] + '/icell_passw.txt', 'r') as f:
         return f.read().split()
 
-
-def has_history_table(db, schema, table):
-    conn = get_conn('local', db, 'postgres')
-    cur = conn.cursor()
-    cur.execute("select count(*) from pg_tables where schemaname = '" + schema + "' and tablename = '" + table + "$hist'")
-    res = cur.fetchone()[0]
-    return res == 1
-
-
-def get_conn(env, db, user):
-    port = get_port(env, utils_db.get_repository_name_from_dbname(db))
-    p = password_from_file(user, port)
-    try:
-        return psycopg2.connect(
-            host='localhost',
-            port=port,
-            database=db,
-            user=user,
-            password=password_from_file(user, port))
-    except Exception as e:
-        print(e)
-
-
-def get_all_databases(env):
-    host, port = 'localhost', get_port(env)
-    cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
-    return cluster.databases
 
 def whoami(  ):
     import sys
@@ -185,12 +76,12 @@ def whoami(  ):
 def get_ip_address_for_docker(repo, loc):
     if loc == 'local':
         return 'gateway.docker.internal'
-    elif loc == 'mlff-test':
+    elif loc == 'perf-test':
         return 'gateway.docker.internal:5555'
     elif loc == 'anonymizer-test':
         return 'gateway.docker.internal:5556'
-    inst = utils_repo.get_instance_from_repo_full_name(repo)
-    return 'gateway.docker.internal:' + str(new_base[loc] + offset[inst])
+    inst = Repository.get_instance_from_repo_full_name(repo)
+    return 'gateway.docker.internal:' + str(Environment.Env.new_base[loc] + Environment.Env.offset[inst])
 
 
 def print_table_level_check(return_dict, filtered=False):
@@ -212,22 +103,9 @@ def print_table_level_check(return_dict, filtered=False):
                 print(f'  {table.ljust(maxlength + 2)}NOT OK')
 
 
-def get_conn_service_user(env, db):
-    port = get_port(env, utils_db.get_repository_name_from_dbname(db))
-    try:
-        return psycopg2.connect(
-            host='localhost',
-            port=port,
-            database=db,
-            user=utils_db.get_sema_from_dbname(db) + '_service',
-            password='mlffTitkosPassword123!')
-    except:
-        return None
-
-
 def get_cluster_databases(env, port=''):
     if not port:
-        port = get_port(env)
+        port = Environment.Env(env).get_port_from_repo()
     host = 'localhost'
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', port))
     return cluster.databases[0:]

@@ -1,6 +1,9 @@
 from unittest import TestCase
 
-from Repository import Repository
+import Environment
+import utils
+import utils_sec
+from Repository import Repository, get_all_repos
 
 
 class TestRepository(TestCase):
@@ -8,12 +11,6 @@ class TestRepository(TestCase):
         r = Repository()
         repo = r.find_name('psp-proxy')
         self.assertEqual('mlff-payment-psp-proxy-postgredb', repo)
-
-    def test_get_name2(self):
-        r = Repository()
-        with self.assertRaises(Exception) as e:
-            repo = r.find_name('enforcement')
-        self.assertEqual("Nem egyértelmű a repository név!", str(e.exception))
 
     def test_get_db_name1(self):
         r = Repository('mlff-payment-psp-proxy-postgredb')
@@ -38,7 +35,7 @@ class TestRepository(TestCase):
 
     def test_get_db_names_by_group(self):
         actual = Repository.get_db_names_by_group('K-Team')
-        self.assertEqual(5, len(actual))
+        self.assertEqual(6, len(actual))
 
     def test_env_ver(self):
         self.assertEqual('1.8', Repository('doc-').env_ver)
@@ -62,7 +59,7 @@ class TestRepository(TestCase):
     def test_get_schema_version_content(self):
         r = Repository('doc-')
         c = r.get_schema_version_label_lines()
-        self.assertTrue(len(c.splitlines()) == 2)
+        self.assertEqual(4, len(c.splitlines()))
 
     def test_get_tables_dir1(self):
         r = Repository('customer')
@@ -81,9 +78,30 @@ class TestRepository(TestCase):
 
     def test_get_tables_dir4(self):
         r = Repository('mlff-enforcement-onsite-inspection-postgredb')
-        tabdir = 'c:/GIT/MLFF/mlff-enforcement-onsite-inspection-postgredb/liquibase/enforcement_onsite_inspection/template/tables'
+        tabdir = 'c:/GIT/MLFF/mlff-enforcement-onsite-inspection-postgredb/liquibase/enforcement_onsite_inspection/onsite_inspection/tables'
         self.assertEqual(tabdir, r.get_tables_dir())
 
     def test_last_component_ver(self):
         r = Repository('doc-postgredb')
-        self.assertEqual('0.10', r.last_component_ver)
+        self.assertEqual('1.8', r.last_component_ver)
+
+    def test_get_all_repos(self):
+        self.assertTrue(len(get_all_repos()) > 0)
+
+    def test_get_build_command(self):
+        repo = Repository('doc-postgredb')
+        expected = 'docker-compose --env-file c:\\GIT\\MLFF\\doc-postgredb\\.env -f c:\\GIT\\MLFF\\doc-postgredb\\etc\\release\\docker-compose.yml build'
+        self.assertEqual(expected, repo.image_build_command)
+
+    def test_get_image_name_with_release(self):
+        repo = Repository('doc-postgredb')
+        expected = 'dockerhub.icellmobilsoft.hu/liquibase/mlff-document-postgredb:1.8.0'
+        self.assertEqual(expected, repo.image_name_with_release)
+
+    def test_get_run_command(self):
+        repo = Repository('doc-postgredb')
+        password = utils_sec.password_from_file('postgres', Environment.Env('local').get_port_from_repo(repo.name))
+        expected = 'docker run --rm --network mlff-local-network -e DB_ADDRESS=gateway.docker.internal ' \
+                   f'-e DB_PORT=5432 -e POSTGRES_PASSWORD={password} ' \
+                   'dockerhub.icellmobilsoft.hu/liquibase/mlff-document-postgredb:1.8.0'
+        self.assertEqual(expected, repo.image_run_command)

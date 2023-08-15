@@ -3,6 +3,7 @@ import logging
 import os
 from datetime import datetime
 
+import Environment
 import utils
 import utils_sec
 from Repository import Repository
@@ -23,7 +24,7 @@ class Runner:
 
     def _call_liquibase(self, project, env, postgrespass, db):
         print(project + ' : ' + db)
-        cmd = '''docker run --rm -v #base##project#\liquibase\:/liquibase/changelog liquibase/liquibase:4.15 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=#changelog# #context# update'''
+        cmd = '''docker run --rm -v #base##project#\liquibase\:/liquibase/changelog liquibase/liquibase:4.21 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=#changelog# #context# update'''
         if self.checkonly:
             cmd = cmd.replace('update', 'status --verbose')
         cmd = cmd\
@@ -101,7 +102,7 @@ class Runner:
         self.loc = loc
         self.checkonly = checkonly
         for repo in [repo.get_name() for repo in self.repos]:
-            self.password = utils_sec.password_from_file('postgres', utils.get_port(loc, repo))
+            self.password = utils_sec.password_from_file('postgres', Environment.get_port_from_env_repo(loc, repo))
             self.run_for_repo(get_ip_address_for_docker(repo, loc), repo, delete_changelog_only)
 
     def kill(self, param):

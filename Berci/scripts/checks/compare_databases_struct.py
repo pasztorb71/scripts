@@ -2,7 +2,7 @@ import psycopg2
 
 import utils_sec
 from Cluster import Cluster
-from utils import get_port
+from Environment import get_port_from_env_repo
 
 
 def pk_fk(conn1, conn2):
@@ -123,11 +123,11 @@ def indexes(conn1, conn2):
 
 def compare(dbname):
     print(dbname)
-    port = get_port('fit')
+    port = get_port_from_env_repo('fit')
     database = dbname
     conn1 = psycopg2.connect(f"host=localhost port={port} dbname={database} "
                              f"user=postgres password={utils_sec.password_from_file('postgres', 'localhost', port)}")
-    port = get_port('test')
+    port = get_port_from_env_repo('test')
     database = dbname
     conn2 = psycopg2.connect(f"host=localhost port={port} dbname={database} "
                              f"user=postgres password={utils_sec.password_from_file('postgres', 'localhost', port)}")
@@ -161,7 +161,7 @@ def compare(dbname):
 
 
 if __name__ == '__main__':
-    host, port = 'localhost', get_port('test')
+    host, port = 'localhost', get_port_from_env_repo('test')
     cluster = Cluster(host=host, port=port, passw=utils_sec.password_from_file('postgres', host, port))
     databases = cluster.databases[0:]
     for db in databases:

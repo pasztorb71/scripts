@@ -3,8 +3,12 @@ import os
 import re
 from inspect import getfile
 
-import utils
 import Database
+import Environment
+import utils_sec
+from Cluster import Cluster
+from utils_file import file_contains, append_to_file_after_line_last_occurence
+from utils_sec import password_from_file
 
 
 class Repository():
@@ -81,7 +85,7 @@ class Repository():
         noneed = ['install-parameters-db1.xml', 'liquibase-install-db1-step-01.xml', 'liquibase-install-db1-step-02.xml',
                   'liquibase-install-db-step-01.xml', 'liquibase-install-schema-step-02.xml', 'install-parameters.xml',
                   '_all-modules', '_create_dbs', '__init_dbs', 'init_dbs', '_init_dbs', 'all-modules', 'partman', 'cron_jobs',
-                  'create_publication.sql']
+                  'create_publication.sql', 'ddl_changes_module']
         return list(set(files) - set(noneed))[0]
 
     @classmethod
@@ -147,7 +151,7 @@ class Repository():
     def get_tablename_from_indexname(self, indexname):
         arr = indexname.split('.')
         schema, iname = arr[0], arr[1]
-        conn = utils.get_conn('local', self.dbname, 'postgres')
+        conn = Environment.Env('local').get_conn_from_db_user(self.dbname, 'postgres')
         cur = conn.cursor()
         cur.execute(f"SELECT tablename FROM pg_catalog.pg_indexes where schemaname = '{schema}' and indexname = '{iname}'")
         tabname = cur.fetchone()[0]
@@ -195,5 +199,58 @@ class Repository():
     def is_new_type_sql_numbering(self):
         return len(glob.glob(f'{self.get_tables_dir()}/*.xml')) > 1
 
+    @property
+    def image_name_with_release(self):
+        with open(f'{self.base + self.name}/.env') as envfile:
+            lines = envfile.read().split()
+        return lines[0].split('=')[1] + lines[1].split('}')[1] + ':' + lines[2].split('=')[1]
+
+    @property
+    def image_run_command(self):
+        name = self.image_name_with_release
+        password = utils_sec.password_from_file('postgres', Environment.Env('local').get_port_from_repo(self.name))
+        return ('docker run --rm --network mlff-local-network -e DB_ADDRESS=gateway.docker.internal '
+                       f'-e DB_PORT=5432 -e POSTGRES_PASSWORD={password} {name}')
+
+    @property
+    def image_build_command(self):
+        base_name = self.base.replace('/', '\\') + self.name
+        return f"docker-compose --env-file {base_name}\\.env -f {base_name}\etc\\release\\docker-compose.yml build"
 
 
+def get_instance_from_repo_full_name(repo):
+    if repo == 'doc-postgredb':
+        return 'pg-doc'
+    else:
+        id = repo.split('-')[1]
+        return 'pg-' + id
+
+
+def get_repos_containing_release(rname):
+    out = []
+    for repo in Repository().get_repo_names():
+        if file_contains(f'{Repository(repo).get_tables_dir()}/schema-version-0.xml', rname):
+            out.append(repo)
+    return out
+
+
+def get_repos_from_port(port):
+    cluster = Cluster(host='localhost', port=port, passw=password_from_file('postgres', 'localhost', port))
+    dbs = cluster.databases
+    return Database.get_repositories_from_dbs(dbs)
+
+
+def get_all_repos() -> list[Repository]:
+    return [Repository(x) for x in Repository.get_repo_names()]
+
+
+def get_all_repos_by_group(group):
+    return [Repository.Repository(x) for x in Repository.Repository.get_repo_names_by_group(group)]
+
+
+def get_repository_name_from_dbname(db_name):
+    repo_names = Repository().get_repo_names()
+    for repo in [Repository(x) for x in repo_names]:
+        if db_name == repo.get_db_name():
+            return repo.name
+    return None

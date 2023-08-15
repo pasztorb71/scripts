@@ -12,8 +12,12 @@ def gen_bucket_write_rights(project, instances) -> list:
     return out
 
 
+def read_parameters():
+    #TODO migr-read_parameters
+
 if __name__ == '__main__':
-    project = 'mlff-sb-s'
+    a,b,c = read_parameters()
+    project = 'cantas-dev-id'
     outdir = 'c:/Users/bertalan.pasztor/Documents/MLFF/Partitioning_test/'
     filename = 'payment_export.bat'
     commands = [f'gcloud config set project {project}\n']

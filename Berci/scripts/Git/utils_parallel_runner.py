@@ -17,6 +17,7 @@ def _mproc_multiple_commands(git, return_dict, commands):
     out = []
     err = []
     for cmd in commands:
+        #print('cmd /u /c git -C ' + git.base +'/' + git.repo +' '+cmd)
         proc=subprocess.Popen('cmd /u /c git -C ' + git.base +'/' + git.repo +' '+cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out.append(proc.stdout.read().decode('utf-8'))
         e = proc.stderr.read().decode('utf-8')

@@ -30,7 +30,6 @@ if __name__ == '__main__':
   #work
     #git_init(base)
     #exit(0)
-    #TODO loggert bevezetni, a dir és fájl másolásokat csak DEBUG szinten mutassa
     copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\.gitlab\\', base+'/.gitlab', delete_dir_if_exists=True)
     copy_dir('c:\\GIT\\MLFF\\mlff-core-customer-postgredb\\docs\\', base+'/docs', delete_dir_if_exists=True)
     replace_in_file(base+'/docs/development.adoc', to_replace)

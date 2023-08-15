@@ -4,8 +4,9 @@ from time import strftime
 from dateutil.utils import today
 
 import Database
+import Environment
 import utils
-from docker_ips import new_base
+from Environment import new_base
 
 
 def daterange(start_date, end_date):
@@ -152,13 +153,13 @@ def check_default_partitions():
 
 def check_eligibility_partitions_in_all_env():
     for env in utils.get_envs(exclude=['local'])[0:1]:
-        print(utils.get_ports_from_env(env))
+        print(Environment.get_ports(env))
         #check_default_partitions()
 
 
 if __name__ == '__main__':
     partkey = 'event_time'
-    port = utils.get_port_from_env_inst('test', 'pg-enforcement')
+    port = Environment.get_port_from_env_inst('test', 'pg-enforcement')
     remove_default_part_data(port, 'eligibility.detection_minilog_record')
     #check_eligibility_partitions_in_all_env()
 

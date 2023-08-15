@@ -1,15 +1,17 @@
 import os
 from datetime import datetime
 
+import Environment
+import Repository
 import utils
 import utils_db
 import utils_sec
 
 
 def compare_db(dbname, env1, env2):
-    repo_name = utils_db.get_repository_name_from_dbname(dbname)
-    port1 = utils.get_port(env1, repo_name)
-    port2 = utils.get_port(env2, repo_name)
+    repo_name = Repository.get_repository_name_from_dbname(dbname)
+    port1 = Environment.get_port_from_env_repo(env1, repo_name)
+    port2 = Environment.get_port_from_env_repo(env2, repo_name)
     cmd = f'docker run --rm ' \
           f'liquibase/liquibase:latest ' \
           f'--url=jdbc:postgresql://gateway.docker.internal:{port1}/{dbname} ' \

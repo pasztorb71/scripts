@@ -3,6 +3,7 @@ import multiprocessing
 import pandas as pd
 import psycopg2
 
+import Environment
 import utils
 import utils_sec
 
@@ -70,6 +71,7 @@ def mproc_get_dabase_names(host, port, db, return_dict):
         cur.execute("SELECT datname FROM pg_database WHERE datname NOT IN ('cloudsqladmin', 'postgres', 'template0', 'template1')")
         record = cur.fetchall()
         return_dict[f'{port}|{db}'] = record
+        #print(f'{port}|{db}: ok')
         cur.close()
         conn.commit()
         conn.close()
@@ -407,7 +409,7 @@ def mproc_grant_dwh_stream_databasechangelog(host, port, db, return_dict):
         conn.commit()
         conn.close()
     except:
-        return_dict[f'{port}|{db}'] = "Database not exists"
+        return_dict[f'{port}|{db}'] = ["Database not exists"]
 
 def sum_counts(d):
     sum = 0
@@ -424,6 +426,7 @@ def parallel_run(ports_dbs, func):
         jobs.append(p)
         p.start()
     # Wait until all process finish
+
     for job in jobs:
         job.join()
     return return_dict
@@ -459,7 +462,7 @@ def parallel_run_sql(ports_dbs, sql, func):
 def gen_port_databases_from_env_db(env, databases):
     out = []
     for db in databases:
-        out.append([utils.get_port_from_env_inst(env, utils.get_instance_from_db_name(db)), db])
+        out.append([Environment.get_port_from_env_inst(env, utils.get_instance_from_db_name(db)), db])
     return out
 
 
@@ -467,7 +470,7 @@ def gen_port_databases_from_envs(envlist: list[str]):
     ports_databases = []
     a = []
     for env in envlist:
-        a += utils.get_ports_from_env(env)
+        a += Environment.Env(env).get_ports()
     for port in a:
         ports_databases.append([port, 'postgres'])
     return_dict = parallel_run(ports_databases, mproc_get_dabase_names)
@@ -485,7 +488,7 @@ def return_dict_to_dataframe(dictproxy):
     l = []
     for db, records in sorted(dictproxy.items()):
         env_db = db.split('|')
-        env = utils.get_env(int(env_db[0]))
+        env = Environment.get_env_name_from_port(int(env_db[0]))
         db = env_db[1]
         for rec in records[1:]:
             l.append([env, db] + list(rec))
@@ -502,12 +505,12 @@ def print_dataframe(df):
 
 
 if __name__ == '__main__':
-    envs = ['c_dev']
-    #envs = utils.get_envs()
+    #envs = ['c_dev']
+    envs = utils.get_envs()
     #databases = load_from_file('../databases.txt')
     #databases = ['core_customer']
-    #ports_databases = gen_port_databases_from_envs(envs)[0:]
-    ports_databases = [[6041, 'core_customer']]
+    ports_databases = gen_port_databases_from_envs(envs)[0:]
+    #ports_databases = [[6041, 'core_customer']]
     #return_dict = parallel_run(ports_databases, truncate_table)
     return_dict = parallel_run(ports_databases, mproc_count_records)
     #return_dict = parallel_run_sql(ports_databases, 'select now()',  mproc_single_sql)

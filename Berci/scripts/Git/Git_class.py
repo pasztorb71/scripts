@@ -4,6 +4,15 @@ import Repository
 
 
 class Git:
+    def __init__(self, base: str=None, repo: str=None):
+        self.base = base
+        self.repo = repo
+        self.base = self.repo.base
+        self.synced = ''
+
+    def __repr__(self):
+        return self.repo
+
     @staticmethod
     def get_gitlist():
         repo = Repository.Repository()
@@ -16,14 +25,6 @@ class Git:
         gitlist = Git.get_gitlist()
         urls = [git.get_remote_url() for git in gitlist]
         return 'git clone ' + '\ngit clone '.join(urls)
-
-    def __init__(self, base=None, repo=None):
-        self.base = base
-        self.repo = repo
-        self.synced = ''
-
-    def __repr__(self):
-        return self.repo
 
     def print_log(self):
         os.system('git -C ' + self.repo + ' log --oneline')
@@ -43,10 +44,12 @@ class Git:
             self.synced = False
         return self.synced
 
-    def get_current_branch(self):
-        return os.popen('cmd /u /c git -C ' + self.base + '/' + self.repo + ' branch --show-current ').read().replace('\n','')
+    @property
+    def current_branch(self):
+        return os.popen('cmd /u /c git -C ' + self.base + '/' + self.repo.name + ' branch --show-current ').read().replace('\n','')
 
-    def get_remote_url(self):
+    @property
+    def remote_url(self):
         return os.popen('cmd /u /c git -C ' + self.base + '/' + self.repo + ' config --get remote.origin.url ').read().replace('\n','')
 
     def checkout_branch(self, branch):
@@ -54,9 +57,10 @@ class Git:
 
     def new_branch(self, branch):
         self._run_command('checkout -b ' + branch, ['Switched to a new branch'])
+        print(f'{branch} created.')
 
     def _run_command(self, cmd, acceptable_err):
-        proc = subprocess.Popen('cmd /u /c git -C ' + self.base + '/' + self.repo + ' ' + cmd,
+        proc = subprocess.Popen('cmd /u /c git -C ' + self.base + '/' + self.repo.name + ' ' + cmd,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         stdout, stderr = proc.communicate()
         if stderr and not any([x in stderr for x in acceptable_err]):

@@ -1,10 +1,9 @@
 import utils
 from Cluster import Cluster
 from Database import Database
-from Repository import Repository
+from Repository import Repository, get_repos_from_port
 from liquibase_runner.Runner import Runner
 from utils_file import load_from_file
-from utils_repo import get_repos_from_port
 
 if __name__ == '__main__':
     repos = [Repository(x) for x in Repository.get_repo_names_exclude(['meta','eligibility'])]

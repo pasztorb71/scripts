@@ -2,13 +2,13 @@ import logging
 
 from Cluster import Cluster
 from Repository import Repository
-from utils import get_conn
 from utils_sec import password_from_file
 from utils_db import get_sema_from_dbname
+from Environment import get_conn_from_db_user
 
 
 def runteszt(env, db, user, cmd_list):
-    conn = get_conn(env, db, user)
+    conn = get_conn_from_db_user(env, db, user)
     log('debug', 'user: ' + user)
     result = _run(cmd_list, conn)
     sema = user.rsplit('_',1)[0]

@@ -2,7 +2,6 @@ import os
 
 import psycopg2
 
-import utils_db
 import utils_sec
 import Repository
 
@@ -12,12 +11,12 @@ class Database:
     def get_repositories_from_dbs(databases):
         repos = []
         for db in databases:
-            repo = Repository.Repository(utils_db.get_repository_name_from_dbname(db))
+            repo = Repository.Repository(Repository.get_repository_name_from_dbname(db))
             repos.append(repo)
         return repos
 
 
-    def __init__(self, name: str, host: str, port: str):
+    def __init__(self, name: str, host: str = 'localhost', port: str = '5432'):
         self.name = name
         self.host = host
         self.port = port
@@ -151,3 +150,8 @@ class Database:
         os.system(f"pg_dump -p 5433 -U postgres -Fc --verbose core_customer >core_customer.dump")
 
 
+    def has_history_table(self, schema, table):
+        cur = self.conn.cursor()
+        cur.execute("select count(*) from pg_tables where schemaname = '" + schema + "' and tablename = '" + table + "$hist'")
+        res = cur.fetchone()[0]
+        return res == 1

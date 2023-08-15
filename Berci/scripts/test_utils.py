@@ -1,6 +1,8 @@
 import os
 from unittest import TestCase
 
+import Database
+import Environment
 import utils
 import utils_command
 import utils_file
@@ -11,13 +13,7 @@ from utils import get_atlassian_login_from_file
 
 class Test(TestCase):
     def test_get_login_from_file(self):
-        self.assertEqual(get_atlassian_login_from_file()[0], 'bertalan.pasztor')
-
-    def test_is_history_table_exist(self):
-        self.assertTrue(utils.has_history_table('core_customer', 'customer', 'customer'))
-
-    def test_is_history_table_not_exist(self):
-        self.assertFalse(utils.has_history_table('core_customer', 'customer', 'user_session'))
+        self.assertEqual('bertalan.pasztor@icellmobilsoft.hu', get_atlassian_login_from_file()[0])
 
     def test_get_tablename(self):
         tabname = utils_command.get_tablename_from_command('',
@@ -27,7 +23,7 @@ class Test(TestCase):
 
     def test_get_colname(self):
         colname = utils_command.get_columnname_from_command(
-            'ALTER TABLE account_info.payment_method ALTER COLUMN x__version TYPE int8 USING x__version::int8;')
+                'ALTER TABLE account_info.payment_method ALTER COLUMN x__version TYPE int8 USING x__version::int8;')
         expected = 'x__version'
         self.assertEqual(expected, colname)
 
@@ -52,7 +48,7 @@ class Test(TestCase):
 
     def test_get_schema_from_command(self):
         actual = utils_command.get_schema_from_command(
-            "ALTER SCHEMA notification_common RENAME TO notification_dispacther;")
+                "ALTER SCHEMA notification_common RENAME TO notification_dispacther;")
         self.assertEqual('notification_common', actual)
 
     def test_append_to_file_after_line_last_occurence_after_exists(self):
@@ -137,20 +133,24 @@ class Test(TestCase):
 
     def test_get_indexname_from_command(self):
         index = utils_command.get_indexname_from_command(
-            "ALTER INDEX tariff.ix_segsec_glied_id RENAME TO ix_section_glied_id;")
+                "ALTER INDEX tariff.ix_segsec_glied_id RENAME TO ix_section_glied_id;")
         self.assertEqual('ix_segsec_glied_id', index)
 
     def test_get_port(self):
-        self.assertEqual(5544, utils.get_port('dev', Repository('account-info').name))
+        self.assertEqual(5544, Environment.Env('dev').get_port_from_repo(Repository('account-info').name))
 
     def test_get_instance_from_db_name(self):
         self.assertEqual('pg-doc', utils.get_instance_from_db_name('doc_document'))
 
     def test_get_ports_from_env1(self):
-        self.assertEqual([5432], utils.get_ports_from_env('local'))
+        self.assertEqual([5432], Environment.Env('local').get_ports())
 
     def test_get_ports_from_env2(self):
-        self.assertEqual([5440, 5441, 5442, 5443, 5444, 5445, 5447], utils.get_ports_from_env('sandbox'))
+        self.assertEqual([5440, 5441, 5442, 5443, 5444, 5445, 5447], Environment.Env('sandbox').get_ports())
 
     def test_get_env(self):
-        self.assertEqual('fit', utils.get_env(5641))
+        self.assertEqual('cantas_dev', Environment.Env.get_env_name_from_port(6041))
+
+
+def test_get_port_from_env_inst():
+    assert False

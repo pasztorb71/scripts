@@ -1,7 +1,6 @@
+import Environment
 import utils
 from Cluster import Cluster
-from Repository import Repository
-from docker_ips import offset
 from utils_db import get_sema_from_dbname
 from utils_sec import password_from_file
 
@@ -30,7 +29,7 @@ def print_grants_databases(port, databases):
 
 
 def get_instance_name_from(port, base_port):
-    for i in offset.items():
+    for i in Environment.Env.offset.items():
         if port-base_port == i[1]:
             return i[0]
 
@@ -44,7 +43,7 @@ def is_database_in_instance(db, instance_name):
 
 
 def copy_db(from_env, to_range):
-    host, port = 'localhost', utils.get_port(from_env)
+    host, port = 'localhost', Environment.get_port_from_env_repo(from_env)
     cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
     databases = cluster.databases[0:]
     base_port = min(list(to_range))
