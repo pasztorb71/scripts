@@ -76,7 +76,7 @@ def whoami(  ):
 def get_ip_address_for_docker(repo, loc):
     if loc == 'local':
         return 'gateway.docker.internal'
-    elif loc == 'perf-test':
+    elif loc == 'mlff_test':
         return 'gateway.docker.internal:5555'
     elif loc == 'anonymizer-test':
         return 'gateway.docker.internal:5556'
@@ -117,5 +117,3 @@ def get_last_nth_occurence_of_list_element(plist, pelem, nth):
         return None
     return index_after[-nth] + 1
 
-def get_envs(exclude=['']) -> list[str]:
-    return [env for env in new_base if env not in exclude]

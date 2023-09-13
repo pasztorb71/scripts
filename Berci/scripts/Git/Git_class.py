@@ -4,10 +4,9 @@ import Repository
 
 
 class Git:
-    def __init__(self, base: str=None, repo: str=None):
+    def __init__(self, base: str='c:/GIT/MLFF/', repo: str=None):
         self.base = base
         self.repo = repo
-        self.base = self.repo.base
         self.synced = ''
 
     def __repr__(self):

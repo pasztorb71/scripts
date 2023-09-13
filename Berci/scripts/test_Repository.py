@@ -1,9 +1,8 @@
 from unittest import TestCase
 
 import Environment
-import utils
 import utils_sec
-from Repository import Repository, get_all_repos
+from Repository import Repository, get_all_repos, rel_to_num
 
 
 class TestRepository(TestCase):
@@ -81,9 +80,23 @@ class TestRepository(TestCase):
         tabdir = 'c:/GIT/MLFF/mlff-enforcement-onsite-inspection-postgredb/liquibase/enforcement_onsite_inspection/onsite_inspection/tables'
         self.assertEqual(tabdir, r.get_tables_dir())
 
+    def test_max_rel_to_num(self):
+        self.assertEqual(0.14, rel_to_num('R0.14'))
+
+    def test_max_rel_to_num_bugfix(self):
+        self.assertEqual(0.14, rel_to_num('R0.14.1'))
+
     def test_last_component_ver(self):
         r = Repository('doc-postgredb')
-        self.assertEqual('1.8', r.last_component_ver)
+        self.assertEqual(['1.8', 'R0.16.1'], r.last_component_ver())
+
+    def test_last_component_ver_relfilter(self):
+        r = Repository('mlff-core-genos-postgredb')
+        self.assertEqual(['0.8', 'R0.18'], r.last_component_ver('R0.18'))
+
+    def test_last_component_ver_relfilter_lessthan(self):
+        r = Repository('mlff-core-notification-email-postgredb')
+        self.assertEqual(['0.5', 'R0.14'], r.last_component_ver('R0.18'))
 
     def test_get_all_repos(self):
         self.assertTrue(len(get_all_repos()) > 0)
@@ -105,3 +118,4 @@ class TestRepository(TestCase):
                    f'-e DB_PORT=5432 -e POSTGRES_PASSWORD={password} ' \
                    'dockerhub.icellmobilsoft.hu/liquibase/mlff-document-postgredb:1.8.0'
         self.assertEqual(expected, repo.image_run_command)
+

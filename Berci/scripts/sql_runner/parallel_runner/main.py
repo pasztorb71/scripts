@@ -425,8 +425,8 @@ def parallel_run(ports_dbs, func):
         p = multiprocessing.Process(target=func, args=(host, port_db[0], port_db[1], return_dict))
         jobs.append(p)
         p.start()
-    # Wait until all process finish
 
+    # Wait until all process finish
     for job in jobs:
         job.join()
     return return_dict
@@ -506,7 +506,7 @@ def print_dataframe(df):
 
 if __name__ == '__main__':
     #envs = ['c_dev']
-    envs = utils.get_envs()
+    envs = Environment.get_envs()
     #databases = load_from_file('../databases.txt')
     #databases = ['core_customer']
     ports_databases = gen_port_databases_from_envs(envs)[0:]

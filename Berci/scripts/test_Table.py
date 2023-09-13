@@ -1,11 +1,13 @@
 from unittest import TestCase
 
-from table import Table
+from Database import Database
+from Table import Table
 
 
 class Test(TestCase):
     def setUp(self):
-        self.table = Table('local', 'core_notification_wa', 'notification_wa.staging_wa')
+        self.db = Database('core_notification_wa')
+        self.table = Table('notification_wa.staging_wa', self.db.conn)
 
     def test_is_check_constraint_on_column(self):
         self.assertTrue(self.table.is_check_constraint_on_column('processing_status'))
@@ -18,8 +20,14 @@ class Test(TestCase):
         actual = self.table.gen_drop_constraint_stmt('processing_status')
         self.assertEqual(expected, actual)
 
-    def test_getfklist(self):
-        t = Table('local', 'core_customer', 'customer.customer_outbox')
-        a = t.getfklist()
-        self.assertEqual(1, len(t.getfklist())
-)
+class Test(TestCase):
+    def setUp(self):
+        self.db = Database('core_customer')
+
+    def test_is_history_table_exist(self):
+        table = Table('customer.customer', self.db.conn)
+        self.assertTrue(table.has_history())
+
+    def test_is_history_table_not_exist(self):
+        table = Table('customer.user_session', self.db.conn)
+        self.assertFalse(table.has_history())

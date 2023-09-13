@@ -102,7 +102,7 @@ class Runner:
         self.loc = loc
         self.checkonly = checkonly
         for repo in [repo.get_name() for repo in self.repos]:
-            self.password = utils_sec.password_from_file('postgres', Environment.get_port_from_env_repo(loc, repo))
+            self.password = utils_sec.password_from_file('postgres', Environment.Env(loc).get_port_from_repo(repo))
             self.run_for_repo(get_ip_address_for_docker(repo, loc), repo, delete_changelog_only)
 
     def kill(self, param):

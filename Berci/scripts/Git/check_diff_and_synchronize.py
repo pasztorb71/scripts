@@ -22,7 +22,7 @@ def check_diff_and_synchronize():
 
 
 if __name__ == '__main__':
-    gitlist = [git for git in Git.get_gitlist() if git.repo != 'doc-postgredb']
+    gitlist = [git for git in Git.get_gitlist() if '' in git.repo]
     #gitlist = Git.get_gitlist()
     check_diff_and_synchronize()
     #synchronize_branch_in_multiple_repos(gitlist, branch='master')

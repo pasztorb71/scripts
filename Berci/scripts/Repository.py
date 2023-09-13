@@ -7,8 +7,17 @@ import Database
 import Environment
 import utils_sec
 from Cluster import Cluster
-from utils_file import file_contains, append_to_file_after_line_last_occurence
+import utils_file
 from utils_sec import password_from_file
+
+
+def rel_to_num(release):
+    if not release:
+        return 999
+    if release.count('.') == 2:
+        release = release.rsplit('.', 1)[0]
+    return float(release[1:])
+
 
 
 class Repository():
@@ -66,12 +75,19 @@ class Repository():
             lines = f.readlines()
         return [line.split()[0] for line in lines if groupname in line]
 
-    @property
-    def last_component_ver(self) -> str:
-        c = self.get_schema_version_label_lines().splitlines()
-        if len(c) == 0: return None
-        m = re.match('.*labels="(.*), .*', c[-1])
-        return m.group(1).replace('.0', '.') if m else None
+    def last_component_ver(self, max_release: str = None) -> list[str, str]:
+        lines = self.get_schema_version_label_lines().splitlines()
+        if len(lines) == 0: return None
+        out = []
+        for line in reversed(lines):
+            m = re.match('.*labels="(.*), (.*)".*', line)
+            if m:
+                if rel_to_num(max_release) >= rel_to_num(m.group(2)):
+                    out = [m.group(1).replace('.0', '.'), m.group(2)]
+                    break
+            else:
+                out = [None, None]
+        return out
 
     @property
     def env_ver(self):
@@ -85,7 +101,7 @@ class Repository():
         noneed = ['install-parameters-db1.xml', 'liquibase-install-db1-step-01.xml', 'liquibase-install-db1-step-02.xml',
                   'liquibase-install-db-step-01.xml', 'liquibase-install-schema-step-02.xml', 'install-parameters.xml',
                   '_all-modules', '_create_dbs', '__init_dbs', 'init_dbs', '_init_dbs', 'all-modules', 'partman', 'cron_jobs',
-                  'create_publication.sql', 'ddl_changes_module']
+                  'create_publication.sql', 'ddl_changes_module', 'create_extensions.sql']
         return list(set(files) - set(noneed))[0]
 
     @classmethod
@@ -143,7 +159,7 @@ class Repository():
     def modify_schema_version_xml(self, tab_name):
         dirname = self.get_tables_dir()
         ddl_line = f'<include file="{tab_name}/{tab_name}.sql" relativeToChangelogFile="true"/>'
-        append_to_file_after_line_last_occurence(f"{dirname}/create-tables.xml", '<include file=', '  ' + ddl_line)
+        utils_file.append_to_file_after_line_last_occurence(f"{dirname}/create-tables.xml", '<include file=', '  ' + ddl_line)
         print('Line added to create-tables.xml')
         print(ddl_line)
 
@@ -174,22 +190,22 @@ class Repository():
 
 
     def drop_database(self):
-        clus = Database.Database('postgres', 'localhost', '5432')
-        clus.sql_exec(f'drop database if exists {self.dbname}')
+        clus = Database.Database('postgres', '5432')
+        clus.__sql_exec(f'drop database if exists {self.dbname}')
         print(f'{self.dbname} database dropped.')
 
     def drop_roles(self):
-        clus = Database.Database('postgres', 'localhost', '5432')
+        clus = Database.Database('postgres', '5432')
         clus.drop_roles(self.schema)
 
     def drop_main_changelog(self):
-        clus = Database.Database('postgres', 'localhost', '5432')
-        clus.sql_exec(f'drop table if exists public.databasechangelog')
+        clus = Database.Database('postgres', '5432')
+        clus.__sql_exec(f'drop table if exists public.databasechangelog')
         print(f'public.databasechangelog dropped.')
 
     def drop_db_changelog(self):
-        clus = Database.Database(self.dbname, 'localhost', '5432')
-        clus.sql_exec(f'drop table if exists public.databasechangelog')
+        clus = Database.Database(self.dbname, '5432')
+        clus.__sql_exec(f'drop table if exists public.databasechangelog')
         print(f'databasechangelog dropped from {self.dbname} database.')
 
     def _get_instance(self):
@@ -229,7 +245,7 @@ def get_instance_from_repo_full_name(repo):
 def get_repos_containing_release(rname):
     out = []
     for repo in Repository().get_repo_names():
-        if file_contains(f'{Repository(repo).get_tables_dir()}/schema-version-0.xml', rname):
+        if utils_file.file_contains(f'{Repository(repo).get_tables_dir()}/schema-version-0.xml', rname):
             out.append(repo)
     return out
 

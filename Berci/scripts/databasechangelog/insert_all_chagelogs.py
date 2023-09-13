@@ -3,11 +3,9 @@ import psycopg2
 import Environment
 import utils
 import utils_sec
-from Cluster import Cluster
 from Database import Database
 from checks.db_changeset_status import get_changeset_ids_from_repos_release
 from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_envs
-from Environment import get_conn_from_db_user, get_all_databases
 from Repository import get_repos_containing_release
 
 
@@ -15,7 +13,7 @@ def insert_into_local_all_changelogs(to_db, records, env, db):
     insert_query = """INSERT INTO public.all_changelogs_serial (env, database_name, id, author, filename, dateexecuted, 
     orderexecuted, exectype, md5sum, description, "comments", tag, liquibase, contexts, labels, deployment_id) 
     VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-    to_db.sql_exec(f"delete from public.all_changelogs_serial where env='{env}' and database_name='{db}'")
+    to_db.__sql_exec(f"delete from public.all_changelogs_serial where env='{env}' and database_name='{db}'")
     to_db.sql_executemany(insert_query, records)
 
 
@@ -25,7 +23,7 @@ def insert_proc():
     for port in range(5432, 5434):
         env = utils.get_env_old(port)
         print(env)
-        for db in get_all_databases(env)[0:]:
+        for db in Environment.Env(env).get_all_databases()[0:]:
             print('  ', db)
             sql = f"select '{env}', '{db}', id, author, filename, to_char(dateexecuted, 'YYYY-MM-DD HH24:MI:SS.MS'), orderexecuted, " \
                   f"exectype, md5sum, description, comments, tag, liquibase, contexts, labels, deployment_id " \
@@ -38,7 +36,7 @@ def insert_proc():
                 pass
 
 def insert_changelog(host, port, db, return_dict):
-    env = Environment.get_env_name_from_port(port)
+    env = Environment.Env.get_env_name_from_port(port)
     sql = f"select '{env}', '{db}', id, author, filename, to_char(dateexecuted, 'YYYY-MM-DD HH24:MI:SS.MS'), orderexecuted, " \
           f"exectype, md5sum, description, comments, tag, liquibase, contexts, labels, deployment_id " \
           f"from public.databasechangelog t"
@@ -89,6 +87,9 @@ def insert_filesystem_all_changelogs():
 
 if __name__ == '__main__':
     #TODO a id LIKE '%MLFFDEV-22171%' miért került bele a cantas_test-be?
-    envs = utils.get_envs()
-    insert_proc_parallel(envs)
+    envs = Environment.get_envs()
+    envs = ['sandbox']
+    print('Envs:')
+    print('  -'+ '\n  -'.join(envs))
+    insert_proc_parallel(envs[0:])
 

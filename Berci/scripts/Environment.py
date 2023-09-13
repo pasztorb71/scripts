@@ -3,11 +3,12 @@ import psycopg2
 import Repository
 import utils_db
 from Cluster import Cluster
-from Database import Database
+import Database
 from utils_sec import password_from_file
 
 
 class Env():
+    test = {'mlff_test': 5555}
     new_base = {'local': 5432,
                 'sandbox': 5440,
                 'dev': 5540,
@@ -42,6 +43,8 @@ class Env():
         return names
 
     def get_port_from_inst(self, inst):
+        if self.name in self.test:
+            return self.test[self.name]
         if self.name in self.new_base:
             if inst in self.offset:
                 return self.new_base[self.name] + self.offset[inst]
@@ -72,7 +75,7 @@ class Env():
     def get_port_from_repo(self, repo_full_name: str) -> int:
         if self.name == 'local':
             return 5432
-        elif self.name == 'perf-test':
+        elif self.name == 'mlff_test':
             return 5555
         elif self.name == 'anonymizer-test':
             return 5556
@@ -159,3 +162,5 @@ def environment_selector() -> Env:
     return Env(env_name)
 
 
+def get_envs(exclude=['']) -> list[str]:
+    return [env for env in Env.new_base if env not in exclude]

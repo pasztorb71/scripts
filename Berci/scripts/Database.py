@@ -4,6 +4,7 @@ import psycopg2
 
 import utils_sec
 import Repository
+from Table import Table
 
 
 class Database:
@@ -16,12 +17,17 @@ class Database:
         return repos
 
 
-    def __init__(self, name: str, host: str = 'localhost', port: str = '5432'):
+    def __init__(self, name: str, port: int = 5432, host: str = 'localhost'):
         self.name = name
         self.host = host
         self.port = port
         self.user = 'postgres'
-        self.__conn = None
+        passw = utils_sec.password_from_file(self.user, port)
+        self.__connection_string = f"postgres://{self.user}:{passw}@{host}:{port}/{name}"
+        self.__conn = psycopg2.connect(self.__connection_string)
+        self.tables = self._get_tables()
+
+
 
     def __repr__(self):
         return f'{self.name}__{self.port}'
@@ -37,24 +43,16 @@ class Database:
                 password=utils_sec.password_from_file(self.user, self.port))
         return self.__conn
 
-    def sql_exec(self, *args):
-        if isinstance(args[0], str):
-            cmds = [args[0]]
-        elif isinstance(args[0], list):
-            cmds = args[0]
-        self.conn.autocommit = True
-        cur = self.conn.cursor()
-        status = False
-        while not status:
-            for cmd in cmds:
-                try:
-                    cur.execute(cmd)
-                    status = True
-                    self.conn.commit()
-                except psycopg2.errors.ObjectInUse as e:
-                    print(e)
-                    if input("Újra? [y/n]") != "y":
-                        return
+    def _get_tables(self) -> dict[str, Table]:
+        res = self.sql_query("""
+            SELECT schemaname, relname
+            FROM pg_catalog.pg_stat_all_tables 
+            WHERE schemaname not in ('pg_toast', 'information_schema', 'pg_catalog')
+            ORDER BY schemaname, relname """)
+        return dict([rc[1], Table(f'{rc[0]}.{rc[1]}')] for rc in res)
+
+    def get_table(self, name: str) -> Table:
+        return self.tables[name]
 
     def sql_executemany(self, insert_query, records):
         conn = self.conn
@@ -120,7 +118,7 @@ class Database:
             print(rec[1])
             truncate_cmds.append(f'truncate table {rec[0]}.{rec[1]} CASCADE')
         if input("Mehet a törlés[y/n]") == "y":
-            self.sql_exec(truncate_cmds)
+            self.__sql_exec(truncate_cmds)
 
     @property
     def triggers(self):
@@ -137,21 +135,15 @@ class Database:
             print(rec)
             truncate_cmds.append(f'drop trigger {rec[1]} on {rec[0]}.{rec[2]}')
         if input("Mehet a törlés[y/n]") == "y":
-            self.sql_exec(truncate_cmds)
+            self.__sql_exec(truncate_cmds)
 
     def put_triggers(self, triggers):
         cre_cmds = []
         for trigger in triggers:
             cmd = f"call {trigger[0]}.HIST_TRIGGER_GENERATOR('{trigger[0]}', '{trigger[2]}');"
             print(cmd)
-            self.sql_exec(cmd)
+            self.__sql_exec(cmd)
 
     def dump_database(self):
         os.system(f"pg_dump -p 5433 -U postgres -Fc --verbose core_customer >core_customer.dump")
 
-
-    def has_history_table(self, schema, table):
-        cur = self.conn.cursor()
-        cur.execute("select count(*) from pg_tables where schemaname = '" + schema + "' and tablename = '" + table + "$hist'")
-        res = cur.fetchone()[0]
-        return res == 1

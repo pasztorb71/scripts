@@ -33,8 +33,8 @@ def table_operations():
 
 
 if __name__ == '__main__':
+    repo = Repository('-wa')
     t = read_ticket()
-    repo = Repository('inspection')
     print_info(t, repo)
     create_branch(t, repo)
     table_operations()

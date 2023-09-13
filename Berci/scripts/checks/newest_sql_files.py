@@ -42,16 +42,20 @@ def get_schema_xml_files_labels(lines: list[str]) -> list[str, str]:
 
 
 def get_label_advanced(file, xml_files:list[str, str]):
-    file_name = file.rsplit('\\', 1)[1]
+    sql_file_name = file.rsplit('\\', 1)[1]
     for xml_f in xml_files:
         if not os.path.exists(file.rsplit('\\', 2)[0] + '/schema-version-0.xml'):
             return None
         try:
             lines = []
-            with open(file.rsplit('\\', 2)[0] + f'/{xml_f[0]}', 'r', encoding='utf8') as f:
-                lines = f.readlines()
-                for line in lines:
-                    return xml_f[1]
+            schema_version_file = file.rsplit('\\', 2)[0] + f'/{xml_f[0]}'
+            with open(schema_version_file, 'r', encoding='utf8') as f:
+                for line in f.readlines():
+                    if sql_file_name in line:
+                        if xml_f[1]:
+                            return xml_f[1]
+                        else:
+                            return
         except Exception as e:
             print(file)
             raise e
