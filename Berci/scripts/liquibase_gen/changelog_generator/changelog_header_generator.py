@@ -1,7 +1,6 @@
 import re
 
-import utils
-import utils_command
+from utils import utils_command
 from liquibase_gen.changelog_generator.command_templates import *
 
 

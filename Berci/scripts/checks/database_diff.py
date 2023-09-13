@@ -3,9 +3,7 @@ from datetime import datetime
 
 import Environment
 import Repository
-import utils
-import utils_db
-import utils_sec
+from utils import utils_db, utils_sec
 
 
 def compare_db(dbname, env1, env2):
@@ -17,12 +15,12 @@ def compare_db(dbname, env1, env2):
           f'--url=jdbc:postgresql://gateway.docker.internal:{port1}/{dbname} ' \
           f'--driver=org.postgresql.Driver ' \
           f'--username=postgres ' \
-          f'--password={utils_sec.password_from_file("postgres",port1)} ' \
+          f'--password={utils_sec.password_from_file("postgres", port1)} ' \
           f'--schemas={utils_db.get_sema_from_dbname(dbname)} ' \
           f'diff ' \
           f'--referenceUrl=jdbc:postgresql://gateway.docker.internal:{port2}/{dbname} ' \
           f'--referenceUsername=postgres ' \
-          f'--referencePassword={utils_sec.password_from_file("postgres",port2)} ' \
+          f'--referencePassword={utils_sec.password_from_file("postgres", port2)} ' \
           f'--schemas={utils_db.get_sema_from_dbname(dbname)}'
     print('Diff runs...')
     result = os.popen(cmd).read()

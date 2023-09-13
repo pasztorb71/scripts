@@ -1,6 +1,6 @@
 import os.path
 
-from utils_file import append_to_file_after_line_last_occurence
+from utils.utils_file import append_to_file_after_line_last_occurence
 
 version_file_tmpl = """<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

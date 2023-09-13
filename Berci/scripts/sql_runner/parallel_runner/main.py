@@ -4,8 +4,8 @@ import pandas as pd
 import psycopg2
 
 import Environment
-import utils
-import utils_sec
+from utils import utils, utils_sec
+
 
 def mproc_single_command_tmpl(host, port, db, return_dict):
     conn = psycopg2.connect(
@@ -384,7 +384,7 @@ def mproc_grant_dwh_read_databasechangelog(host, port, db, return_dict):
             port=port,
             database=db,
             user="postgres",
-            password=utils_sec.password_from_file('postgres',port))
+            password=utils_sec.password_from_file('postgres', port))
         cur = conn.cursor()
         cur.execute("GRANT SELECT ON public.databasechangelog TO dwh_read")
         return_dict[f'{port}|{db}'] = "OK"
@@ -401,7 +401,7 @@ def mproc_grant_dwh_stream_databasechangelog(host, port, db, return_dict):
             port=port,
             database=db,
             user="postgres",
-            password=utils_sec.password_from_file('postgres',port))
+            password=utils_sec.password_from_file('postgres', port))
         cur = conn.cursor()
         cur.execute("GRANT SELECT ON public.databasechangelog TO dwh_stream")
         return_dict[f'{port}|{db}'] = "OK"

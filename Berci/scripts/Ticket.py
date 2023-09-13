@@ -3,7 +3,7 @@ import json
 import requests
 from requests.auth import HTTPBasicAuth
 
-import utils
+from utils import utils
 
 
 class Ticket:

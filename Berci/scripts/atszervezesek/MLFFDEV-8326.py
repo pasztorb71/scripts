@@ -1,8 +1,6 @@
 import os
 
-import utils
-import utils_db
-import utils_file
+from utils import utils_file
 
 
 def sema_atszervezes(repos):

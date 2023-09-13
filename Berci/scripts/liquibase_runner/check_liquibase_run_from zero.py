@@ -1,6 +1,5 @@
 from Repository import Repository
 from liquibase_runner.Runner import Runner
-from utils_file import load_from_file
 
 if __name__ == '__main__':
     #repos = [Repository(name) for name in load_from_file('repos.txt')][0:]

@@ -2,7 +2,7 @@ import os
 import shutil
 from distutils.dir_util import copy_tree
 
-import utils
+from utils.utils import get_last_nth_occurence_of_list_element
 
 
 def append_to_file_after_line_last_occurence(fname, after, what):
@@ -11,9 +11,9 @@ def append_to_file_after_line_last_occurence(fname, after, what):
   already_exists = [idx for idx, s in enumerate(text) if what in s]
   if already_exists:
     return
-  index_after = utils.get_last_nth_occurence_of_list_element(text, after, 1)
+  index_after = get_last_nth_occurence_of_list_element(text, after, 1)
   if not index_after:
-      index_header_end = utils.get_last_nth_occurence_of_list_element(text, '    <!-- ==================================', 1)
+      index_header_end = get_last_nth_occurence_of_list_element(text, '    <!-- ==================================', 1)
       if not index_header_end:
         return
       else:

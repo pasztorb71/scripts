@@ -1,8 +1,7 @@
 import Environment
-import utils
 from Cluster import Cluster
-from utils_db import get_sema_from_dbname
-from utils_sec import password_from_file
+from utils.utils_db import get_sema_from_dbname
+from utils.utils_sec import password_from_file
 
 
 def print_create_databases(port, databases):

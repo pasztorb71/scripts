@@ -1,10 +1,10 @@
 import psycopg2
 
 import Environment
-import utils
-import utils_sec
+from utils import utils_sec
 from sql_runner.parallel_runner.main import parallel_run
-from utils import get_cluster_databases
+from utils.utils import get_cluster_databases, utils
+
 
 def max_labels(host, port, db, return_dict):
     try:

@@ -1,6 +1,6 @@
 import psycopg2
 
-import utils_sec
+from utils import utils_sec
 from Cluster import Cluster
 from Environment import get_port_from_env_repo
 

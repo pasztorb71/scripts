@@ -5,10 +5,9 @@ from inspect import getfile
 
 import Database
 import Environment
-import utils_sec
 from Cluster import Cluster
-import utils_file
-from utils_sec import password_from_file
+from utils import utils_file, utils_sec
+from utils.utils_sec import password_from_file
 
 
 def rel_to_num(release):

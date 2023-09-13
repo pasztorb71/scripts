@@ -1,9 +1,6 @@
-import Repository
-
 from Git.Git_class import Git
-from Git.services import is_branch_synchronized_in_multiple_repos, synchronize_branch_in_multiple_repos, \
-    create_branch_multiple_repos
-import utils
+from Git.services import is_branch_synchronized_in_multiple_repos, synchronize_branch_in_multiple_repos
+from utils import utils
 
 
 def check_diff_and_synchronize():

@@ -1,5 +1,4 @@
-import utils
-import utils_file
+from utils import utils_file
 
 if __name__ == '__main__':
     files = utils_file.get_files_from_path_fname_filtered('c:/GIT/MLFF', 'schema-version-0.xml')

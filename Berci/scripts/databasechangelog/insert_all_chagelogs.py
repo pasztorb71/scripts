@@ -1,8 +1,7 @@
 import psycopg2
 
 import Environment
-import utils
-import utils_sec
+from utils import utils, utils_sec
 from Database import Database
 from checks.db_changeset_status import get_changeset_ids_from_repos_release
 from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_envs

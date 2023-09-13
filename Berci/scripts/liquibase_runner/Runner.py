@@ -1,14 +1,12 @@
 import glob
 import logging
 import os
-from datetime import datetime
 
 import Environment
-import utils
-import utils_sec
+from utils import utils_sec
 from Repository import Repository
-from utils import get_ip_address_for_docker
-from utils_db import get_dbname_from_project
+from utils.utils import get_ip_address_for_docker
+from utils.utils_db import get_dbname_from_project
 
 
 class Runner:

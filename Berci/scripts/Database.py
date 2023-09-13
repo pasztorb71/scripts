@@ -2,7 +2,7 @@ import os
 
 import psycopg2
 
-import utils_sec
+from utils import utils_sec
 import Repository
 from Table import Table
 

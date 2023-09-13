@@ -1,9 +1,8 @@
 import logging
 
 from Cluster import Cluster
-from Repository import Repository
-from utils_sec import password_from_file
-from utils_db import get_sema_from_dbname
+from utils.utils_sec import password_from_file
+from utils.utils_db import get_sema_from_dbname
 from Environment import get_conn_from_db_user
 
 

@@ -1,9 +1,6 @@
-import glob
-import os
 import re
 
-import utils
-import utils_file
+from utils import utils_file, utils
 
 
 def ddl_file_name_not_match_v_table_name():

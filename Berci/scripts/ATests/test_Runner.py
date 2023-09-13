@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from Repository import Repository
 from liquibase_runner.Runner import Runner
-from utils import get_ip_address_for_docker
+from utils.utils import get_ip_address_for_docker
 
 
 class TestRunner(TestCase):

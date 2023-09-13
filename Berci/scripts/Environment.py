@@ -1,10 +1,10 @@
 import psycopg2
 
 import Repository
-import utils_db
+from utils import utils_db
 from Cluster import Cluster
 import Database
-from utils_sec import password_from_file
+from utils.utils_sec import password_from_file
 
 
 class Env():

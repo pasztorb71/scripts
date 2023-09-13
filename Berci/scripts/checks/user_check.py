@@ -1,9 +1,8 @@
 import psycopg2
 
-import utils
-import utils_sec
+from utils import utils_sec
 from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_envs
-from utils import get_cluster_databases
+from utils.utils import utils
 
 
 def dwh_check(host, port, db, return_dict):

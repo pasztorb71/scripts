@@ -1,15 +1,13 @@
 import re
-from pprint import pprint
 
 import psycopg2
 from tabulate import tabulate
 
 import Environment
-import utils
-import utils_sec
+from utils import utils_sec
 from Repository import Repository, get_repos_containing_release
 from sql_runner.parallel_runner.main import parallel_run
-from utils import get_env_old
+from utils.utils import get_env_old
 
 
 def get_changelogs(host, port, db, return_dict):

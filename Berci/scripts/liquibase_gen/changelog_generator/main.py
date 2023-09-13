@@ -1,15 +1,14 @@
 import re
 
-import utils
-import utils_command
+from utils import utils_command
 import version
 from Repository import Repository
 from Ticket import Ticket
 from liquibase_gen.changelog_generator.changelog_header_generator import Changelog_header_generator
 from liquibase_gen.changelog_generator.commands import command_list
 from liquibase_gen.changelog_generator.paramsfile import params
-from utils_command import get_tablename_from_command
-from utils_file import get_files_from_path_ext_filtered
+from utils.utils_command import get_tablename_from_command
+from utils.utils_file import get_files_from_path_ext_filtered
 
 
 def get_commands():

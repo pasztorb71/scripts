@@ -1,8 +1,7 @@
 import os
 
-from Git.Git_class import git_init
-from utils_db import get_db_name
-from utils_file import copy_dir, replace_in_file, copy_file
+from utils.utils_db import get_db_name
+from utils.utils_file import copy_dir, replace_in_file, copy_file
 
 
 def _cre_docker_compose_build(fname):

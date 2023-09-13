@@ -1,8 +1,6 @@
 import os
 
-import utils
-import utils_db
-import utils_file
+from utils import utils_file, utils_db
 from Repository import Repository
 
 
