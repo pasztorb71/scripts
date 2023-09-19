@@ -31,3 +31,15 @@ class Test(TestCase):
     def test_is_history_table_not_exist(self):
         table = Table('customer.user_session', self.db.conn)
         self.assertFalse(table.has_history())
+
+    def test_is_partitioned(self):
+        table = Table('customer.user_session', self.db.conn)
+        self.assertFalse(table.has_partitions())
+
+class Test_eligibility(TestCase):
+    def setUp(self):
+        self.db = Database('enforcement_eligibility', 5442)
+
+    def test_is_partitioned1(self):
+        table = Table('eligibility.detection_data', self.db.conn)
+        self.assertTrue(table.has_partitions())

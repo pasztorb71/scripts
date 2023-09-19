@@ -507,16 +507,17 @@ def print_dataframe(df):
 if __name__ == '__main__':
     #envs = ['c_dev']
     envs = Environment.get_envs()
+    print(envs)
     #databases = load_from_file('../databases.txt')
     #databases = ['core_customer']
-    ports_databases = gen_port_databases_from_envs(envs)[0:]
+    ports_databases = gen_port_databases_from_envs(envs[0:1])[0:]
     #ports_databases = [[6041, 'core_customer']]
     #return_dict = parallel_run(ports_databases, truncate_table)
-    return_dict = parallel_run(ports_databases, mproc_count_records)
-    #return_dict = parallel_run_sql(ports_databases, 'select now()',  mproc_single_sql)
+    #return_dict = parallel_run(ports_databases, mproc_count_records)
+    return_dict = parallel_run_sql(ports_databases, "SELECT md5(prosrc) FROM pg_proc WHERE proname = 'f_log_ddl'",  mproc_single_sql)
     #df = return_dict_to_dataframe(return_dict)
     #df_sorted = df.sort_values(by='COUNT', ascending=False)
     #print_dataframe(df_sorted)
-    utils.print_sql_result(return_dict, 50, header=True)
+    utils.print_sql_result(return_dict, 50, header=False)
     #utils.print_one_result(return_dict, 50)
 

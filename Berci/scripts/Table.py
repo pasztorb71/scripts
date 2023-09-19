@@ -20,6 +20,9 @@ class Table:
         self.schema, self.name = table.split('.')
         self.foreign_keys: dict[str, ForeignKey] = None
 
+    def __str__(self):
+        return f'{self.schema}.{self.name}'
+
     def setconn(self, connection: psycopg2.extensions.connection):
         self.conn = connection
 
@@ -179,8 +182,14 @@ class Table:
         return row[0] == 0
 
 
-    def has_history(self,):
+    def has_history(self):
         cur = self.conn.cursor()
-        cur.execute("select count(*) from pg_tables where schemaname = '" + self.schema + "' and tablename = '" + self.name + "$hist'")
+        cur.execute(f"select count(*) from pg_tables where schemaname = '{self.schema}' and tablename = '{self.name}$hist'")
         res = cur.fetchone()[0]
         return res == 1
+
+    def has_partitions(self):
+        cur = self.conn.cursor()
+        cur.execute(f"SELECT count(*) FROM pg_catalog.pg_inherits WHERE inhparent = '{self.schema}.{self.name}'::regclass")
+        res = cur.fetchone()[0]
+        return res > 0

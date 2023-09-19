@@ -9,7 +9,7 @@ from utils.utils_sec import password_from_file
 
 class Env():
     test = {'mlff_test': 5555}
-    new_base = {'local': 5432,
+    base = {'local': 5432,
                 'sandbox': 5440,
                 'dev': 5540,
                 'fit': 5640,
@@ -17,7 +17,7 @@ class Env():
                 'cantas_test': 5840,
                 'perf': 5940,
                 'cantas_dev': 6040
-                }
+            }
 
     offset = {'pg-doc': 0,
               'pg-core': 1,
@@ -29,7 +29,20 @@ class Env():
               'pg-obu': 7,
               }
 
+    @staticmethod
+    def is_valid_location(name):
+        (Env.base).update(Env.test)
+        valid = name in Env.base
+        if not valid:
+            print(f"Not valid location: {name}")
+            print("Possible locations:")
+            print('  ' + '\n  '.join(get_envs()))
+        return valid
+
     def __init__(self, name='local'):
+        if name:
+            if not Env.is_valid_location(name):
+                exit(1)
         self.name = name
 
     @property
@@ -45,9 +58,9 @@ class Env():
     def get_port_from_inst(self, inst):
         if self.name in self.test:
             return self.test[self.name]
-        if self.name in self.new_base:
+        if self.name in self.base:
             if inst in self.offset:
-                return self.new_base[self.name] + self.offset[inst]
+                return self.base[self.name] + self.offset[inst]
             else:
                 print("Lehetséges instance-ok:")
                 print('\n'.join([x for x in self.offset.keys()]))
@@ -69,7 +82,7 @@ class Env():
             return [5432]
         ports = []
         for idx in self.offset.values():
-            ports.append(self.new_base[self.name] + idx)
+            ports.append(self.base[self.name] + idx)
         return ports
 
     def get_port_from_repo(self, repo_full_name: str) -> int:
@@ -80,7 +93,7 @@ class Env():
         elif self.name == 'anonymizer-test':
             return 5556
         inst = Repository.get_instance_from_repo_full_name(repo_full_name)
-        return self.new_base[self.name] + self.offset[inst]
+        return self.base[self.name] + self.offset[inst]
 
     def get_old_port(self, repo_full_name=''):
         if self.name == 'sandbox':
@@ -114,7 +127,7 @@ class Env():
     @staticmethod
     def get_env_name_from_port(port):
         prevkey = ''
-        for env, p in Env.new_base.items():
+        for env, p in Env.base.items():
             if int(port) < p:
                 return prevkey
             prevkey = env
@@ -155,12 +168,13 @@ class Env():
 
 def environment_selector() -> Env:
     print('Válassz környezetet!')
-    for idx, env in enumerate(Env.new_base):
+    for idx, env in enumerate(Env.base):
         print(f'{idx}: {env}')
     idx = int(input('Írd be a sorszámát:'))
-    env_name = list(Env.new_base.keys())[idx]
+    env_name = list(Env.base.keys())[idx]
     return Env(env_name)
 
 
 def get_envs(exclude=['']) -> list[str]:
-    return [env for env in Env.new_base if env not in exclude]
+    (Env.base).update(Env.test)
+    return [env for env in Env.base if env not in exclude]

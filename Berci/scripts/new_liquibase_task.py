@@ -5,7 +5,7 @@ from Ticket import Ticket
 
 def read_ticket() -> Ticket:
     nr = input('Number of ticket?:')
-    t = Ticket(f'MLFFDEV-{nr}')
+    t = Ticket(f'MLFFSUP-{nr}')
     return t
 
 
@@ -33,7 +33,7 @@ def table_operations():
 
 
 if __name__ == '__main__':
-    repo = Repository('-wa')
+    repo = Repository('-tariff')
     t = read_ticket()
     print_info(t, repo)
     create_branch(t, repo)

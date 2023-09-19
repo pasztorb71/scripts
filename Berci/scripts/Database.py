@@ -17,7 +17,7 @@ class Database:
         return repos
 
 
-    def __init__(self, name: str, port: int = 5432, host: str = 'localhost'):
+    def __init__(self, name: str, port = 5432, host = 'localhost'):
         self.name = name
         self.host = host
         self.port = port
@@ -26,7 +26,6 @@ class Database:
         self.__connection_string = f"postgres://{self.user}:{passw}@{host}:{port}/{name}"
         self.__conn = psycopg2.connect(self.__connection_string)
         self.tables = self._get_tables()
-
 
 
     def __repr__(self):
@@ -47,9 +46,11 @@ class Database:
         res = self.sql_query("""
             SELECT schemaname, relname
             FROM pg_catalog.pg_stat_all_tables 
-            WHERE schemaname not in ('pg_toast', 'information_schema', 'pg_catalog')
+            WHERE schemaname not in ('pg_toast', 'information_schema', 'pg_catalog', 'ddl_changes', 'partman', 'public')
+              AND relname not like '%\_p2%' AND schemaname not like 'pg\_%'
+              AND relname not like '%\_default'
             ORDER BY schemaname, relname """)
-        return dict([rc[1], Table(f'{rc[0]}.{rc[1]}')] for rc in res)
+        return dict([rc[1], Table(f'{rc[0]}.{rc[1]}', self.conn)] for rc in res)
 
     def get_table(self, name: str) -> Table:
         return self.tables[name]

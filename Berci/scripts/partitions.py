@@ -1,12 +1,10 @@
 import datetime
-from time import strftime
 
 from dateutil.utils import today
 
 import Database
 import Environment
-import utils
-from Table import Table
+from utils.utils_sec import password_from_file
 
 
 def daterange(start_date, end_date):
@@ -45,10 +43,15 @@ def pr_create_partition_of_table(days, schema_table):
     #FOR VALUES FROM ('{day[0]} 02:00:00+02:00') TO ('{add_n_days(day[0], 1)} 02:00:00+02:00');""")
 
 
-def pr_create_table_like(days, schema_table):
+def pr_create_table_like_multiple_days(days, schema_table):
     for day in days:
-        print(f"CREATE TABLE {schema_table}_p{day[0].replace('-', '_')} (LIKE {schema_table});")
+        pr_create_table_like(day, schema_table)
     print()
+
+
+def pr_create_table_like(day, schema_table):
+    print(f"CREATE TABLE {schema_table}_p{day.replace('-', '_')} (LIKE {schema_table});")
+
 
 def pr_create_single_partitions(day, schema_table):
     print(f"CREATE TABLE {schema_table}_p{day[0].replace('-', '_')} (LIKE {schema_table});")
@@ -70,23 +73,21 @@ def pr_create_future_partitions(days, schema_table):
 
 def pr_insert_partitions(days, schema_table, new_schema_table):
     for day in days:
-        pr_insert_single_partitions(day, schema_table, new_schema_table)
-
-
-def pr_insert_single_partitions(day, schema_table, new_schema_table):
-    #table = Table(new_schema_table)
-    print(f"""INSERT INTO {new_schema_table}_p{day[0].replace('-', '_')}
-                SELECT * FROM {schema_table}
-                  WHERE {partkey} >= '{day[0]} 02:00:00+02:00' AND {partkey} < '{add_n_days(day[0], 1)} 02:00:00+02:00';""")
+        pr_insert_single_partition(day, schema_table, new_schema_table)
     print()
 
+def pr_insert_single_partition(day, schema_table, new_schema_table):
+    print(f"""INSERT INTO {new_schema_table}_p{day.replace('-', '_')}
+  SELECT * FROM {schema_table}
+  WHERE {partkey} >= '{day} 02:00:00+02:00' AND {partkey} < '{add_n_days(day, 1)} 02:00:00+02:00';""")
 
-def pr_count_part_records(days, schema_table):
+def pr_count_part_records_multiple_days(days, schema_table):
     for day in days:
-        print(
-            f"""select '{schema_table.split('.')[1]}_p{day[0].replace('-', '_')}' as day, count(*) from {schema_table}_p{day[0].replace('-', '_')}
-union all""")
+        pr_count_part_records(day, schema_table)
     print()
+
+def pr_count_part_records(day, schema_table):
+    print(f"""select '{schema_table.split('.')[1]}_p{day.replace('-', '_')}' as day, count(*) from {schema_table}_p{day.replace('-', '_')};""")
 
 def pr_count_records(schema_table):
     print(f"SELECT COUNT(*) FROM {schema_table};")
@@ -106,44 +107,43 @@ def pr_count_single_default_ranges(day, schema_table):
 def pr_delete_partitions(days, schema_table):
     for day in days:
         pr_delete_single_partition(day, schema_table)
+    print()
 
 
 def pr_delete_single_partition(day, schema_table):
     print(f"""DELETE FROM {schema_table}_default
-  WHERE {partkey} >= '{day[0]} 02:00:00+02:00' AND {partkey} < '{add_n_days(day[0], 1)} 02:00:00+02:00';""")
-    print()
+  WHERE {partkey} >= '{day} 02:00:00+02:00' AND {partkey} < '{add_n_days(day, 1)} 02:00:00+02:00';""")
 
 
-def pr_attach_partitions(days, schema_table):
+def pr_attach_partitions_multiple_days(days, schema_table):
     for day in days:
-        print(f"""ALTER TABLE {schema_table} ATTACH PARTITION {schema_table}_p{day[0].replace('-', '_')}
-  FOR VALUES FROM ('{day[0]} 02:00:00+02:00') TO ('{add_n_days(day[0], 1)} 02:00:00+02:00');""")
+        pr_attach_partition(day, schema_table)
     print()
 
 
-def pr_attach_single_partitions(day, schema_table):
-    print(f"""ALTER TABLE {schema_table} ATTACH PARTITION {schema_table}_p{day[0].replace('-', '_')}
-  FOR VALUES FROM ('{day[0]} 01:00:00+01:00') TO ('{add_n_days(day[0], 1)} 01:00:00+01:00');""")
-    print()
-
+def pr_attach_partition(day, schema_table):
+    print(f"""ALTER TABLE {schema_table} ATTACH PARTITION {schema_table}_p{day.replace('-', '_')}
+  FOR VALUES FROM ('{day} 02:00:00+02:00') TO ('{add_n_days(day, 1)} 02:00:00+02:00');""")
 
 def remove_default_part_data(db, schema_table, partkey):
     print(get_login_str(db))
-    days_records = get_record_per_days_from_table(db, schema_table+'_default', partkey)
-    list_days_in_default(days_records)
-    pr_create_table_like(days_records, schema_table)
-    #pr_create_future_partitions(days_records, schema_table)
-    pr_insert_partitions(days_records, schema_table+'_default', schema_table)
-    pr_count_part_records(days_records, schema_table)
-    #pr_count_default_ranges(days_records, schema_table)
-    pr_delete_partitions(days_records, schema_table)
-    # print(f"select count(*) from {schema_table}_default;")
-    print()
-    pr_attach_partitions(days_records, schema_table)
+    days_records_all = get_record_per_days_from_table(db, schema_table+'_default', partkey)
+    list_days_in_default(days_records_all)
+    days = [d[0] for d in days_records_all]
+    for day in days:
+        print(f'-- {day} ---')
+        print('begin transaction;')
+        pr_create_table_like(day, schema_table)
+        pr_insert_single_partition(day, schema_table+'_default', schema_table)
+        pr_count_part_records(day, schema_table)
+        pr_delete_single_partition(day, schema_table)
+        pr_attach_partition(day, schema_table)
+        print('commit;')
+        print(f'-- End of {day} ---\n\n')
 
 
 def get_login_str(db):
-    return f"""@SET PGPASSWORD={utils.password_from_file('postgres', db.port)}
+    return f"""@SET PGPASSWORD={password_from_file('postgres', db.port)}
 psql -p {db.port} -U postgres -d {db.name}
 """
 
@@ -188,21 +188,21 @@ def operations_by_partition(days_records, new_schema_table, schema_table):
         print(f'-- {day[0]} ---')
         print('begin transaction;')
         pr_create_single_partitions(day, new_schema_table)
-        pr_insert_single_partitions(day, schema_table, new_schema_table)
+        pr_insert_single_partition(day, schema_table, new_schema_table)
         # pr_count_single_default_ranges(day, schema_table)
         # pr_delete_single_default_partitions(day, schema_table)
-        pr_attach_single_partitions(day, new_schema_table)
+        pr_attach_partition(day, new_schema_table)
         print('commit;')
         print(f'-- End of {day[0]} ---\n\n')
     print('-- End of single operations\n')
 
 
 if __name__ == '__main__':
-    port = Environment.Env('dev').get_port_from_inst('pg-enforcement')
+    port = Environment.Env('cantas_test').get_port_from_inst('pg-enforcement')
     db = Database.Database('enforcement_eligibility', port)
     partkey = 'event_time'
     #TODO átírni objektumosra
     #partgen(db, 'payment_transaction.payment_transaction_old', partkey)
-    remove_default_part_data(db, 'eligibility.ticket_data', partkey)
+    remove_default_part_data(db, 'eligibility.detection_data', partkey)
     #check_eligibility_partitions_in_all_env()
 

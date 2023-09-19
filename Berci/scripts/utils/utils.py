@@ -17,8 +17,10 @@ def has_header(l):
 
 def print_sql_result(d, maxlength, header=False):
     for db, records in sorted(d.items()):
-        print(f"{db}:".ljust(maxlength))
-        if records:
+        print(f"{db}:".ljust(maxlength), end='')
+        if not records:
+            print()
+        else:
             if isinstance(records, str):
                 print(f"  {records}")
             else:
@@ -26,9 +28,8 @@ def print_sql_result(d, maxlength, header=False):
                     print(tabulate(records[1:], headers=records[0], tablefmt="pipe"))
                     print()
                 else:
-                    #print(f"records: {records}")
                     for value in records:
-                        print('  ' + value)
+                        print('  ' + value[0])
     print(f'Összesen: {len(d)} db repo')
 
 def print_one_result(d, maxlength):
@@ -81,7 +82,7 @@ def get_ip_address_for_docker(repo, loc):
     elif loc == 'anonymizer-test':
         return 'gateway.docker.internal:5556'
     inst = Repository.get_instance_from_repo_full_name(repo)
-    return 'gateway.docker.internal:' + str(Environment.Env.new_base[loc] + Environment.Env.offset[inst])
+    return 'gateway.docker.internal:' + str(Environment.Env.base[loc] + Environment.Env.offset[inst])
 
 
 def print_table_level_check(return_dict, filtered=False):
