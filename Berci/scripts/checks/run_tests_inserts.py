@@ -2,7 +2,7 @@ import re
 
 from Cluster import Cluster
 from checks.cmdlist import cmdlist
-from sql_runner.parallel_runner.main import parallel_run
+from sql_runner.parallel_runner.main import parallel_run_multiprocess
 from utils.utils import print_sql_result
 from Environment import get_conn_service_user
 from utils.utils_sec import password_from_file
@@ -45,6 +45,6 @@ if __name__ == '__main__':
     #databases = load_from_file('../databases.txt')
     databases = ['enforcement_detection']
     #databases = cluster.databases
-    return_dict = parallel_run(host, [port], databases, runteszt)
+    return_dict = parallel_run_multiprocess(host, [port], databases, runteszt)
     print_sql_result(return_dict,50, header=False)
 

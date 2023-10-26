@@ -1,3 +1,4 @@
+import pathlib
 from unittest import TestCase
 
 import Environment
@@ -119,3 +120,7 @@ class TestRepository(TestCase):
                    'dockerhub.icellmobilsoft.hu/liquibase/mlff-document-postgredb:1.8.0'
         self.assertEqual(expected, repo.image_run_command)
 
+    def test_get_run_sh_eol_type(self):
+        path = str(pathlib.Path().absolute()) + '/'
+        r = Repository('test_repo', base=path)
+        self.assertEqual('unix', r.run_sh_eol_type)

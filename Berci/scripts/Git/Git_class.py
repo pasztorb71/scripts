@@ -13,10 +13,10 @@ class Git:
         return self.repo
 
     @staticmethod
-    def get_gitlist():
+    def get_gitlist(exclude=[]):
         repo = Repository.Repository()
         base = repo.get_base()
-        repo_names = repo.get_repo_names()
+        repo_names = repo.get_repo_names_exclude(exclude)
         return [Git(base, name) for name in repo_names[0:]]
 
     @staticmethod

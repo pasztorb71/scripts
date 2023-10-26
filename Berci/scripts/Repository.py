@@ -22,14 +22,16 @@ def rel_to_num(release):
 class Repository():
     base = 'c:/GIT/MLFF/'
 
-    def __init__(self, name='', schema=''):
+    def __init__(self, name='', schema='', base=base):
         if name:
+            self.base = base
             self.name = self.find_name(name)
             self.base_path = self.base + self.name + '/liquibase/'
             self.dbname = self.get_db_name()
             self.db_path = self.dbname.replace('-', '_')
             #self.schema = self.get_schema() if not schema else schema
             self.instance = self._get_instance()
+            pass
 
     def __str__(self):
         return f'Repository({self.name})'
@@ -47,9 +49,8 @@ class Repository():
     def get_base_path(self):
         return self.base_path
 
-    @staticmethod
-    def find_name(name):
-        repos = os.listdir(__class__.base)
+    def find_name(self, name):
+        repos = os.listdir(self.base)
         a = [repo for repo in repos if name in repo]
         if len(a) > 1:
             print("Nem egyértelmű a repository név!")
@@ -190,7 +191,7 @@ class Repository():
 
     def drop_database(self):
         clus = Database.Database('postgres', '5432')
-        clus.__sql_exec(f'drop database if exists {self.dbname}')
+        clus.sql_exec(f'drop database if exists {self.dbname}')
         print(f'{self.dbname} database dropped.')
 
     def drop_roles(self):
@@ -199,12 +200,12 @@ class Repository():
 
     def drop_main_changelog(self):
         clus = Database.Database('postgres', '5432')
-        clus.__sql_exec(f'drop table if exists public.databasechangelog')
+        clus.sql_exec(f'drop table if exists public.databasechangelog')
         print(f'public.databasechangelog dropped.')
 
     def drop_db_changelog(self):
         clus = Database.Database(self.dbname, '5432')
-        clus.__sql_exec(f'drop table if exists public.databasechangelog')
+        clus.sql_exec(f'drop table if exists public.databasechangelog')
         print(f'databasechangelog dropped from {self.dbname} database.')
 
     def _get_instance(self):
@@ -231,6 +232,14 @@ class Repository():
     def image_build_command(self):
         base_name = self.base.replace('/', '\\') + self.name
         return f"docker-compose --env-file {base_name}\\.env -f {base_name}\etc\\release\\docker-compose.yml build"
+
+    @property
+    def run_sh_eol_type(self):
+        with open(self.base + self.name + '/run.sh') as f:
+            oneline = f.readline()
+        if f.newlines == '\r\n':
+            return 'windows'
+        return 'unix'
 
 
 def get_instance_from_repo_full_name(repo):

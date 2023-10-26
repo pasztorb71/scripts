@@ -1,7 +1,7 @@
 import psycopg2
 
 from utils import utils_sec
-from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_envs
+from sql_runner.parallel_runner.main import parallel_run_multiprocess, gen_port_databases_from_envs
 from utils.utils import utils
 
 
@@ -80,5 +80,5 @@ if __name__ == '__main__':
     envs = ['c_dev']
     ports_databases = gen_port_databases_from_envs(envs)[0:]
     # ports_databases = [[5741, 'postgres']]
-    return_dict = parallel_run(ports_databases, dwh_check)
+    return_dict = parallel_run_multiprocess(ports_databases, dwh_check)
     utils.print_table_level_check(return_dict, filtered=True)

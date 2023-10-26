@@ -4,7 +4,7 @@ import Environment
 from utils import utils, utils_sec
 from Database import Database
 from checks.db_changeset_status import get_changeset_ids_from_repos_release
-from sql_runner.parallel_runner.main import parallel_run, gen_port_databases_from_envs
+from sql_runner.parallel_runner.main import parallel_run_multiprocess, gen_port_databases_from_envs
 from Repository import get_repos_containing_release
 
 
@@ -69,7 +69,7 @@ def insert_changelog(host, port, db, return_dict):
 def insert_proc_parallel(env):
     ports_databases = gen_port_databases_from_envs(env)[0:]
     print('Insert start...')
-    return_dict = parallel_run(ports_databases, insert_changelog)
+    return_dict = parallel_run_multiprocess(ports_databases, insert_changelog)
     utils.print_sql_result(return_dict, 50)
 
 

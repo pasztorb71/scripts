@@ -17,7 +17,7 @@ def has_header(l):
 
 def print_sql_result(d, maxlength, header=False):
     for db, records in sorted(d.items()):
-        print(f"{db}:".ljust(maxlength), end='')
+        print(f"{db}:".ljust(maxlength))
         if not records:
             print()
         else:
@@ -74,7 +74,9 @@ def whoami(  ):
     return f'--- {sys._getframe(1).f_code.co_name} ---'
 
 
-def get_ip_address_for_docker(repo, loc):
+def get_ip_address_for_docker(repo, loc, port:str=None):
+    if port:
+        return f'gateway.docker.internal:{port}'
     if loc == 'local':
         return 'gateway.docker.internal'
     elif loc == 'mlff_test':

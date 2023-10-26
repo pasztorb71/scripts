@@ -91,7 +91,7 @@ class Runner:
         for db in self.get_dbs(repo):
             self._call_liquibase(repo, ip_address, self.password, db)
 
-    def run_multiple_repos(self, loc, checkonly, delete_db_before=False, delete_changelog_only=False):
+    def run_multiple_repos(self, loc, checkonly, delete_db_before=False, delete_changelog_only=False, port:str=None):
         if not checkonly:
             if not self.confirm(loc): return
         else:
@@ -100,8 +100,10 @@ class Runner:
         self.loc = loc
         self.checkonly = checkonly
         for repo in [repo.get_name() for repo in self.repos]:
-            self.password = utils_sec.password_from_file('postgres', Environment.Env(loc).get_port_from_repo(repo))
-            self.run_for_repo(get_ip_address_for_docker(repo, loc), repo, delete_changelog_only)
+            if not port:
+                port = Environment.Env(loc).get_port_from_repo(repo)
+            self.password = utils_sec.password_from_file('postgres', port)
+            self.run_for_repo(get_ip_address_for_docker(repo, loc, port), repo, delete_changelog_only)
 
     def kill(self, param):
         pass

@@ -1,7 +1,11 @@
 import multiprocessing
+import os.path
+from concurrent.futures import ThreadPoolExecutor
+from time import sleep
 
 import pandas as pd
 import psycopg2
+import yaml
 
 import Environment
 from utils import utils, utils_sec
@@ -77,6 +81,26 @@ def mproc_get_dabase_names(host, port, db, return_dict):
         conn.close()
     except:
         return_dict[f'{port}|{db}'] = ("Database not exists")
+
+def mproc_get_dabase_names_thread(port_db):
+    port = port_db[0]
+    db = port_db[1]
+    try:
+        conn = psycopg2.connect(
+            host='localhost',
+            port=port,
+            database=db,
+            user="postgres",
+            password=utils_sec.password_from_file('postgres', port))
+        cur = conn.cursor()
+        cur.execute("SELECT datname FROM pg_database WHERE datname NOT IN ('cloudsqladmin', 'postgres', 'template0', 'template1')")
+        record = cur.fetchall()
+        return_dict1[f'{port}|{db}'] = record
+        cur.close()
+        conn.commit()
+        conn.close()
+    except:
+        return_dict1[f'{port}|{db}'] = ("Database not exists")
 
 def mproc_grant_after_migr(host, port, db, return_dict):
     conn = psycopg2.connect(
@@ -417,7 +441,7 @@ def sum_counts(d):
         sum += records[1][0]
     return sum
 
-def parallel_run(ports_dbs, func):
+def parallel_run_multiprocess(ports_dbs, func):
     host = 'localhost'
     return_dict = multiprocessing.Manager().dict()
     jobs = []
@@ -466,19 +490,32 @@ def gen_port_databases_from_env_db(env, databases):
     return out
 
 
-def gen_port_databases_from_envs(envlist: list[str]):
+def is_backup():
+    return os.path.isfile('../../backup/port_databases_from_envs.yaml')
+
+
+def ports_databases_from_backup():
+    with open('../../backup/port_databases_from_envs.yaml', 'r') as b:
+        port_databases = yaml.load(b, Loader=yaml.Loader)
+    return port_databases
+
+def gen_port_databases_from_envs(envlist: list[str], forced_refresh: bool=False):
+    if not forced_refresh and is_backup():
+        return ports_databases_from_backup()
     ports_databases = []
     a = []
     for env in envlist:
         a += Environment.Env(env).get_ports()
     for port in a:
         ports_databases.append([port, 'postgres'])
-    return_dict = parallel_run(ports_databases, mproc_get_dabase_names)
+    return_dict = parallel_run_multiprocess(ports_databases, mproc_get_dabase_names)
     ports_databases = []
     for db, records in sorted(return_dict.items()):
         for rec in records:
             if rec[0] != "Database not exists":
                 ports_databases.append([db.split('|')[0], rec[0]])
+    with open('../../backup/port_databases_from_envs.yaml', 'w') as b:
+        yaml.dump(ports_databases, b)
     return ports_databases
 
 
@@ -505,19 +542,20 @@ def print_dataframe(df):
 
 
 if __name__ == '__main__':
-    #envs = ['c_dev']
-    envs = Environment.get_envs()
+    #envs = ['sandbox']
+    envs = Environment.get_envs()[1:-1] #local nem kell, mlff_test nem kell
     print(envs)
     #databases = load_from_file('../databases.txt')
     #databases = ['core_customer']
-    ports_databases = gen_port_databases_from_envs(envs[0:1])[0:]
+    #envs = ['dev']
+    ports_databases = gen_port_databases_from_envs(envs[0:1], forced_refresh=True)[0:]
     #ports_databases = [[6041, 'core_customer']]
     #return_dict = parallel_run(ports_databases, truncate_table)
-    #return_dict = parallel_run(ports_databases, mproc_count_records)
-    return_dict = parallel_run_sql(ports_databases, "SELECT md5(prosrc) FROM pg_proc WHERE proname = 'f_log_ddl'",  mproc_single_sql)
+    return_dict = parallel_run_multiprocess(ports_databases, mproc_count_records)
+    #return_dict = parallel_run_sql(ports_databases, "SELECT md5(prosrc) FROM pg_proc WHERE proname = 'f_log_ddl'",  mproc_single_sql)
     #df = return_dict_to_dataframe(return_dict)
     #df_sorted = df.sort_values(by='COUNT', ascending=False)
     #print_dataframe(df_sorted)
-    utils.print_sql_result(return_dict, 50, header=False)
+    utils.print_sql_result(return_dict, 50, header=True)
     #utils.print_one_result(return_dict, 50)
 

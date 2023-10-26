@@ -51,7 +51,8 @@ def get_label_advanced(file, xml_files:list[str, str]):
                         if xml_f[1]:
                             return xml_f[1]
                         else:
-                            return
+                            m = re.match('.*labels=.*,\s(.*)"/>.*', line)
+                            return m.group(1) if m else None
         except Exception as e:
             print(file)
             raise e
@@ -65,11 +66,11 @@ def get_label(file):
         lines = []
         with open(file.rsplit('\\', 2)[0] + '/schema-version-0.xml', 'r', encoding='utf8') as f:
             lines = f.readlines()
-            for line in lines:
-                if file_name in line:
-                    m = re.match('.*labels=.*,\s(.*)"/>.*', line)
-                    return m.group(1) if m else None
-            return get_label_advanced(file, get_schema_xml_files_labels(lines))
+        for line in lines:
+            if file_name in line:
+                m = re.match('.*labels=.*,\s(.*)"/>.*', line)
+                return m.group(1) if m else None
+        return get_label_advanced(file, get_schema_xml_files_labels(lines))
     except Exception as e:
         print(file)
         raise e
@@ -97,11 +98,12 @@ def file_modtime_greater(filename: str, mtime: datetime) -> bool:
 
 if __name__ == '__main__':
     prev_db_name = ''
-    modtime = datetime.strptime('23/07/04 15:41:00', '%y/%m/%d %H:%M:%S')
-    for file in utils_file.get_files_from_path_fname_filtered('c:/GIT/MLFF/', '.sql'):
-        if 'ddl_changes_module' in file:
-            continue
-        if not file_modtime_greater(file, modtime):
+    path = 'c:\\GIT\\MLFF\\'
+    #path = path + '\\mlff-enforcement-onsite-inspection-postgredb\\'
+    #modtime = datetime.strptime('23/07/04 15:41:00', '%y/%m/%d %H:%M:%S')
+    modtime = datetime.strptime('23/10/11 16:00:00', '%y/%m/%d %H:%M:%S')
+    for file in utils_file.get_files_from_path_fname_filtered(path, '.sql'):
+        if 'ddl_changes_module' in file or not file_modtime_greater(file, modtime):
             continue
         commands = get_important_commands_from_file(file)
         if not commands:

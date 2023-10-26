@@ -2,9 +2,9 @@ import Environment
 from Repository import Repository
 from liquibase_runner.Runner import Runner
 
-repos = [Repository('tro')]
-#repos = [Repository(x) for x in Repository.get_repo_names() if '-detection' in x]
-Runner(repos).run_multiple_repos(loc = 'mlff_test', checkonly = False)
+#repos = [Repository('eligibility')]
+repos = [Repository(x) for x in Repository.get_repo_names() if '' in x][0:]
+Runner(repos, confirm=False).run_multiple_repos(loc = 'local', checkonly = False, port = '')
 """
 for env in Environment.get_envs()[1:]:
     Runner(repos).run_multiple_repos(loc = env, checkonly = False)

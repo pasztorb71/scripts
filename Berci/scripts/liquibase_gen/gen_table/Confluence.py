@@ -6,12 +6,13 @@ from bs4 import BeautifulSoup
 
 from requests.auth import HTTPBasicAuth
 
-from utils.utils import utils
+import utils
+from utils.utils import get_atlassian_login_from_file
 
 
 class Confluence:
     def get_table_from_url(self, url):
-        user_pass = utils.get_atlassian_login_from_file()
+        user_pass = get_atlassian_login_from_file()
         page = requests.get(url, auth=HTTPBasicAuth(user_pass[0], user_pass[1]))
         cont = page.text
         page_id = url.split('/pages/')[1].split('/',1)[0]

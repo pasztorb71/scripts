@@ -32,6 +32,9 @@ class Test(TestCase):
     def test_password_from_file3(self):
         self.assertEqual('mysecretpassword', utils_sec.password_from_file('postgres', 5432))
 
+    def test_password_from_file_5433(self):
+        self.assertEqual('postgres', utils_sec.password_from_file('postgres', 5433))
+
     def test_password_from_file_service(self):
         self.assertEqual('mlffTitkosPassword123!', utils_sec.password_from_file('detection_service', 5437))
 

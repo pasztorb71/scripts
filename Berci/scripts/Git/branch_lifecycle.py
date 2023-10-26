@@ -5,10 +5,10 @@ from Git.services import create_stage_and_commit, push_branch, delete_branch_mul
     create_branch_multiple_repos
 
 if __name__ == '__main__':
-    gitlist = [git for git in Git.get_gitlist() if 'tariff' not in git.repo]
-    #gitlist = Git.get_gitlist()
-    branch = 'feature/MLFFSUP-4281_A_ddl_logoló_finomhangolása'
+    #gitlist = Git.get_gitlist(exclude=[''])
+    gitlist = Git.get_gitlist(exclude=['empty'])
+    branch = 'feature/MLFFSUP-5392_Source_system_ddl_change_tracker_bug_fix_install'
     #create_branch_multiple_repos(gitlist, branch)
-    #create_stage_and_commit(gitlist, 'MLFFSUP-4281  A_ddl_logoló_finomhangolása')
+    #create_stage_and_commit(gitlist, 'MLFFSUP-5392  Source_system_ddl_change_tracker_bug_fix_install')
     #push_branch(gitlist, branch)
     delete_branch_multiple_repos(gitlist, branch)

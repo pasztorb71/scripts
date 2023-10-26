@@ -6,7 +6,7 @@ from tabulate import tabulate
 import Environment
 from utils import utils_sec
 from Repository import Repository, get_repos_containing_release
-from sql_runner.parallel_runner.main import parallel_run
+from sql_runner.parallel_runner.main import parallel_run_multiprocess
 from utils.utils import get_env_old
 
 
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     host = 'localhost'
     version_files = get_version_filenames(databases, '0.10')
     databases = ['core_vehicle']
-    return_dict = parallel_run(host, ports, databases, get_changelogs)
+    return_dict = parallel_run_multiprocess(host, ports, databases, get_changelogs)
     for key, data in return_dict.items():
         if key not in result_d:
             result_d[key] = [data]

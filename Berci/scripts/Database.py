@@ -55,6 +55,25 @@ class Database:
     def get_table(self, name: str) -> Table:
         return self.tables[name]
 
+    def sql_exec(self, *args):
+        if isinstance(args[0], str):
+            cmds = [args[0]]
+        elif isinstance(args[0], list):
+            cmds = args[0]
+        self.conn.autocommit = True
+        cur = self.conn.cursor()
+        status = False
+        while not status:
+            for cmd in cmds:
+                try:
+                    cur.execute(cmd)
+                    status = True
+                    self.conn.commit()
+                except psycopg2.errors.ObjectInUse as e:
+                    print(e)
+                    if input("Újra? [y/n]") != "y":
+                        return
+
     def sql_executemany(self, insert_query, records):
         conn = self.conn
         cur = conn.cursor()

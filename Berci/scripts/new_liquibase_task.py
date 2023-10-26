@@ -23,6 +23,7 @@ def create_branch(t: Ticket, r: Repository) -> None:
 
 def print_info(t: Ticket, r: Repository):
     print(f'branch : {t.branch}')
+    print(f'commit msg : {t.commit_msg}')
     print(f'release: {t.release}')
     print(f'release in repo: {r.env_ver}')
 
@@ -33,7 +34,7 @@ def table_operations():
 
 
 if __name__ == '__main__':
-    repo = Repository('-tariff')
+    repo = Repository('-identifier')
     t = read_ticket()
     print_info(t, repo)
     create_branch(t, repo)

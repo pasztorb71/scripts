@@ -63,7 +63,6 @@ def delete_branch_multiple_repos(gitlist, branch):
 def create_branch_multiple_repos(gitlist, branch):
     commands = ['checkout -b ' + branch]
     ret_dict = parallel_run(gitlist, _mproc_multiple_commands, commands)
-    print(ret_dict)
 
 
 def create_stage_and_commit(gitlist, message):

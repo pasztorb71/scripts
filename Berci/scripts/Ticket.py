@@ -41,6 +41,10 @@ class Ticket:
         return f'feature/{self.name}_{self.get_title()}'
 
     @property
+    def commit_msg(self):
+        return f'{self.name}  {self.get_title()}'
+
+    @property
     def release(self):
         fv = self.content['fields']['fixVersions']
         if fv:

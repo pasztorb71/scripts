@@ -2,7 +2,7 @@ import psycopg2
 
 import Environment
 from utils import utils_sec
-from sql_runner.parallel_runner.main import parallel_run
+from sql_runner.parallel_runner.main import parallel_run_multiprocess
 from utils.utils import get_cluster_databases, utils
 
 
@@ -41,5 +41,5 @@ if __name__ == '__main__':
     #databases = ['enforcement_detection']
     port = Environment.get_port_from_env_repo(env)
     ports = list(range(port, port+1))
-    return_dict = parallel_run(ports, databases, max_labels)
+    return_dict = parallel_run_multiprocess(ports, databases, max_labels)
     utils.print_one_result(return_dict, len(max(databases, key=len)) + 7)
