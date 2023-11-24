@@ -33,7 +33,7 @@ class Test(TestCase):
         self.assertFalse(table.has_history())
 
     def test_is_partitioned(self):
-        table = Table('customer.user_session', self.db.conn)
+        table = Table('customer.customer', self.db.conn)
         self.assertFalse(table.has_partitions())
 
 class Test_eligibility(TestCase):

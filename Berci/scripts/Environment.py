@@ -92,7 +92,7 @@ class Env():
             return 5555
         elif self.name == 'anonymizer-test':
             return 5556
-        inst = Repository.get_instance_from_repo_full_name(repo_full_name)
+        inst = Repository.Repository.get_instance_from_repo_full_name(repo_full_name)
         return self.base[self.name] + self.offset[inst]
 
     def get_old_port(self, repo_full_name=''):
@@ -126,12 +126,10 @@ class Env():
 
     @staticmethod
     def get_env_name_from_port(port):
-        prevkey = ''
         for env, p in Env.base.items():
-            if int(port) < p:
-                return prevkey
-            prevkey = env
-        return prevkey
+            if int(port) - p < 100:
+                return env
+        return None
 
     def get_all_databases(self):
         host, port = 'localhost', self.get_port_from_repo()
@@ -140,7 +138,7 @@ class Env():
 
 
     def get_conn_service_user(self, db):
-        port = self.get_port_from_repo(Repository.get_repository_name_from_dbname(db))
+        port = self.get_port_from_repo(Repository.Repository.get_repository_name_from_dbname(db))
         try:
             return psycopg2.connect(
                     host='localhost',
@@ -153,7 +151,7 @@ class Env():
 
 
     def get_conn_from_db_user(self, db, user):
-        port = self.get_port_from_repo(Repository.get_repository_name_from_dbname(db))
+        port = self.get_port_from_repo(Repository.Repository.get_repository_name_from_dbname(db))
         p = password_from_file(user, port)
         try:
             return psycopg2.connect(

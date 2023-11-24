@@ -39,7 +39,6 @@ def create_old_file(fname):
         # move_file(fname + '_old', fname)
     move_file(fname, fname + '_old')
 
-
 def replace_in_file(fname, from_to):
     text = ''
     with open(fname, 'r', encoding='utf-8') as f:
@@ -50,13 +49,11 @@ def replace_in_file(fname, from_to):
     with open(fname, 'w', encoding='utf-8') as f:
         f.write(text)
 
-
 def move_file(src, dst):
     print('file: '+src, dst)
     if os.path.isfile(src):
         print('  '+src)
         shutil.move(src, dst)
-
 
 def copy_file(src, dst):
     print('file: '+src, dst)
@@ -105,15 +102,20 @@ def get_files_from_path_ext_find_content(path, ext, cont):
                     out.append(os.path.join(root, file))
     return out
 
-
 def file_contains(file, cont,):
     with open(file, 'r', encoding='utf-8') as f:
         if cont in f.read():
             return True
     return False
 
-
 def load_from_file(fname):
     project_root = os.path.dirname(os.path.dirname(__file__))
     with open('/'.join([project_root,'scripts',fname]), 'r') as f:
         return [x for x in f.read().split('\n') if not x.startswith('#')]
+
+def get_line_from_file_by_linepart(fname:str, linepart:str) -> str:
+    with open(fname, 'r') as f:
+        for l in f.readlines():
+            if linepart in l:
+                return l
+    return None

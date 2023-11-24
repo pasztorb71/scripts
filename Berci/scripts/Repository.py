@@ -22,9 +22,14 @@ def rel_to_num(release):
 class Repository():
     base = 'c:/GIT/MLFF/'
 
+    @classmethod
+    def get_repo_from_filename(cls, filename):
+        return cls(filename.split('liquibase')[0].split('\\')[1])
+
+
     def __init__(self, name='', schema='', base=base):
+        self.base = base
         if name:
-            self.base = base
             self.name = self.find_name(name)
             self.base_path = self.base + self.name + '/liquibase/'
             self.dbname = self.get_db_name()
@@ -35,6 +40,88 @@ class Repository():
 
     def __str__(self):
         return f'Repository({self.name})'
+
+    @staticmethod
+    def get_release_label_release_of_file(file):
+        file_name = file.rsplit('\\', 1)[1]
+        # label = get_label_from_file(file)
+        # if label:
+        #    return label
+        if not os.path.exists(file.rsplit('\\', 2)[0] + '/schema-version-0.xml'):
+            return None
+        try:
+            repo = Repository.get_repo_from_filename(file)
+            label = repo.get_label_of_file_from_schema_version(file_name)
+            if label:
+                return label
+            lines = repo.get_schema_xml_files_labels()
+            return repo.get_label_advanced(file, lines)
+        except Exception as e:
+            print(file)
+            raise e
+
+    def get_schema_xml_files_labels(self) -> list[str, str]:
+        filelist = []
+        for line in self.lines:
+            m = re.match(".*(schema-version-.*.xml).*", line)
+            if m:
+                m_label = re.match('.*labels=.*(R.*)"/>.*', line)
+                label = m_label.group(1) if m_label else None
+                filelist.append([m.group(1), label])
+        return filelist
+
+    def get_label_advanced(self, file, xml_files: list[str, str]):
+        sql_file_name = file.rsplit('\\', 1)[1]
+        for xml_f in xml_files:
+            if not os.path.exists(file.rsplit('\\', 2)[0] + '/schema-version-0.xml'):
+                return None
+            try:
+                lines = []
+                schema_version_file = file.rsplit('\\', 2)[0] + f'/{xml_f[0]}'
+                with open(schema_version_file, 'r', encoding='utf8') as f:
+                    for line in f.readlines():
+                        if sql_file_name in line:
+                            if xml_f[1]:
+                                return xml_f[1]
+                            else:
+                                m = re.match('.*labels=.*R(.*)"/>.*', line)
+                                return m.group(1) if m else None
+            except Exception as e:
+                print(file)
+                raise e
+
+    @staticmethod
+    def get_repository_name_from_dbname(db_name):
+        repo_names = Repository().get_repo_names()
+        for repo in [Repository(x) for x in repo_names]:
+            if db_name == repo.get_db_name():
+                return repo.name
+        return None
+
+    def get_instance_from_repo_full_name(repo):
+        if repo == 'doc-postgredb':
+            return 'pg-doc'
+        else:
+            id = repo.split('-')[1]
+            return 'pg-' + id
+
+    @staticmethod
+    def get_repos_containing_release(rname):
+        out = []
+        for repo in Repository().get_repo_names():
+            if utils_file.file_contains(f'{Repository(repo).get_tables_dir()}/schema-version-0.xml', rname):
+                out.append(repo)
+        return out
+
+    @staticmethod
+    def get_repos_from_port(port):
+        cluster = Cluster(host='localhost', port=port, passw=password_from_file('postgres', 'localhost', port))
+        dbs = cluster.databases
+        return Database.get_repositories_from_dbs(dbs)
+
+    @staticmethod
+    def get_all_repos_by_group(group):
+        return [Repository.Repository(x) for x in Repository.Repository.get_repo_names_by_group(group)]
 
     @property
     def schema(self):
@@ -76,7 +163,7 @@ class Repository():
         return [line.split()[0] for line in lines if groupname in line]
 
     def last_component_ver(self, max_release: str = None) -> list[str, str]:
-        lines = self.get_schema_version_label_lines().splitlines()
+        lines = self.get_schema_version_0_label_lines().splitlines()
         if len(lines) == 0: return None
         out = []
         for line in reversed(lines):
@@ -132,12 +219,20 @@ class Repository():
     def get_tables_dir(self):
         return '/'.join([self.base_path[:-1], self.db_path, self.schema, 'tables'])
 
-    def get_schema_version_label_lines(self):
+    def get_schema_version_0_label_lines(self) -> list[str]:
         with open(f'{self.get_tables_dir()}/schema-version-0.xml', 'r', encoding='utf8') as f:
-            lines = [line for line in f.readlines() if 'labels=' in line]
+            lines = [line for line in f.read().split('\n') if 'labels=' in line]
             if len(lines) > 10:
                 lines = lines[-10:]
-            return ''.join(lines)
+            return lines
+
+    def get_label_of_file_from_schema_version(self, file):
+        self.lines = self.get_schema_version_0_label_lines()
+        for line in self.lines:
+            if file in line:
+                m = re.match('.*labels=.*R(.*)"/>.*', line)
+                return m.group(1) if m else None
+        return None
 
     def is_table_file_exists(self, tablename):
         dirname = self.get_tables_dir()
@@ -241,40 +336,7 @@ class Repository():
             return 'windows'
         return 'unix'
 
-
-def get_instance_from_repo_full_name(repo):
-    if repo == 'doc-postgredb':
-        return 'pg-doc'
-    else:
-        id = repo.split('-')[1]
-        return 'pg-' + id
-
-
-def get_repos_containing_release(rname):
-    out = []
-    for repo in Repository().get_repo_names():
-        if utils_file.file_contains(f'{Repository(repo).get_tables_dir()}/schema-version-0.xml', rname):
-            out.append(repo)
-    return out
-
-
-def get_repos_from_port(port):
-    cluster = Cluster(host='localhost', port=port, passw=password_from_file('postgres', 'localhost', port))
-    dbs = cluster.databases
-    return Database.get_repositories_from_dbs(dbs)
-
-
 def get_all_repos() -> list[Repository]:
     return [Repository(x) for x in Repository.get_repo_names()]
 
 
-def get_all_repos_by_group(group):
-    return [Repository.Repository(x) for x in Repository.Repository.get_repo_names_by_group(group)]
-
-
-def get_repository_name_from_dbname(db_name):
-    repo_names = Repository().get_repo_names()
-    for repo in [Repository(x) for x in repo_names]:
-        if db_name == repo.get_db_name():
-            return repo.name
-    return None

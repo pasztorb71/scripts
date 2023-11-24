@@ -542,8 +542,8 @@ def print_dataframe(df):
 
 
 if __name__ == '__main__':
-    #envs = ['sandbox']
-    envs = Environment.get_envs()[1:-1] #local nem kell, mlff_test nem kell
+    envs = ['cantas_test']
+    #envs = Environment.get_envs()[1:-1] #local nem kell, mlff_test nem kell
     print(envs)
     #databases = load_from_file('../databases.txt')
     #databases = ['core_customer']

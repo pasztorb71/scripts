@@ -27,10 +27,7 @@ class Test(TestCase):
                          utils_sec.password_from_file('notification_wa_service', 'localhost', 5433))
 
     def test_password_from_file2(self):
-        self.assertEqual('mysecretpassword', utils_sec.password_from_file('postgres', 5432))
-
-    def test_password_from_file3(self):
-        self.assertEqual('mysecretpassword', utils_sec.password_from_file('postgres', 5432))
+        self.assertEqual('postgres', utils_sec.password_from_file('postgres', 5432))
 
     def test_password_from_file_5433(self):
         self.assertEqual('postgres', utils_sec.password_from_file('postgres', 5433))

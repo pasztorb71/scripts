@@ -69,12 +69,12 @@ class Runner:
             dblist = [file.replace('liquibase-install-','').replace('.xml','') for file in files]
             return dblist
 
-    def run_for_repo(self, ip_address, repo, delete_changelog_only=False):
+    def run_for_repo(self, ip_address, repo, delete_changelog_only=False, deleteonly=False):
         print(f"Környezet IP: {ip_address}")
         print(f"Az alábbi repora lesz telepítve: {repo}")
         if not self.checkonly:
             try:
-                print(Repository(repo).get_schema_version_label_lines())
+                print('\n'.join(Repository(repo).get_schema_version_0_label_lines()))
             except FileNotFoundError:
                 pass
         if self.confirm_one_run == True:
@@ -87,11 +87,13 @@ class Runner:
                 exit('Nem local esetén nem dobható el az adatbázis!!!')
             if not Repository(repo).clear_repo(delete_changelog_only, self.confirm_one_run):
                 return
+        if deleteonly:
+            return
         self._call_liquibase(repo, ip_address, self.password, 'postgres')
         for db in self.get_dbs(repo):
             self._call_liquibase(repo, ip_address, self.password, db)
 
-    def run_multiple_repos(self, loc, checkonly, delete_db_before=False, delete_changelog_only=False, port:str=None):
+    def run_multiple_repos(self, loc, checkonly, delete_db_before=False, delete_changelog_only=False, port:str=None, deleteonly=False):
         if not checkonly:
             if not self.confirm(loc): return
         else:
@@ -103,7 +105,23 @@ class Runner:
             if not port:
                 port = Environment.Env(loc).get_port_from_repo(repo)
             self.password = utils_sec.password_from_file('postgres', port)
-            self.run_for_repo(get_ip_address_for_docker(repo, loc, port), repo, delete_changelog_only)
+            self.run_for_repo(get_ip_address_for_docker(repo, loc, port), repo, delete_changelog_only, deleteonly)
+
+    def gen_build_and_run_commands(self, loc, port:str=None):
+        out = ''
+        for repo in [repo.get_name() for repo in self.repos]:
+            r = Repository(repo)
+            if not port:
+                port = Environment.Env(loc).get_port_from_repo(repo)
+                password = utils_sec.password_from_file('postgres', port)
+            out += f'docker-compose --env-file c:/GIT/MLFF/{repo}/.env' \
+                   f' -f c:/GIT/MLFF/{repo}/etc/release/docker-compose.yml build\n\n'
+            out += f"""docker run --rm \\
+          -e DB_ADDRESS=gateway.docker.internal \\
+          -e DB_PORT={port} \\
+          -e POSTGRES_PASSWORD={password} \\
+          dockerhub-mlff.icellmobilsoft.hu/liquibase/{repo}:{r.env_ver}.0-SNAPSHOT"""
+        return out
 
     def kill(self, param):
         pass

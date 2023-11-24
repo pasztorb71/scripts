@@ -66,7 +66,7 @@ def create_branch_multiple_repos(gitlist, branch):
 
 
 def create_stage_and_commit(gitlist, message):
-    commands = [f'commit -a -m "{message}"' ]
+    commands = ['add -A', f'commit -am "{message}"' ]
     ret_dict = parallel_run(gitlist, _mproc_multiple_commands, commands)
 
 

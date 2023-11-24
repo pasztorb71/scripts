@@ -64,7 +64,7 @@ def table_columns(tab_name, table, tab_short_name):
         if colnames[3].upper() == 'DEFAULT':
             default = ' DEFAULT ' + ("'"+str(col[3])+"'") if not is_nan_or_none(col[3]) else ''
             null = ' NULL' if any(col[2].lower() == x for x in ['nullable', 'yes']) else ' NOT NULL'
-        elif colnames[3].upper() == 'NOT NULL':
+        elif colnames[3].upper() in ['NOT NULL', 'NULLABLE']:
             default = ''
             null = ' NULL' if is_nullable(col) else ' NOT NULL'
         else:

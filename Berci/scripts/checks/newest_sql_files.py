@@ -26,54 +26,13 @@ def get_important_commands_from_file(file):
     return out
 
 
-def get_schema_xml_files_labels(lines: list[str]) -> list[str, str]:
-    filelist = []
-    for line in lines:
-        m = re.match(".*(schema-version-.*.xml).*",line)
-        if m:
-           m_label = re.match('.*labels=.*,\s(.*)"/>.*', line)
-           label = m_label.group(1) if m_label else None
-           filelist.append([m.group(1), label])
-    return filelist
-
-
-def get_label_advanced(file, xml_files:list[str, str]):
-    sql_file_name = file.rsplit('\\', 1)[1]
-    for xml_f in xml_files:
-        if not os.path.exists(file.rsplit('\\', 2)[0] + '/schema-version-0.xml'):
-            return None
-        try:
-            lines = []
-            schema_version_file = file.rsplit('\\', 2)[0] + f'/{xml_f[0]}'
-            with open(schema_version_file, 'r', encoding='utf8') as f:
-                for line in f.readlines():
-                    if sql_file_name in line:
-                        if xml_f[1]:
-                            return xml_f[1]
-                        else:
-                            m = re.match('.*labels=.*,\s(.*)"/>.*', line)
-                            return m.group(1) if m else None
-        except Exception as e:
-            print(file)
-            raise e
-
-
-def get_label(file):
-    file_name = file.rsplit('\\', 1)[1]
-    if not os.path.exists(file.rsplit('\\', 2)[0] + '/schema-version-0.xml'):
-        return None
-    try:
-        lines = []
-        with open(file.rsplit('\\', 2)[0] + '/schema-version-0.xml', 'r', encoding='utf8') as f:
-            lines = f.readlines()
-        for line in lines:
-            if file_name in line:
-                m = re.match('.*labels=.*,\s(.*)"/>.*', line)
-                return m.group(1) if m else None
-        return get_label_advanced(file, get_schema_xml_files_labels(lines))
-    except Exception as e:
-        print(file)
-        raise e
+def get_label_from_file(file):
+    with open(file, 'r') as f:
+        data = f.read()
+    m = re.match('.*labels:(.*)\n--comment', data, re.DOTALL)
+    if m:
+        return m.group(1)
+    return None
 
 
 def get_modification_time(filename):
@@ -112,6 +71,6 @@ if __name__ == '__main__':
         if db_name != prev_db_name:
             print('\n' + db_name)
             prev_db_name = db_name
-        label = get_label(file)
+        label = get_release_label_release_of_file(file)
         print(f"\tlabel:{label}, {file}")
         print('\t\t' + '\n\t\t'.join(commands))

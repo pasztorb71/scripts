@@ -20,7 +20,7 @@ class TestTicket(TestCase):
 
     def test_release(self):
         t = Ticket('MLFFDEV-21725')
-        self.assertEqual('MLFF 0.19', t.release)
+        self.assertEqual('MLFF 0.19.0', t.release)
 
     def test_release_missing(self):
         t = Ticket('MLFFDEV-21701')

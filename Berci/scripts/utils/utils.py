@@ -83,7 +83,7 @@ def get_ip_address_for_docker(repo, loc, port:str=None):
         return 'gateway.docker.internal:5555'
     elif loc == 'anonymizer-test':
         return 'gateway.docker.internal:5556'
-    inst = Repository.get_instance_from_repo_full_name(repo)
+    inst = Repository.Repository.get_instance_from_repo_full_name(repo)
     return 'gateway.docker.internal:' + str(Environment.Env.base[loc] + Environment.Env.offset[inst])
 
 
