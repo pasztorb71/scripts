@@ -499,7 +499,7 @@ def ports_databases_from_backup():
         port_databases = yaml.load(b, Loader=yaml.Loader)
     return port_databases
 
-def gen_port_databases_from_envs(envlist: list[str], forced_refresh: bool=False):
+def gen_port_databases_from_envs(envlist: list[str], forced_refresh=True):
     if not forced_refresh and is_backup():
         return ports_databases_from_backup()
     ports_databases = []
@@ -542,7 +542,7 @@ def print_dataframe(df):
 
 
 if __name__ == '__main__':
-    envs = ['cantas_test']
+    envs = ['sandbox']
     #envs = Environment.get_envs()[1:-1] #local nem kell, mlff_test nem kell
     print(envs)
     #databases = load_from_file('../databases.txt')
