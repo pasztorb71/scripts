@@ -2,7 +2,7 @@ import re
 
 from Cluster import Cluster
 from checks.cmdlist import cmdlist
-from sql_runner.parallel_runner.main import parallel_run_multiprocess
+from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess
 from utils.utils import print_sql_result
 from Environment import get_conn_service_user
 from utils.utils_sec import password_from_file

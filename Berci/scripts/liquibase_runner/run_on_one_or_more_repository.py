@@ -17,12 +17,12 @@ def gen_build_and_run_commands(repo):
     return out
 
 if __name__ == '__main__':
-    repos = [Repository('-private')]
+    repos = [Repository('-trip')]
     #repos = [Repository(x) for x in Repository.get_repo_names() if '' in x][1:]
     '''
     Runner(repos)
     for repo in repos:
-        print(Runner(repos, confirm=True).gen_build_and_run_commands(loc = 'fit'))
+        print(Runner(repos, confirm=True).gen_build_and_run_commands(loc = 'local'))
     exit(0)
     '''
     Runner(repos, confirm=True).run_multiple_repos(loc = 'sandbox', checkonly = False, port = '')

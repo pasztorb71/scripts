@@ -1,7 +1,7 @@
 import psycopg2
 
 from utils import utils, utils_sec
-from sql_runner.parallel_runner.main import gen_port_databases_from_envs, parallel_run_args
+from sql_runner.parallel_runner.multiprocess import gen_port_databases_from_envs, parallel_run_args
 
 
 def mproc_search_in_changelog(host, port, db, return_dict, id_list):

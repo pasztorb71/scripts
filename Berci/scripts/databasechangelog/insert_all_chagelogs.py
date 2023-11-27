@@ -4,7 +4,7 @@ import Environment
 from utils import utils, utils_sec
 from Database import Database
 from checks.db_changeset_status import get_changeset_ids_from_repos_release
-from sql_runner.parallel_runner.main import parallel_run_multiprocess, gen_port_databases_from_envs
+from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess, gen_port_databases_from_envs
 from Repository import get_repos_containing_release
 
 

@@ -6,7 +6,7 @@ from tabulate import tabulate
 import Environment
 from utils import utils_sec
 from Repository import Repository, get_repos_containing_release
-from sql_runner.parallel_runner.main import parallel_run_multiprocess
+from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess
 from utils.utils import get_env_old
 
 

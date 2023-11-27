@@ -2,7 +2,7 @@ import psycopg2
 
 import Environment
 from utils import utils_sec
-from sql_runner.parallel_runner.main import parallel_run_multiprocess
+from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess
 from utils.utils import get_cluster_databases, utils
 
 

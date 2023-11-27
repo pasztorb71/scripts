@@ -1,4 +1,4 @@
-from sql_runner.parallel_runner.main import gen_port_databases_from_envs
+from sql_runner.parallel_runner.multiprocess import gen_port_databases_from_envs
 
 
 def main():
