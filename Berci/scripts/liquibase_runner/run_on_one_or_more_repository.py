@@ -17,13 +17,13 @@ def gen_build_and_run_commands(repo):
     return out
 
 if __name__ == '__main__':
-    repos = [Repository('-trip')]
+    repos = [Repository('-eligibility-pos')]
     #repos = [Repository(x) for x in Repository.get_repo_names() if '' in x][1:]
+    '''
     '''
     Runner(repos)
     for repo in repos:
         print(Runner(repos, confirm=True).gen_build_and_run_commands(loc = 'local'))
     exit(0)
-    '''
-    Runner(repos, confirm=True).run_multiple_repos(loc = 'sandbox', checkonly = False, port = '')
+    Runner(repos, confirm=True).run_multiple_repos(loc = 'cantas_test', checkonly = False, port = '')
     print('Ne felejtsd el beírni ide: https://icellmobilsoft-int.atlassian.net/wiki/spaces/DAT/pages/46761949/Minden+amit+tudni+akart+l+az+mlff+t+blav+ltoz+sokr+l...')

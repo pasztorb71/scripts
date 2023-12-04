@@ -34,7 +34,7 @@ def table_operations():
 
 
 if __name__ == '__main__':
-    repo = Repository('-privateuser')
+    repo = Repository('-detection-pos')
     t = read_ticket()
     print_info(t, repo)
     create_branch(t, repo)
