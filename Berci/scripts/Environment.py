@@ -1,13 +1,18 @@
+from __future__ import annotations
+
+import logging
+
 import psycopg2
 
 import Repository
+from sql_runner.parallel_runner.thread import Querydata, dbcommand_thread_executor
 from utils import utils_db
 from Cluster import Cluster
 import Database
 from utils.utils_sec import password_from_file
 
 
-class Env():
+class Env:
     test = {'mlff_test': 5555}
     base = {'local': 5432,
                 'sandbox': 5440,
@@ -16,7 +21,8 @@ class Env():
                 'cantas_train': 5740,
                 'cantas_test': 5840,
                 'perf': 5940,
-                'cantas_dev': 6040
+                'cantas_dev': 6040,
+                'prod': 6140
             }
 
     offset = {'pg-doc': 0,
@@ -28,6 +34,20 @@ class Env():
               # 'pg-data': 6,
               'pg-obu': 7,
               }
+
+    @classmethod
+    def environment_selector(cls) -> Env:
+        print('Válassz környezetet!')
+        for idx, env in enumerate(Env.base):
+            print(f'{idx}: {env}')
+        idx = int(input('Írd be a sorszámát:'))
+        env_name = list(Env.base.keys())[idx]
+        return Env(env_name)
+
+    @staticmethod
+    def get_envs(exclude=['']) -> list[str]:
+        (Env.base).update(Env.test)
+        return [env for env in Env.base if env not in exclude]
 
     @staticmethod
     def is_valid_location(name):
@@ -48,12 +68,28 @@ class Env():
     @property
     def database_names(self):
         names = []
-        for port in self.get_ports(self.name):
-            db = Database('postgres', 'localhost', str(port))
+        for port in self.get_ports():
+            db = Database.Database('postgres', str(port))
             rows = db.sql_query("SELECT datname from pg_database WHERE datistemplate IS FALSE "
                                 "AND datname NOT IN ('cloudsqladmin', 'postgres')")
             names += [x[0] for x in rows]
         return names
+
+    @property
+    def databases(self):
+        dblist = []
+        logging.debug(f'Portok: {self.get_ports()}')
+        sql = "SELECT datname from pg_database WHERE datistemplate IS FALSE " \
+              "AND datname NOT IN ('cloudsqladmin', 'postgres')"
+        res_dict = {}
+        qd_list = []
+        for port in self.get_ports():
+            qd_list.append(Querydata(port, 'postgres', sql, res_dict))
+        result = dbcommand_thread_executor(qd_list)
+        for db_port in result.keys():
+            port = db_port.split('__')[0]
+            dblist += [Database.Database(x[0],port) for x in result[db_port]]
+        return dblist
 
     def get_port_from_inst(self, inst):
         if self.name in self.test:
@@ -164,15 +200,4 @@ class Env():
             print(e)
 
 
-def environment_selector() -> Env:
-    print('Válassz környezetet!')
-    for idx, env in enumerate(Env.base):
-        print(f'{idx}: {env}')
-    idx = int(input('Írd be a sorszámát:'))
-    env_name = list(Env.base.keys())[idx]
-    return Env(env_name)
 
-
-def get_envs(exclude=['']) -> list[str]:
-    (Env.base).update(Env.test)
-    return [env for env in Env.base if env not in exclude]

@@ -8,5 +8,5 @@ class TestDatabase(TestCase):
         self.db = Database('enforcement_eligibility', 5442)
 
     def test__get_tables(self):
-        tables = self.db._get_tables()
+        tables = self.db.tables
         self.assertTrue(not any(['_p2' in t for t in tables.keys()]))

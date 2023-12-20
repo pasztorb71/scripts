@@ -8,11 +8,11 @@ from liquibase_gen.changelog_generator.changelog_header_generator import Changel
 from liquibase_gen.changelog_generator.commands import command_list
 from liquibase_gen.changelog_generator.paramsfile import params
 from utils.utils_command import get_tablename_from_command
-from utils.utils_file import get_files_from_path_ext_filtered
+from utils.utils_file import get_files_from_path_ext_and_cont_filtered
 
 
 def get_commands():
-    files = get_files_from_path_ext_filtered("c:/GIT/MLFF", '.sql', 'DDL')
+    files = get_files_from_path_ext_and_cont_filtered("c:/GIT/MLFF", '.sql', 'DDL')
     # noinspection PyShadowingNames
     commands = []
     for file in files:

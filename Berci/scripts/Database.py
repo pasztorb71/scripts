@@ -17,19 +17,19 @@ class Database:
         return repos
 
 
-    def __init__(self, name: str, port = 5432, host = 'localhost'):
+    def __init__(self, name: str, port=5432, host='localhost'):
         self.name = name
         self.host = host
         self.port = port
         self.user = 'postgres'
         passw = utils_sec.password_from_file(self.user, port)
         self.__connection_string = f"postgres://{self.user}:{passw}@{host}:{port}/{name}"
-        self.__conn = psycopg2.connect(self.__connection_string)
-        self.tables = self._get_tables()
+        self.__conn = None
+        #self.tables = self._get_tables()
 
 
     def __repr__(self):
-        return f'{self.name}__{self.port}'
+        return f'{self.port}__{self.name}'
 
     @property
     def conn(self):
@@ -42,7 +42,8 @@ class Database:
                 password=utils_sec.password_from_file(self.user, self.port))
         return self.__conn
 
-    def _get_tables(self) -> dict[str, Table]:
+    @property
+    def tables(self) -> dict[str, Table]:
         res = self.sql_query("""
             SELECT schemaname, relname
             FROM pg_catalog.pg_stat_all_tables 

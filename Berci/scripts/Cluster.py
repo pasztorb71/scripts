@@ -14,7 +14,6 @@ class Cluster:
             database="postgres",
             user="postgres",
             password=passw)
-        #self.conn.close()
 
     @property
     def databases(self):

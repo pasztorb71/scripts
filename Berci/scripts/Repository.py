@@ -163,7 +163,7 @@ class Repository():
         return [line.split()[0] for line in lines if groupname in line]
 
     def last_component_ver(self, max_release: str = None) -> list[str, str]:
-        lines = self.get_schema_version_0_label_lines().splitlines()
+        lines = self.get_schema_version_0_label_lines()
         if len(lines) == 0: return None
         out = []
         for line in reversed(lines):

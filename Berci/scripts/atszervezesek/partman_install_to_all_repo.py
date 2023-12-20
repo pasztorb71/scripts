@@ -72,5 +72,5 @@ def sema_atszervezes(repos):
 if __name__ == '__main__':
     base = 'c:/GIT/MLFF/'
     repos = os.listdir(base)
-    repos = [x for x in os.listdir(base) if 'ion-image-postg' in x]
+    repos = [x for x in os.listdir(base) if '-tro-clearing-pos' in x]
     sema_atszervezes(repos)

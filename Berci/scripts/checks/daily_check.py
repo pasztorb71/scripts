@@ -1,9 +1,5 @@
+from utils.utils_file import check_window_eol_in_sh_files
 from sql_runner.parallel_runner.multiprocess import gen_port_databases_from_envs
-
-
-def main():
-    check_partition_privileges()
-
 
 def check_partition_privileges():
     env = 'train'
@@ -15,4 +11,6 @@ def check_partition_privileges():
     return_dict = parallel_run_sql(ports_databases, hash_in_fk, mproc_single_sql)
 
 
-main()
+if __name__ == '__main__':
+    #check_partition_privileges()
+    check_window_eol_in_sh_files()

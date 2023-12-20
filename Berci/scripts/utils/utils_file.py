@@ -2,7 +2,7 @@ import os
 import shutil
 from distutils.dir_util import copy_tree
 
-from utils.utils import get_last_nth_occurence_of_list_element
+import utils
 
 
 def append_to_file_after_line_last_occurence(fname, after, what):
@@ -11,9 +11,9 @@ def append_to_file_after_line_last_occurence(fname, after, what):
   already_exists = [idx for idx, s in enumerate(text) if what in s]
   if already_exists:
     return
-  index_after = get_last_nth_occurence_of_list_element(text, after, 1)
+  index_after = utils.get_last_nth_occurence_of_list_element(text, after, 1)
   if not index_after:
-      index_header_end = get_last_nth_occurence_of_list_element(text, '    <!-- ==================================', 1)
+      index_header_end = utils.get_last_nth_occurence_of_list_element(text, '    <!-- ==================================', 1)
       if not index_header_end:
         return
       else:
@@ -41,12 +41,12 @@ def create_old_file(fname):
 
 def replace_in_file(fname, from_to):
     text = ''
-    with open(fname, 'r', encoding='utf-8') as f:
+    with open(fname, 'r', encoding='utf-8',newline='') as f:
         text = f.read()
         for pair in from_to:
             text = text.replace(pair[0], pair[1])
             text = text.replace(pair[0].upper(), pair[1].upper())
-    with open(fname, 'w', encoding='utf-8') as f:
+    with open(fname, 'w', encoding='utf-8',newline='') as f:
         f.write(text)
 
 def move_file(src, dst):
@@ -75,7 +75,7 @@ def move_dir(src, dst):
         print('  '+src)
         shutil.move(src, dst)
 
-def get_files_from_path_ext_filtered(path, ext, cont):
+def get_files_from_path_ext_and_cont_filtered(path, ext, cont):
     out = []
     for root, dirs, files in os.walk(path):
         for file in files:
@@ -89,6 +89,14 @@ def get_files_from_path_fname_filtered(path, name):
     for root, dirs, files in os.walk(path):
         for file in files:
             if name in file:
+                out.append(os.path.join(root, file))
+    return out
+
+def get_files_from_path_ext_filtered(path, ext):
+    out = []
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if file.endswith(ext):
                 out.append(os.path.join(root, file))
     return out
 
@@ -119,3 +127,18 @@ def get_line_from_file_by_linepart(fname:str, linepart:str) -> str:
             if linepart in l:
                 return l
     return None
+
+
+def check_window_eol_in_sh_files():
+    windows_eol = '\r\n'
+    print('check_window_eol_in_sh_files:', end='')
+    exceptions = []
+    for file in get_files_from_path_fname_filtered('c:/GIT/MLFF/', '.sh'):
+        with open(file, 'r') as f:
+            c = f.readline()
+            if f.newlines == windows_eol:
+                exceptions.append(file)
+    if exceptions:
+        print('\n\t'+ '\n\t'.join(exceptions))
+    else:
+        print(' OK')

@@ -23,11 +23,11 @@ def _run_query(q: Querydata):
 
 def run_query_single_result_with_header(q: Querydata):
     header, records = _run_query(q)
-    q.result[q.dbname] = header + records
+    q.result[f'{q.port}__{q.dbname}'] = header + records
 
 def run_query_single_result_without_header(q: Querydata):
     header, records = _run_query(q)
-    q.result[q.dbname] = records
+    q.result[f'{q.port}__{q.dbname}'] = records
 
 def make_connection(port, database):
     conn = psycopg2.connect(
@@ -35,15 +35,15 @@ def make_connection(port, database):
             port=port,
             database=database,
             user="postgres",
-            password=utils_sec.password_from_file('postgres', 5432))
+            password=utils_sec.password_from_file('postgres', port))
     return conn
 
-def print_queryresult_single_value(l: list[Querydata]):
-    out = []
-    header = ['PORT', 'DATABASE', 'CURRENT_DATABASE']
-    for q in l:
-        out.append([q.port, q.dbname, q.result[q.dbname][1]])
-    print(tabulate(out, headers=header))
+def dbcommand_thread_executor(commands: list[Querydata]) -> dict[str, list]:
+    """commands = list of Querydata
+    Querydata('port', database_name, sql_command, result_dict"""
+    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        executor.map(run_query_single_result_without_header, commands)
+    return commands[0].result
 
 
 if __name__ == "__main__":
@@ -51,7 +51,5 @@ if __name__ == "__main__":
     result = {}
     l = [Querydata('5432', 'core_analytic', sql, result),
          Querydata('5432', 'core_customer', sql, result)]
-    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-        executor.map(run_query_single_result_with_header, l)
-    print(sql)
-    print_queryresult_single_value(l)
+    result = dbcommand_thread_executor(l)
+    print(result)

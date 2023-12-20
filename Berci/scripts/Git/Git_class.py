@@ -22,7 +22,7 @@ class Git:
     @staticmethod
     def gen_clone_commands_for_all():
         gitlist = Git.get_gitlist()
-        urls = [git.get_remote_url() for git in gitlist]
+        urls = [git.remote_url for git in gitlist]
         return 'git clone ' + '\ngit clone '.join(urls)
 
     def print_log(self):
@@ -76,3 +76,6 @@ def git_init_from_path(path):
     repo = a[0] + '/' + a[1]
     g = Git(repo)
     g.init()
+
+if __name__ == '__main__':
+    print(Git.gen_clone_commands_for_all())
