@@ -34,7 +34,7 @@ def table_operations():
 
 
 if __name__ == '__main__':
-    repo = Repository('-detection-pos')
+    repo = Repository('-customer-pos')
     print(repo.name)
     t = read_ticket()
     print_info(t, repo)

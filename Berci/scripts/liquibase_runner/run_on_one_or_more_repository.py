@@ -17,8 +17,8 @@ def gen_build_and_run_commands(repo):
     return out
 
 if __name__ == '__main__':
-    repos = [Repository('-trip-pos')]
-    loc = 'cantas_test'
+    repos = [Repository('-customer-pos')]
+    loc = 'local'
     #repos = [Repository(x) for x in Repository.get_repo_names() if '' in x][1:]
     Runner(repos)
     for repo in repos:

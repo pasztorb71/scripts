@@ -24,7 +24,7 @@ class Repository():
 
     @classmethod
     def get_repo_from_filename(cls, filename):
-        return cls(filename.split('liquibase')[0].split('\\')[1])
+        return cls(filename.split('\\liquibase')[0].rsplit('\\', 1)[1])
 
 
     def __init__(self, name='', schema='', base=base):
@@ -51,6 +51,7 @@ class Repository():
             return None
         try:
             repo = Repository.get_repo_from_filename(file)
+            repo.lines = repo.get_schema_version_0_label_lines()
             label = repo.get_label_of_file_from_schema_version(file_name)
             if label:
                 return label
@@ -221,13 +222,15 @@ class Repository():
 
     def get_schema_version_0_label_lines(self) -> list[str]:
         with open(f'{self.get_tables_dir()}/schema-version-0.xml', 'r', encoding='utf8') as f:
-            lines = [line for line in f.read().split('\n') if 'labels=' in line]
+            lines = [line for line in f.read().split('\n') #if 'labels=' in line
+                     ]
+            """
             if len(lines) > 10:
                 lines = lines[-10:]
+            """
             return lines
 
     def get_label_of_file_from_schema_version(self, file):
-        self.lines = self.get_schema_version_0_label_lines()
         for line in self.lines:
             if file in line:
                 m = re.match('.*labels=.*R(.*)"/>.*', line)
