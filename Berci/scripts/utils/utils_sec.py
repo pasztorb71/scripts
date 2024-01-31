@@ -18,4 +18,6 @@ def password_from_file(puser, pport, phost='localhost'):
             if host == phost and port == str(pport) and user == puser:
                 pass_out = passw
                 break
+        if not pass_out:
+            print(f'Nincs jelszó: {puser}, {pport}, {phost}')
     return pass_out

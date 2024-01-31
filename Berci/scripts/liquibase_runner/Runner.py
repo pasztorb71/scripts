@@ -72,9 +72,9 @@ class Runner:
     def run_for_repo(self, ip_address, repo, delete_changelog_only=False, deleteonly=False):
         print(f"Környezet IP: {ip_address}")
         print(f"Az alábbi repora lesz telepítve: {repo}")
-        if not self.checkonly:
+        if not self.checkonly and not deleteonly:
             try:
-                print('\n'.join(Repository(repo).get_schema_version_0_label_lines()))
+                print('\n'.join(Repository(repo).get_schema_version_0_lines()[-10:]))
             except FileNotFoundError:
                 pass
         if self.confirm_one_run == True:

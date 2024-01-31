@@ -28,7 +28,7 @@ def print_grants_databases(port, databases):
 
 
 def get_instance_name_from(port, base_port):
-    for i in Environment.Env.offset.items():
+    for i in Environment.Env._domains.items():
         if port-base_port == i[1]:
             return i[0]
 

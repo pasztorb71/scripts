@@ -2,7 +2,7 @@ import os
 import shutil
 from distutils.dir_util import copy_tree
 
-import utils
+from utils import utils
 
 
 def append_to_file_after_line_last_occurence(fname, after, what):
@@ -142,3 +142,9 @@ def check_window_eol_in_sh_files():
         print('\n\t'+ '\n\t'.join(exceptions))
     else:
         print(' OK')
+
+def del_file_ignore_error(path):
+    try:
+      os.remove(path)
+    except OSError:
+      pass

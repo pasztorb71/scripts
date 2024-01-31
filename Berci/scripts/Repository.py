@@ -30,7 +30,10 @@ class Repository():
     def __init__(self, name='', schema='', base=base):
         self.base = base
         if name:
-            self.name = self.find_name(name)
+            if 'doc' not in name:
+                self.name = self.find_name(name)
+            else:
+                self.name = 'doc-db'
             self.base_path = self.base + self.name + '/liquibase/'
             self.dbname = self.get_db_name()
             self.db_path = self.dbname.replace('-', '_')
@@ -51,7 +54,6 @@ class Repository():
             return None
         try:
             repo = Repository.get_repo_from_filename(file)
-            repo.lines = repo.get_schema_version_0_label_lines()
             label = repo.get_label_of_file_from_schema_version(file_name)
             if label:
                 return label
@@ -63,7 +65,7 @@ class Repository():
 
     def get_schema_xml_files_labels(self) -> list[str, str]:
         filelist = []
-        for line in self.lines:
+        for line in self.get_schema_version_0_lines():
             m = re.match(".*(schema-version-.*.xml).*", line)
             if m:
                 m_label = re.match('.*labels=.*(R.*)"/>.*', line)
@@ -126,7 +128,10 @@ class Repository():
 
     @property
     def schema(self):
-        return self.get_schema()
+        if 'doc' not in self.name:
+            return self.get_schema()
+        else:
+            return 'document_meta'
 
     def get_name(self):
         return self.name
@@ -139,7 +144,7 @@ class Repository():
 
     def find_name(self, name):
         repos = os.listdir(self.base)
-        a = [repo for repo in repos if name in repo]
+        a = [repo for repo in repos if name.replace('_', '-') in repo]
         if len(a) > 1:
             print("Nem egyértelmű a repository név!")
             print("Melyiket választod?")
@@ -164,7 +169,7 @@ class Repository():
         return [line.split()[0] for line in lines if groupname in line]
 
     def last_component_ver(self, max_release: str = None) -> list[str, str]:
-        lines = self.get_schema_version_0_label_lines()
+        lines = self.get_schema_version_0_lines()
         if len(lines) == 0: return None
         out = []
         for line in reversed(lines):
@@ -198,7 +203,7 @@ class Repository():
         m = re.match('.*mlff-(.*)-postgredb', base_path)
         if m:
             name = m.group(1)
-        if 'doc-postgredb' in base_path:
+        if 'doc' in base_path:
             name = 'doc_document'
         return name.replace('-', '_')
 
@@ -220,18 +225,12 @@ class Repository():
     def get_tables_dir(self):
         return '/'.join([self.base_path[:-1], self.db_path, self.schema, 'tables'])
 
-    def get_schema_version_0_label_lines(self) -> list[str]:
+    def get_schema_version_0_lines(self) -> list[str]:
         with open(f'{self.get_tables_dir()}/schema-version-0.xml', 'r', encoding='utf8') as f:
-            lines = [line for line in f.read().split('\n') #if 'labels=' in line
-                     ]
-            """
-            if len(lines) > 10:
-                lines = lines[-10:]
-            """
-            return lines
+            return [line for line in f.read().split('\n')]
 
     def get_label_of_file_from_schema_version(self, file):
-        for line in self.lines:
+        for line in self.get_schema_version_0_lines():
             if file in line:
                 m = re.match('.*labels=.*R(.*)"/>.*', line)
                 return m.group(1) if m else None
@@ -280,7 +279,7 @@ class Repository():
         else:
             self.drop_database()
             self.drop_roles()
-            self.drop_main_changelog()
+            self.delete_from_main_changelog()
         if confirm == False:
             return True
         if input("Mehet a telepítés? [y/n]") == "y":
@@ -296,10 +295,13 @@ class Repository():
         clus = Database.Database('postgres', '5432')
         clus.drop_roles(self.schema)
 
-    def drop_main_changelog(self):
+    def delete_from_main_changelog(self):
         clus = Database.Database('postgres', '5432')
-        clus.sql_exec(f'drop table if exists public.databasechangelog')
-        print(f'public.databasechangelog dropped.')
+        if self.dbname == 'doc_document':
+            clus.sql_exec(f"delete from public.databasechangelog where id like 'document_meta%'")
+        else:
+            clus.sql_exec(f"delete from public.databasechangelog where filename like '{self.dbname}/%'")
+        print(f'{self.dbname}/% deleted from postgres db public.databasechangelog.')
 
     def drop_db_changelog(self):
         clus = Database.Database(self.dbname, '5432')

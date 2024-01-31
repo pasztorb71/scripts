@@ -10,7 +10,7 @@ def read_ticket() -> Ticket:
 
 
 def create_branch(t: Ticket, r: Repository) -> None:
-    git = Git(repo=r)
+    git = Git(repo=r.name)
     print(f'Current branch: {git.current_branch}')
     if git.current_branch != 'master':
         print('EXIT')
@@ -34,7 +34,7 @@ def table_operations():
 
 
 if __name__ == '__main__':
-    repo = Repository('-customer-pos')
+    repo = Repository('enforcement_detection_transition')
     print(repo.name)
     t = read_ticket()
     print_info(t, repo)

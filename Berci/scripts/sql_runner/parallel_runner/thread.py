@@ -43,7 +43,6 @@ def dbcommand_thread_executor(commands: list[Querydata]) -> dict[str, list]:
     Querydata('port', database_name, sql_command, result_dict"""
     with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
         executor.map(run_query_single_result_without_header, commands)
-    return commands[0].result
 
 
 if __name__ == "__main__":
@@ -51,5 +50,5 @@ if __name__ == "__main__":
     result = {}
     l = [Querydata('5432', 'core_analytic', sql, result),
          Querydata('5432', 'core_customer', sql, result)]
-    result = dbcommand_thread_executor(l)
+    dbcommand_thread_executor(l)
     print(result)

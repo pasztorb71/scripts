@@ -86,7 +86,7 @@ def get_ip_address_for_docker(repo, loc, port:str=None):
     elif loc == 'anonymizer-test':
         return 'gateway.docker.internal:5556'
     inst = Repository.Repository.get_instance_from_repo_full_name(repo)
-    return 'gateway.docker.internal:' + str(Environment.Env.base[loc] + Environment.Env.offset[inst])
+    return 'gateway.docker.internal:' + str(Environment.Env._env_ports[loc] + Environment.Env._domains[inst])
 
 
 def print_table_level_check(return_dict, filtered=False):

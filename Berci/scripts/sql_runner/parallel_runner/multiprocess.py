@@ -1,13 +1,12 @@
 import multiprocessing
 import os.path
-from concurrent.futures import ThreadPoolExecutor
-from time import sleep
 
 import pandas as pd
 import psycopg2
 import yaml
 
 import Environment
+from Environment import ports_databases_from_backup, PORT_DATABASES_FROM_ENVS
 from utils import utils, utils_sec
 
 
@@ -259,7 +258,7 @@ def mproc_count_records(host, port, db, return_dict):
     recout = []
     cur.execute(f"SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') "
                 f"AND schemaname NOT IN ('public', 'information_schema', 'pg_catalog', 'airflow_meta', 'ingestion_meta') "
-                f"AND tablename not like '%\_p\_%' order by 1,2")
+                f"AND tablename not like '%/_p/_%' order by 1,2")
     record = cur.fetchall()
     for rec in record:
         try:
@@ -286,7 +285,7 @@ def truncate_table(host, port, db, return_dict):
     cur = conn.cursor()
     cur.execute(f"SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') "
                 f"AND schemaname NOT IN ('public', 'information_schema', 'pg_catalog', 'airflow_meta', 'ingestion_meta') "
-                f"AND tablename not like '%\_p\_%' order by 1,2")
+                f"AND tablename not like '%/_p/_%' order by 1,2")
     record = cur.fetchall()
     for rec in record:
         try:
@@ -310,7 +309,7 @@ def mproc_count_records_dataframe(host, port, db, return_dict):
     cur = conn.cursor()
     cur.execute(f"SELECT schemaname, tablename FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') "
                 f"AND schemaname NOT IN ('public', 'information_schema', 'pg_catalog', 'airflow_meta', 'ingestion_meta') "
-                f"AND tablename not like '%\_p\_%' order by 1,2")
+                f"AND tablename not like '%/_p/_%' order by 1,2")
     record = cur.fetchall()
     for rec in record:
         try:
@@ -491,13 +490,8 @@ def gen_port_databases_from_env_db(env, databases):
 
 
 def is_backup():
-    return os.path.isfile('../../backup/port_databases_from_envs.yaml')
+    return os.path.isfile(PORT_DATABASES_FROM_ENVS)
 
-
-def ports_databases_from_backup():
-    with open('../../backup/port_databases_from_envs.yaml', 'r') as b:
-        port_databases = yaml.load(b, Loader=yaml.Loader)
-    return port_databases
 
 def gen_port_databases_from_envs(envlist: list[str], forced_refresh=True):
     if not forced_refresh and is_backup():
@@ -514,7 +508,7 @@ def gen_port_databases_from_envs(envlist: list[str], forced_refresh=True):
         for rec in records:
             if rec[0] != "Database not exists":
                 ports_databases.append([db.split('|')[0], rec[0]])
-    with open('../../backup/port_databases_from_envs.yaml', 'w') as b:
+    with open(PORT_DATABASES_FROM_ENVS, 'w') as b:
         yaml.dump(ports_databases, b)
     return ports_databases
 
@@ -548,7 +542,9 @@ if __name__ == '__main__':
     #databases = load_from_file('../databases.txt')
     #databases = ['core_customer']
     #envs = ['dev']
-    ports_databases = gen_port_databases_from_envs(envs[0:1], forced_refresh=True)[0:]
+    ports_databases = gen_port_databases_from_envs(envs[0:], forced_refresh=True)[0:]
+    print(ports_databases)
+    exit(0)
     #ports_databases = [[6041, 'core_customer']]
     #return_dict = parallel_run(ports_databases, truncate_table)
     return_dict = parallel_run_multiprocess(ports_databases, mproc_count_records)

@@ -66,8 +66,8 @@ class TestRepository(TestCase):
 
     def test_get_schema_version_content(self):
         r = Repository('doc-', base=self.base)
-        c = r.get_schema_version_0_label_lines()
-        self.assertEqual(4, len(c))
+        c = r.get_schema_version_0_lines()
+        self.assertEqual(34, len(c))
 
     def test_get_tables_dir1(self):
         r = Repository('customer')
@@ -140,10 +140,11 @@ class TestRepository(TestCase):
         file = 'test_repo\\mlff-core-analytic-postgredb\\liquibase\\core_analytic\\analytic\\tables\\plate_number_whitelist\\0002-plate_number_whitelist-create.sql'
         self.assertEqual(Repository('core-analytic').name, Repository.get_repo_from_filename(file).name)
 
-    def test_get_schema_version_0_label_lines(self):
+    def test_get_schema_version_0_lines(self):
         file = 'test_repo\\mlff-core-analytic-postgredb\\liquibase\\core_analytic\\analytic\\tables\\plate_number_whitelist\\0002-plate_number_whitelist-create.sql'
-        actual = Repository.get_repo_from_filename(file).get_schema_version_0_label_lines()[0]
-        expected = '    <include file="schema-version-021.xml" relativeToChangelogFile="true" labels="R0.21"/>'
+        r = Repository.get_repo_from_filename(file)
+        actual = len(r.get_schema_version_0_lines())
+        expected = 23
         self.assertEqual(expected, actual)
 
     def test_get_label_of_file_from_schema_version_None(self):

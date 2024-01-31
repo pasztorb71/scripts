@@ -5,8 +5,8 @@ from Git.utils_parallel_runner import parallel_run, _mproc_multiple_commands
 
 
 def _mproc_ck_branch(git, return_dict, branch):
-    os.system('git -C '+git.base+'/'+git.repo+' fetch --all --prune')
-    proc=subprocess.Popen('cmd /u /c git -C ' + git.base +'/' + git.repo +' diff '+branch+' origin/'+branch,
+    os.system('git -C ' + git.base + '/' + git.repo + ' fetch --all --prune')
+    proc=subprocess.Popen('cmd /u /c git -C ' + git.base + '/' + git.repo + ' diff ' + branch + ' origin/' + branch,
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     res = proc.stdout.read()
     git.synced = 'OK' if not res else 'Remote is ahead'
@@ -63,6 +63,7 @@ def delete_branch_multiple_repos(gitlist, branch):
 def create_branch_multiple_repos(gitlist, branch):
     commands = ['checkout -b ' + branch]
     ret_dict = parallel_run(gitlist, _mproc_multiple_commands, commands)
+    pass
 
 
 def create_stage_and_commit(gitlist, message):
