@@ -1,62 +1,95 @@
 """
 A program az input fájlban található sql parancsokra előállítja a szkripteket az összes környezetre,
-amelyeket aztán bemásol egy (a release paraméterben megadott prefix) szerinti könyvtárba.
+amelyeket aztán bemásol az out könyvtár alá egy (a release paraméterben megadott prefix) szerinti könyvtárba.
+Ezek win bat fájlok, amelyek a környezet nevével megegyező könyvtárakban találhatók.
+Az eredmény fájlok ugyanebbe a könyvtárba keletkeznek {domainnév}.sql.out fájlokba.
 """
 import os
 import shutil
+from dataclasses import dataclass
 
 import click
-
 import Environment
-from utils import utils_file, utils_sec
-
-
+from utils import utils_sec
 
 
 @click.command()
 @click.option(
-    "--inputfile",
-    help="File from genrate", default="databasechangelog_1_2.sql")
+        "--inputfile",
+        help="File from genrate", default="databasechangelog_1_2.sql")
 @click.option(
-    "--release",
-    help="Release", default="1.2")
+        "--release",
+        help="Release", default="1.2")
 def gen_plsql_scripts(inputfile, release):
     """
     :param inputfile: Az sql fájl, amiből dolgozik
     :param release: Melyik release előtt kell lefuttatni
     :return:
     """
-    #utils_file.copy_dir('template', f'out/{release}', delete_dir_if_exists=True)
-    create_release(release)
-    sql = read_source_sql_file()
+    create_release_dir(release)
+    sql = read_source_sql_file(inputfile)
     write_sql_files(release, sql)
     gen_psql_calls(release, sql)
 
-def create_release(release):
+
+def create_release_dir(release: str):
     path = f'out/{release}'
-    if os.path.isdir(path) == True:
+    if os.path.isdir(path):
         shutil.rmtree(path)
     os.mkdir(path)
     os.mkdir(f'{path}/sql')
 
-def read_source_sql_file() -> dict[dict]:
+
+@dataclass
+class Database:
+    name: str
+    commands: list[str]
+
+@dataclass
+class Domain:
+    name: str
+    databases: list[Database]
+
+@dataclass
+class Sql:
+    data: dict
+
+
+def read_source_sql_file(infile: str) -> dict[dict]:
     out = {}
-    env = ''
+    domain = ''
     db = ''
-    with open('in/databasechangelog_1_2.sql') as f:
+    with open(f'in/{infile}') as f:
         lines = f.read().split('\n')
     for line in lines:
-        if line.startswith('---'):
-            env = line.split(' ')[1]
-            out[env] = {}
-        if line.startswith('-- '):
-            db = line.split(' ')[1]
-            if db not in out[env].keys():
-                out[env][db] = []
-        if line and not line.startswith('--'):
-            if env and db:
-                out[env][db].append(line)
+        if is_domain_mark_in_line(line):
+            domain = get_marker(line)
+            out[domain] = {}
+            db = ''
+        if is_db_mark_in_line(line):
+            db = get_marker(line)
+            if db not in out[domain].keys():
+                out[domain][db] = []
+        if line and not is_db_mark_in_line(line):
+            if domain and db:
+                try:
+                    out[domain][db].append(line)
+                except Exception as e:
+                    pass
     return out
+
+
+def is_domain_mark_in_line(line: str) -> bool:
+    return line.startswith('---')
+
+
+def is_db_mark_in_line(line: str) -> bool:
+    return line.startswith('-- ')
+
+
+def get_marker(line):
+    return line.split(' ')[1]
+
 
 def write_sql_files(release, sql):
     for domain, db_dict in sql.items():
@@ -67,6 +100,7 @@ def write_sql_files(release, sql):
                 if sqls:
                     f.write(f'\c {db}\n')
                     f.write('\n'.join(sqls) + '\n\n')
+
 
 def gen_psql_calls(release, sql):
     envs = Environment.Env.get_envs(exclude=['mlff_test'])

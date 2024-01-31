@@ -47,9 +47,6 @@ class Repository():
     @staticmethod
     def get_release_label_release_of_file(file):
         file_name = file.rsplit('\\', 1)[1]
-        # label = get_label_from_file(file)
-        # if label:
-        #    return label
         if not os.path.exists(file.rsplit('\\', 2)[0] + '/schema-version-0.xml'):
             return None
         try:

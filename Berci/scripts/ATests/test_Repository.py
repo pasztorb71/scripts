@@ -8,7 +8,7 @@ from Repository import Repository, get_all_repos, rel_to_num
 
 class TestRepository(TestCase):
     def setUp(self) -> None:
-        self.base = 'test_repo\\'
+        self.base = 'test-repo\\'
 
     def test_get_name1(self):
         r = Repository()
@@ -16,7 +16,7 @@ class TestRepository(TestCase):
         self.assertEqual('mlff-payment-psp-proxy-postgredb', repo)
 
     def test_get_name_new_base(self):
-        r = Repository(base='test_repo')
+        r = Repository(base='test-repo')
         repo = r.find_name('analytic')
         self.assertEqual('mlff-core-analytic-postgredb', repo)
 
@@ -46,7 +46,7 @@ class TestRepository(TestCase):
         self.assertEqual(6, len(actual))
 
     def test_env_ver(self):
-        self.assertEqual('0.23', Repository('analytic-', base='test_repo/').env_ver)
+        self.assertEqual('0.23', Repository('analytic-', base='test-repo/').env_ver)
 
     def test_get_schema1(self):
         r = Repository('mlff-core-customer-postgredb')
@@ -96,7 +96,7 @@ class TestRepository(TestCase):
         self.assertEqual(0.14, rel_to_num('R0.14.1'))
 
     def test_last_component_ver(self):
-        r = Repository('doc-postgredb', base='test_repo/')
+        r = Repository('doc-postgredb', base='test-repo/')
         self.assertEqual(['1.8', 'R0.16.1'], r.last_component_ver())
 
     def test_last_component_ver_relfilter(self):
@@ -112,11 +112,11 @@ class TestRepository(TestCase):
 
     def test_get_build_command(self):
         repo = Repository('doc-postgredb', base=self.base)
-        expected = f'docker-compose --env-file {self.base}doc-postgredb\\.env -f {self.base}doc-postgredb\\etc\\release\\docker-compose.yml build'
+        expected = f'docker-compose --env-file {self.base}doc-db\\.env -f {self.base}doc-db\\etc\\release\\docker-compose.yml build'
         self.assertEqual(expected, repo.image_build_command)
 
     def test_get_image_name_with_release(self):
-        repo = Repository('doc-postgredb', base=self.base)
+        repo = Repository('doc-db', base=self.base)
         expected = 'dockerhub.icellmobilsoft.hu/liquibase/mlff-document-postgredb:1.8.0'
         self.assertEqual(expected, repo.image_name_with_release)
 
