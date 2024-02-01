@@ -1,11 +1,11 @@
 import psycopg2
 
 import Environment
+import Repository
 from utils import utils, utils_sec
 from Database import Database
 from checks.db_changeset_status import get_changeset_ids_from_repos_release
 from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess, gen_port_databases_from_envs
-from Repository import get_repos_containing_release
 
 
 def insert_into_local_all_changelogs(to_db, records, env, db):
@@ -75,7 +75,7 @@ def insert_proc_parallel(env):
 
 
 def insert_filesystem_all_changelogs():
-    repos = get_repos_containing_release('')
+    repos = Repository.get_repos_containing_release('')
     changeset_ids = get_changeset_ids_from_repos_release(repos, '')
     for db, values in changeset_ids.items():
         file_label = next(iter(values))
@@ -87,7 +87,7 @@ def insert_filesystem_all_changelogs():
 if __name__ == '__main__':
     #TODO a id LIKE '%MLFFDEV-22171%' miért került bele a cantas_test-be?
     envs = Environment.get_envs()
-    envs = ['sandbox']
+    envs = ['local']
     print('Envs:')
     print('  -'+ '\n  -'.join(envs))
     insert_proc_parallel(envs[0:])

@@ -40,22 +40,17 @@ def create_release_dir(release: str):
     os.mkdir(f'{path}/sql')
 
 
-@dataclass
-class Database:
-    name: str
-    commands: list[str]
-
-@dataclass
-class Domain:
-    name: str
-    databases: list[Database]
-
-@dataclass
-class Sql:
-    data: dict
-
-
 def read_source_sql_file(infile: str) -> dict[dict]:
+    """
+    It reads the file in argument and returns a dictionary with following structure:
+    {
+        domain_name: {
+            database_name: list[command lines])
+            }
+    }
+    :param infile:
+    :return:
+    """
     out = {}
     domain = ''
     db = ''
