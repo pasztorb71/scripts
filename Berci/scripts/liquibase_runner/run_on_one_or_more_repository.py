@@ -17,15 +17,22 @@ def gen_build_and_run_commands(repo):
   dockerhub-mlff.icellmobilsoft.hu/liquibase/{repo.name}:{repo.env_ver}.0-SNAPSHOT"""
     return out
 
+
+def get_remote_image_tags(repo):
+    pass
+
+
 if __name__ == '__main__':
-    repos = [Repository('enforcement_detection_transition')]
-    loc = 'dev'
-    #repos = [Repository(x) for x in Repository.get_repo_names() if '' in x][1:]
+    #repos = [Repository('mlff-core-analytic-postgredb')]
+    loc = 'local'
+    repos = [Repository(x) for x in Repository.get_repo_names() if '' in x][0:]
     Runner(repos)
     for repo in repos:
         g = Git(repo)
         #a = g.get_latest_remote_release()
         #print(a)
-        print(Runner(repos, confirm=True).gen_build_and_run_commands(loc = loc), '\n')
-    #Runner(repos, confirm=True).run_multiple_repos(loc = loc, checkonly = False, port = '')
-    #print('Ne felejtsd el beírni ide: https://icellmobilsoft-int.atlassian.net/wiki/spaces/DAT/pages/46761949/Minden+amit+tudni+akart+l+az+mlff+t+blav+ltoz+sokr+l...')
+        #print(Runner([repo], confirm=True).gen_build_and_run_commands(loc = loc).replace('1.2.0-SNAPSHOT', '1.1.0'), '\n')
+        #print(Runner([repo], confirm=True).gen_build_and_run_commands(loc = loc), '\n')
+        #rem = get_remote_image_tags(repo)
+        print()
+

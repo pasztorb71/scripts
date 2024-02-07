@@ -85,7 +85,6 @@ def insert_filesystem_all_changelogs():
     pass
 
 if __name__ == '__main__':
-    #TODO a id LIKE '%MLFFDEV-22171%' miért került bele a cantas_test-be?
     envs = Environment.get_envs()
     envs = ['local']
     print('Envs:')

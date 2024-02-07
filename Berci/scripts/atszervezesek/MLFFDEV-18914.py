@@ -3,7 +3,7 @@ import shutil
 
 import Repository
 from utils import utils_file
-from utils.utils_db import get_db_name, get_schema
+from utils.utils_db import get_db_name, get_schema, get_sema_from_dbname
 from utils.utils_file import del_file_ignore_error
 
 env_template = """
@@ -26,7 +26,7 @@ def sema_atszervezes(repos):
     base = _base +'/liquibase/'
     db = get_db_name(base)
     db_path = db.replace('-', '_')
-    schema = get_schema(base, db_path)
+    schema = get_sema_from_dbname(db_path)
     to_replace = [['core-customer', db],['core_customer', db_path], ['customer', schema]]
 
     print(repo)
@@ -104,6 +104,75 @@ docker-compose --env-file .env -f etc/docker-compose/docker-compose.yml up --bui
     del_file_ignore_error(base + db_path + '/' + schema + '/install-modules.xml')
     del_file_ignore_error(base + db_path + '/' + schema + '/liquibase-install-schema.xml')
 
+
+def sema_atszervezes_fix(repos):
+  for repo in repos[0:]:
+  # prepare
+    _base = 'c:/GIT/MLFF/' + repo
+    base = _base +'/liquibase/'
+    db = get_db_name(base)
+    db_path = db.replace('_', '-')
+    print(repo)
+    # compose/docker-compose
+    utils_file.replace_in_file(
+          _base + '/etc/docker-compose/docker-compose.yml',
+          [[f'mlff-{db}-postgredb:',
+            f'mlff-{db_path}-postgredb:']]
+    )
+
+def common_egyszerusites(repos):
+  for repo in repos[0:]:
+  # prepare
+    _base = 'c:/GIT/MLFF/' + repo
+    base = _base +'/liquibase/'
+    db_underscore = get_db_name(base)
+    db_minus = db_underscore.replace('_', '-')
+    schema = get_sema_from_dbname(db_underscore)
+    if not schema:
+      raise Exception(f'{db_underscore} : no schema')
+    print(repo)
+    # run.sh
+    utils_file.replace_in_file(_base + '/run.sh', [[f'liquibase-install-db1-', f'liquibase-install-']])
+
+    # Dockerfiles
+    utils_file.copy_file("C:/GIT/MLFF/mlff-core-analytic-postgredb/etc/release/Dockerfile",
+                         _base + '/etc/release/Dockerfile')
+    utils_file.copy_file("C:/GIT/MLFF/mlff-core-analytic-postgredb/etc/docker-compose/Dockerfile",
+                         _base + '/etc/docker-compose/Dockerfile')
+
+    #properties files
+    utils_file.replace_in_file(
+            _base + f'/etc/docker-compose/config/{db_underscore}/step-01/liquibase-localhost.properties'
+            ,[['liquibase-install-db1-step-01.xml'
+            ,'liquibase-install-step-01.xml']])
+
+    utils_file.replace_in_file(
+            _base + f'/etc/docker-compose/config/{db_underscore}/step-02/liquibase-localhost.properties'
+            , [['liquibase-install-db1-step-02.xml'
+                 , 'liquibase-install-step-02.xml']])
+
+    #schema-versions
+    utils_file.copy_file("C:/GIT/MLFF/mlff-core-analytic-postgredb/liquibase/core_analytic/analytic/schema-versions.xml",
+                         base + f'{db_underscore}/{schema}/schema-versions.xml')
+
+    #schema-version-0
+    utils_file.replace_in_file(
+            base + f'{db_underscore}/{schema}/tables/schema-version-0.xml',
+            [["""    <!-- =================================================================================== -->
+    <!-- A Kafka replikáció működéséhez szükséges debezium segédtáblák létrehozása..         -->
+    <!-- =================================================================================== -->
+    <include file="../../_all-modules/schema/tables/debezium_heartbeat/debezium_heartbeat.sql" relativeToChangelogFile="true"/>
+    <include file="../../_all-modules/schema/tables/dbz_signal/dbz_signal.sql" relativeToChangelogFile="true"/>
+
+""".replace('\n', '\r\n'), '']])
+
+  #install-parameters-db1.xml
+    os.rename(base + f'{db_underscore}/install-parameters-db1.xml',
+              base + f'{db_underscore}/install-parameters.xml')
+
+
 if __name__ == '__main__':
-    repos = Repository.Repository().get_repo_names_exclude(['info','inspection'])[1:]
-    sema_atszervezes(repos)
+    repos = Repository.Repository().get_repo_names_exclude(['analytic','inspection'])[1:2]
+    #sema_atszervezes(repos)
+    #sema_atszervezes_fix(repos)
+    common_egyszerusites(repos)

@@ -34,6 +34,7 @@ class Repository():
                 self.name = self.find_name(name)
             else:
                 self.name = 'doc-db'
+                self.base = 'c:/GIT/'
             self.base_path = self.base + self.name + '/liquibase/'
             self.dbname = self.get_db_name()
             self.db_path = self.dbname.replace('-', '_')
@@ -183,7 +184,7 @@ class Repository():
     def env_ver(self):
         with open(f'{self.base}{self.name}/.env', 'r', encoding='utf8') as f:
             ver = re.match('.*VERSION=(.*)\n', f.read(), flags=re.DOTALL).group(1)
-        return ver.rsplit('.', 1)[0]
+        return ver
 
 
     def get_schema(self):

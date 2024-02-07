@@ -13,6 +13,6 @@ if __name__ == '__main__':
     branch = 'feature/MLFFDEV-18914-liquibase-refakt_common_only'
     #create_branch_multiple_repos(gitlist, branch)
     #TODO ellenőrizni ha létezik már a branch
-    #create_stage_and_commit(gitlist, 'MLFFSUP-7104  Build_folyamat_frissítése')
+    #create_stage_and_commit(gitlist, 'MLFFDEV-18914  fix db names')
     #push_branch(gitlist, branch)
     delete_branch_multiple_repos(gitlist, branch)

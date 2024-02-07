@@ -41,6 +41,7 @@ def create_old_file(fname):
 
 def replace_in_file(fname, from_to):
     text = ''
+    print(fname)
     with open(fname, 'r', encoding='utf-8',newline='') as f:
         text = f.read()
         for pair in from_to:
