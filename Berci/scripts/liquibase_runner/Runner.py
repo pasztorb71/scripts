@@ -3,6 +3,7 @@ import logging
 import os
 
 import Environment
+from Nexus import Nexus
 from utils import utils_sec
 from Repository import Repository
 from utils.utils import get_ip_address_for_docker
@@ -11,6 +12,7 @@ from utils.utils_db import get_dbname_from_project
 
 class Runner:
     repos = []
+
     def __init__(self, repos=[], confirm=True):
         self.base = 'c:/GIT/MLFF/'
         self.password = ''
@@ -18,26 +20,27 @@ class Runner:
         self.delete_db_before = False
         self.confirm_one_run = confirm
         Runner.repos = repos
-        logging.basicConfig(level=logging.DEBUG, filename='liquibase_run.log', filemode='a', format='%(asctime)s - %(message)s')
+        logging.basicConfig(level=logging.DEBUG, filename='liquibase_run.log', filemode='a',
+                            format='%(asctime)s - %(message)s')
 
     def _call_liquibase(self, project, env, postgrespass, db):
         print(project + ' : ' + db)
         cmd = '''docker run --rm -v #base##project#\liquibase\:/liquibase/changelog liquibase/liquibase:4.21 --logLevel=info --liquibase-hub-mode=off --url=jdbc:postgresql://#env#/#db# --driver=org.postgresql.Driver --username=postgres --password=#password# --classpath=/liquibase/changelog --changeLogFile=#changelog# #context# update'''
         if self.checkonly:
             cmd = cmd.replace('update', 'status --verbose')
-        cmd = cmd\
-            .replace('#base#', self.base)\
-            .replace('#project#', project)\
-            .replace('#env#', env)\
-            .replace('#password#', postgrespass)\
-            .replace('#db#', db)\
-            .replace('#projectdb#', get_dbname_from_project(project))\
-            .replace('#changelog#', self.get_changelog(db, project))\
+        cmd = cmd \
+            .replace('#base#', self.base) \
+            .replace('#project#', project) \
+            .replace('#env#', env) \
+            .replace('#password#', postgrespass) \
+            .replace('#db#', db) \
+            .replace('#projectdb#', get_dbname_from_project(project)) \
+            .replace('#changelog#', self.get_changelog(db, project)) \
             .replace('#context#', self.get_context())
-        #ret_code = os_command(cmd)
-        #print(cmd)
-        #return
-        #self.confirm('')
+        # ret_code = os_command(cmd)
+        # print(cmd)
+        # return
+        # self.confirm('')
         ret_code = os.system(cmd)
         if ret_code != 0:
             exit(ret_code)
@@ -45,29 +48,29 @@ class Runner:
     def get_changelog(self, db, project):
         db_name = get_dbname_from_project(project)
         if db_name in ['enforcement_onsite_inspection']:
-            return  db_name+'\liquibase-install-db-step-01.xml' if db == 'postgres' else db_name+'\liquibase-install-schema-step-02.xml'
+            return db_name + '\liquibase-install-db-step-01.xml' if db == 'postgres' else db_name + '\liquibase-install-schema-step-02.xml'
         else:
             return db_name + '\liquibase-install-db1-step-01.xml' if db == 'postgres' else db_name + '\liquibase-install-db1-step-02.xml'
 
     def get_context(self):
-        return '--contexts=sand' if self.loc=='sandbox' else ''
+        return '--contexts=sand' if self.loc == 'sandbox' else ''
 
     def get_dbs(self, repo):
-            if repo == 'doc-postgredb':
-                return ['doc_document']
-            t = repo.split('-')
-            return ['_'.join(t[1:-1])]
+        if repo == 'doc-postgredb':
+            return ['doc_document']
+        t = repo.split('-')
+        return ['_'.join(t[1:-1])]
 
     def get_dbs_old(self, repo):
-            if repo == 'mlff-core-customer-postgredb':
-                return ['core_customer']
-            elif repo == 'mlff-enforcement-exemption-postgredb':
-                return ['enforcement_exemption']
-            path = self.base + repo + '/liquibase/*.xml'
-            files = glob.glob(path)
-            files = [f.split('\\')[1] for f in files if 'liquibase-install-databases.xml' not in f]
-            dblist = [file.replace('liquibase-install-','').replace('.xml','') for file in files]
-            return dblist
+        if repo == 'mlff-core-customer-postgredb':
+            return ['core_customer']
+        elif repo == 'mlff-enforcement-exemption-postgredb':
+            return ['enforcement_exemption']
+        path = self.base + repo + '/liquibase/*.xml'
+        files = glob.glob(path)
+        files = [f.split('\\')[1] for f in files if 'liquibase-install-databases.xml' not in f]
+        dblist = [file.replace('liquibase-install-', '').replace('.xml', '') for file in files]
+        return dblist
 
     def run_for_repo(self, ip_address, repo, delete_changelog_only=False, deleteonly=False):
         print(f"Környezet IP: {ip_address}")
@@ -93,7 +96,8 @@ class Runner:
         for db in self.get_dbs(repo):
             self._call_liquibase(repo, ip_address, self.password, db)
 
-    def run_multiple_repos(self, loc, checkonly, delete_db_before=False, delete_changelog_only=False, port:str=None, deleteonly=False):
+    def run_multiple_repos(self, loc, checkonly, delete_db_before=False, delete_changelog_only=False, port: str = None,
+                           deleteonly=False):
         if not checkonly:
             if not self.confirm(loc): return
         else:
@@ -107,23 +111,47 @@ class Runner:
             self.password = utils_sec.password_from_file('postgres', port)
             self.run_for_repo(get_ip_address_for_docker(repo, loc, port), repo, delete_changelog_only, deleteonly)
 
-    def gen_build_and_run_commands(self, loc, port:str=None):
+    def gen_run_commands(self, loc: str, port: str = None, build_command=False, last_ver_from='env'):
+        """
+        :param loc: Environment name, possible values are Env._env_ports.keys()
+        :param port: port to run on
+        :param build_command: If a build command also be generated
+        :return: (build) run commands
+        """
         out = ''
-        for repo in [repo.get_name() for repo in self.repos]:
-            r = Repository(repo)
+        for repo in self.repos:
             if not port:
-                port = Environment.Env(loc).get_port_from_repo(repo)
+                port = Environment.Env(loc).get_port_from_repo(repo.name)
                 password = utils_sec.password_from_file('postgres', port)
-            #out += f'docker-compose --env-file c:/GIT/MLFF/{repo}/.env' \
-            #       f' -f c:/GIT/MLFF/{repo}/etc/release/docker-compose.yml build\n\n'
-            out += f"""docker run --rm `
+            if build_command == True:
+                out += self.gen_build_command(repo.name) + '\n\n'
+            out += self.gen_run_command(password, port, repo, last_ver_from=last_ver_from) + '\n'
+        return out
+
+    @staticmethod
+    def gen_build_command(repo) -> str:
+        return f'docker-compose --env-file c:/GIT/MLFF/{repo}/.env' \
+               f' -f c:/GIT/MLFF/{repo}/etc/release/docker-compose.yml build'
+
+    @staticmethod
+    def gen_run_command(password, port, repo: Repository, last_ver_from='env') -> str:
+        """
+        :param password: password
+        :param port: port
+        :param repo: Repository object
+        :param last_ver_from: 'env' or 'nexus'
+        :return: run command
+        """
+
+        if last_ver_from == 'env':
+            ver = repo.env_ver
+        elif last_ver_from == 'nexus':
+            ver = Nexus().get_last_image_ver_of_repo(repo.name)
+        return f"""docker run --rm `
           -e DB_ADDRESS=gateway.docker.internal `
           -e DB_PORT={port} `
           -e POSTGRES_PASSWORD={password} `
-          dockerhub-mlff.icellmobilsoft.hu/liquibase/{repo}:{r.env_ver}"""
-          #dockerhub-mlff.icellmobilsoft.hu/liquibase/{repo}:1.2.0"""
-          #dockerhub - mlff.icellmobilsoft.hu / liquibase / {repo}: {r.env_ver}"""
-        return out
+          dockerhub-mlff.icellmobilsoft.hu/liquibase/{repo.name}:{ver}"""
 
     def kill(self, param):
         pass
@@ -140,5 +168,3 @@ class Runner:
             print(f" - {r.get_name()}")
         if input("Mehet a telepítés? [y/n]") == "y":
             return True
-
-

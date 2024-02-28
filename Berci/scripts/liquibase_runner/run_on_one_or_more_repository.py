@@ -24,15 +24,7 @@ def get_remote_image_tags(repo):
 
 if __name__ == '__main__':
     #repos = [Repository('customer')]
-    loc = 'tollgo'
-    repos = [Repository(x) for x in Repository.get_repo_names() if 'private' in x][0:]
-    Runner(repos)
-    for repo in repos:
-        #g = Git(repo=repo)
-        #a = g.get_latest_remote_release()
-        #print(a)
-        #print(Runner([repo], confirm=True).gen_build_and_run_commands(loc = loc).replace('1.2.0-SNAPSHOT', '1.1.0'), '\n')
-        print(Runner([repo], confirm=True).gen_build_and_run_commands(loc = loc), '\n')
-        #rem = get_remote_image_tags(repo)
-        print()
+    loc = 'local'
+    repos = [Repository(x) for x in Repository.get_repo_names() if '' in x][0:]
+    print(Runner(repos, confirm=True).gen_run_commands(loc=loc, last_ver_from='nexus'))
 
