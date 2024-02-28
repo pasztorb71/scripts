@@ -1,6 +1,5 @@
 import time
 from functools import wraps
-from inspect import getfile
 
 from tabulate import tabulate
 
@@ -64,11 +63,6 @@ def get_instance_from_db_name(dbname):
     if dbname == 'document':
         return 'pg-doc'
     return 'pg-' + dbname.split('_')[0]
-
-
-def get_atlassian_login_from_file():
-    with open(getfile(get_atlassian_login_from_file).rsplit('\\', 1)[0] + '/icell_passw.txt', 'r') as f:
-        return f.read().split()
 
 
 def whoami(  ):

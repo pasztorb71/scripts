@@ -7,6 +7,7 @@ import Database
 import Environment
 from Cluster import Cluster
 from utils import utils_file, utils_sec
+from utils.utils_db import get_db_name
 from utils.utils_sec import password_from_file
 
 
@@ -30,11 +31,13 @@ class Repository():
     def __init__(self, name='', schema='', base=base):
         self.base = base
         if name:
+            self.name = self.find_name(name)
             if 'doc' not in name:
                 self.name = self.find_name(name)
             else:
-                self.name = 'doc-db'
-                self.base = 'c:/GIT/'
+                if 'test-repo' not in base:
+                    self.name = 'doc-db'
+                    self.base = 'c:/GIT/'
             self.base_path = self.base + self.name + '/liquibase/'
             self.dbname = self.get_db_name()
             self.db_path = self.dbname.replace('-', '_')
@@ -102,6 +105,8 @@ class Repository():
     def get_instance_from_repo_full_name(repo):
         if repo == 'doc-postgredb':
             return 'pg-doc'
+        elif 'notification' in repo:
+            return 'pg-notification'
         else:
             id = repo.split('-')[1]
             return 'pg-' + id
@@ -342,4 +347,19 @@ class Repository():
 def get_all_repos() -> list[Repository]:
     return [Repository(x) for x in Repository.get_repo_names()]
 
-
+def column_search(filter_function, generator=None):
+    columns = []
+    for name in glob.glob('c:/GIT/MLFF/**/*.sql', recursive=True):
+        with open(name, 'r') as f:
+            for line in f.readlines():
+                if filter_function(line):
+                    print(f.name)
+                    dbname = get_db_name(name)
+                    tablename = name.split('\\tables\\')[1].split('\\')[0]
+                    col = line.split()
+                    if generator:
+                        command = generator(f.name, line, dbname, tablename, col)
+                        columns.append([dbname, tablename, col[0], col[1], command])
+                    else:
+                        columns.append([dbname, tablename, col[0], col[1]])
+    return columns

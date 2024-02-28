@@ -104,7 +104,7 @@ class Git:
 
     @property
     def remote_url(self):
-        return os.popen('cmd /u /c git -C ' + self.base + '/' + self.repo + ' config --get remote.origin.url ').read().replace('\n','')
+        return os.popen('cmd /u /c git -C ' + self.base + '/' + self.repo.name + ' config --get remote.origin.url ').read().replace('\n','')
 
     def checkout_branch(self, branch):
         self._run_command('checkout ' + branch, ['Already on', 'Switched to branch'])
@@ -114,11 +114,12 @@ class Git:
         print(f'{branch} created.')
 
     def _run_command(self, cmd, acceptable_err):
-        proc = subprocess.Popen('cmd /u /c git -C ' + self.base + '/' + self.repo + ' ' + cmd,
+        proc = subprocess.Popen('cmd /u /c git -C ' + self.base + '/' + self.repo.name + ' ' + cmd,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         stdout, stderr = proc.communicate()
         if stderr and not any([x in stderr for x in acceptable_err]):
             raise Exception(stderr)
+        return stdout
 
     def init(self):
         os.system(f'git -C {self.base}/{self.repo} restore --staged etc/release/release.sh')
@@ -126,8 +127,8 @@ class Git:
         os.system(f'git -C {self.base}/{self.repo} clean -f -d')
 
     def get_latest_remote_release(self):
-        cmd = "git ls-remote " + self.url
-        output = Git._cmd_execute(cmd)
+        cmd = "ls-remote " + self.remote_url
+        output = self._run_command(cmd, [''])
         #A listából a legnagyobb értéket, a .x-et levágjuk a végéről
         #return str(max(output.split())).strip("'b")[:-2]
         a = [sor.decode().rsplit('-', 1)[1] for sor in output.split() if 'release' in sor.decode()]

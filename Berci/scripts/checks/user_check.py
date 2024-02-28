@@ -114,7 +114,7 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    envs = ['cantas_test']
+    envs = ['cantas_prod']
     ports_databases = gen_port_databases_from_envs(envs, forced_refresh=True)[0:]
     # ports_databases = [[5741, 'postgres']]
     return_dict = parallel_run_multiprocess(ports_databases, ddl_changes_check_dwh_stream)

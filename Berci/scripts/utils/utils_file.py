@@ -5,8 +5,8 @@ from distutils.dir_util import copy_tree
 from utils import utils
 
 
-def append_to_file_after_line_last_occurence(fname, after, what):
-  with open(fname, 'r', encoding='utf-8') as f:
+def append_to_file_after_line_last_occurence(fname: str, after, what):
+  with open(fname, 'r', encoding='utf-8', newline='') as f:
     text = f.readlines()
   already_exists = [idx for idx, s in enumerate(text) if what in s]
   if already_exists:
@@ -18,8 +18,8 @@ def append_to_file_after_line_last_occurence(fname, after, what):
         return
       else:
           index_after = index_header_end + 1
-  text.insert(index_after, what + '\n')
-  with open(fname, 'w', encoding='utf-8') as out:
+  text.insert(index_after, what)
+  with open(fname, 'w', encoding='utf-8', newline='') as out:
     out.write(''.join(text))
 
 
@@ -149,3 +149,13 @@ def del_file_ignore_error(path):
       os.remove(path)
     except OSError:
       pass
+
+def convert_file_to_unix(filename):
+    old = filename + '_old'
+    os.rename(filename, old)
+    with open(filename, "w") as fout:
+        with open(old, "r") as fin:
+            for line in fin:
+                line = line.replace('\r\n', '\n')
+                fout.write(line)
+    os.remove(old)

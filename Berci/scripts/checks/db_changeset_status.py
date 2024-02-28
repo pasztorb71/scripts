@@ -5,7 +5,7 @@ from tabulate import tabulate
 
 import Environment
 from utils import utils_sec
-from Repository import Repository, get_repos_containing_release
+import Repository
 from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess
 from utils.utils import get_env_old
 
@@ -103,11 +103,10 @@ def print_changeset1(changeset_ids):
         pass
 
 if __name__ == '__main__':
-    repo_names = Repository().get_repo_names()
-    repos = [Repository(x) for x in repo_names]
+    repos = Repository.get_all_repos()
     out = []
     for repo in repos:
-        out.append([repo.name, '_'+repo.env_ver, '_'+repo.last_component_ver if repo.last_component_ver else ' '])
+        out.append([repo.name, '_'+repo.env_ver, '_'+repo.last_component_ver()[0] if repo.last_component_ver() else ' '])
     header = ['név', 'env_ver', 'label']
     print(out)
     print(tabulate(out, headers=header))

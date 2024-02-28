@@ -115,12 +115,14 @@ class Runner:
                 port = Environment.Env(loc).get_port_from_repo(repo)
                 password = utils_sec.password_from_file('postgres', port)
             #out += f'docker-compose --env-file c:/GIT/MLFF/{repo}/.env' \
-                   #f' -f c:/GIT/MLFF/{repo}/etc/release/docker-compose.yml build\n\n'
+            #       f' -f c:/GIT/MLFF/{repo}/etc/release/docker-compose.yml build\n\n'
             out += f"""docker run --rm `
           -e DB_ADDRESS=gateway.docker.internal `
           -e DB_PORT={port} `
           -e POSTGRES_PASSWORD={password} `
           dockerhub-mlff.icellmobilsoft.hu/liquibase/{repo}:{r.env_ver}"""
+          #dockerhub-mlff.icellmobilsoft.hu/liquibase/{repo}:1.2.0"""
+          #dockerhub - mlff.icellmobilsoft.hu / liquibase / {repo}: {r.env_ver}"""
         return out
 
     def kill(self, param):

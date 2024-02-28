@@ -3,13 +3,13 @@ import json
 import requests
 from requests.auth import HTTPBasicAuth
 
-from utils import utils
+from utils import utils_sec
 
 
 class Ticket:
     def __init__(self, ticket):
         self.name = ticket
-        user_pass = utils.get_atlassian_login_from_file()
+        user_pass = utils_sec.get_atlassian_login_from_file()
         baseurl = 'https://icellmobilsoft-int.atlassian.net'
         url = f'{baseurl}/rest/api/latest/issue/{ticket}'
         page = requests.get(url, auth=HTTPBasicAuth(user_pass[0], user_pass[1]))

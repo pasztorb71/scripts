@@ -1,6 +1,7 @@
 from unittest import TestCase
 from utils import utils_command, utils_sec, utils_file
-from utils.utils import get_instance_from_db_name, get_atlassian_login_from_file
+from utils.utils import get_instance_from_db_name
+from utils.utils_sec import get_atlassian_login_from_file
 
 
 class Test(TestCase):

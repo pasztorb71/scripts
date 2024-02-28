@@ -40,6 +40,8 @@ class Env:
             'enforcement_sanctioning_presumption,enforcement_sanctioning_sanction,enforcement_visual_check',
         'eobu':
             'eobu_tariff,eobu_trip',
+        'notification':
+            'core_notification_dispatcher,core_notification_email, core_notification_wa',
         'payment':
             'payment_account_info,payment_invoice,payment_psp_proxy,payment_transaction',
         'settlement':
@@ -56,7 +58,8 @@ class Env:
                 'cantas_test': 5840,
                 'perf': 5940,
                 'cantas_dev': 6040,
-                'cantas_prod': 6140
+                'cantas_prod': 6140,
+                'tollgo': 7140
                   }
     _domain_offsets = {'doc': 0,
               'core': 1,
@@ -65,6 +68,7 @@ class Env:
               'payment': 4,
               'settlement': 5,
               'obu': 7,
+              'notification': 8,
                        }
 
     _domains = {'pg-doc': 0,
@@ -74,8 +78,16 @@ class Env:
               'pg-payment': 4,
               'pg-settlement': 5,
               'pg-obu': 7,
+              'pg-notification': 8,
                 }
     list_of_envs = []
+
+    @classmethod
+    def get_domain_from_dbname(cls, dbname):
+        for domain, dbs in cls._domain_databases.items():
+            if dbname in dbs:
+                return domain
+        return None
 
     @classmethod
     def build_list_of_envs_from_databases(cls):
@@ -257,6 +269,7 @@ class Env:
                 password=password_from_file(user, port))
         except Exception as e:
             print(e)
+
 
 def ports_databases_from_backup():
     with open(PORT_DATABASES_FROM_ENVS, 'r') as b:

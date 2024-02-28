@@ -6,8 +6,7 @@ from bs4 import BeautifulSoup
 
 from requests.auth import HTTPBasicAuth
 
-import utils
-from utils.utils import get_atlassian_login_from_file
+from utils.utils_sec import get_atlassian_login_from_file
 
 
 class Confluence:

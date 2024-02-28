@@ -71,7 +71,7 @@ if __name__ == '__main__':
     prev_db_name = ''
     path = 'c:\\GIT\\MLFF\\'
     #path = path + '\\mlff-enforcement-detection-postgredb\\'
-    modtime = datetime.strptime('24/02/00 17:00:00', '%y/%m/%d %H:%M:%S')
+    modtime = datetime.strptime('24/02/01 17:00:00', '%y/%m/%d %H:%M:%S')
     for file in utils_file.get_files_from_path_fname_filtered(path, '.sql'):
         repo = Repository.Repository.get_repo_from_filename(file)
         git = Git(repo=repo.name)

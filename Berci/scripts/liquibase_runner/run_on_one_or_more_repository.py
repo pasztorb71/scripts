@@ -23,16 +23,16 @@ def get_remote_image_tags(repo):
 
 
 if __name__ == '__main__':
-    #repos = [Repository('mlff-core-analytic-postgredb')]
-    loc = 'local'
-    repos = [Repository(x) for x in Repository.get_repo_names() if '' in x][0:]
+    #repos = [Repository('customer')]
+    loc = 'tollgo'
+    repos = [Repository(x) for x in Repository.get_repo_names() if 'private' in x][0:]
     Runner(repos)
     for repo in repos:
-        g = Git(repo)
+        #g = Git(repo=repo)
         #a = g.get_latest_remote_release()
         #print(a)
         #print(Runner([repo], confirm=True).gen_build_and_run_commands(loc = loc).replace('1.2.0-SNAPSHOT', '1.1.0'), '\n')
-        #print(Runner([repo], confirm=True).gen_build_and_run_commands(loc = loc), '\n')
+        print(Runner([repo], confirm=True).gen_build_and_run_commands(loc = loc), '\n')
         #rem = get_remote_image_tags(repo)
         print()
 

@@ -25,7 +25,7 @@ class TestRepository(TestCase):
         self.assertEqual('payment_psp_proxy', r.get_db_name())
 
     def test_get_db_name2(self):
-        r = Repository('doc-postgredb', base=self.base)
+        r = Repository('doc', base=self.base)
         self.assertEqual('doc_document', r.get_db_name())
 
     def test_is_table_file_exists_true(self):
@@ -46,7 +46,7 @@ class TestRepository(TestCase):
         self.assertEqual(6, len(actual))
 
     def test_env_ver(self):
-        self.assertEqual('0.23', Repository('analytic-', base='test-repo/').env_ver)
+        self.assertEqual('0.23.0-SNAPSHOT', Repository('analytic-', base='test-repo/').env_ver)
 
     def test_get_schema1(self):
         r = Repository('mlff-core-customer-postgredb')
@@ -96,7 +96,7 @@ class TestRepository(TestCase):
         self.assertEqual(0.14, rel_to_num('R0.14.1'))
 
     def test_last_component_ver(self):
-        r = Repository('doc-postgredb', base='test-repo/')
+        r = Repository('doc', base='test-repo/')
         self.assertEqual(['1.8', 'R0.16.1'], r.last_component_ver())
 
     def test_last_component_ver_relfilter(self):
@@ -111,7 +111,7 @@ class TestRepository(TestCase):
         self.assertTrue(len(get_all_repos()) > 0)
 
     def test_get_build_command(self):
-        repo = Repository('doc-postgredb', base=self.base)
+        repo = Repository('doc-db', base=self.base)
         expected = f'docker-compose --env-file {self.base}doc-db\\.env -f {self.base}doc-db\\etc\\release\\docker-compose.yml build'
         self.assertEqual(expected, repo.image_build_command)
 
@@ -121,7 +121,7 @@ class TestRepository(TestCase):
         self.assertEqual(expected, repo.image_name_with_release)
 
     def test_get_run_command(self):
-        repo = Repository('doc-postgredb', base=self.base)
+        repo = Repository('doc', base=self.base)
         password = utils_sec.password_from_file('postgres', Environment.Env('local').get_port_from_repo(repo.name))
         expected = 'docker run --rm --network mlff-local-network -e DB_ADDRESS=gateway.docker.internal ' \
                    f'-e DB_PORT=5432 -e POSTGRES_PASSWORD={password} ' \

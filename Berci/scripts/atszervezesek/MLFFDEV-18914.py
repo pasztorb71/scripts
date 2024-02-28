@@ -2,9 +2,10 @@ import os
 import shutil
 
 import Repository
+from Git.Git_class import Git
 from utils import utils_file
 from utils.utils_db import get_db_name, get_schema, get_sema_from_dbname
-from utils.utils_file import del_file_ignore_error
+from utils.utils_file import del_file_ignore_error, convert_file_to_unix
 
 env_template = """
 MLFF_LIQUIBASE_COMMON_IMAGE=${DOCKER_REPOSITORY}/liquibase/mlff-liquibase-common-postgredb
@@ -122,7 +123,8 @@ def sema_atszervezes_fix(repos):
 
 def common_egyszerusites(repos):
   for repo in repos[0:]:
-  # prepare
+    # prepare
+    g = Git(repo=repo).init()
     _base = 'c:/GIT/MLFF/' + repo
     base = _base +'/liquibase/'
     db_underscore = get_db_name(base)
@@ -131,25 +133,21 @@ def common_egyszerusites(repos):
     if not schema:
       raise Exception(f'{db_underscore} : no schema')
     print(repo)
-    # run.sh
+
+    #run.sh
     utils_file.replace_in_file(_base + '/run.sh', [[f'liquibase-install-db1-', f'liquibase-install-']])
 
-    # Dockerfiles
+    #properties files
+    utils_file.replace_in_file(_base + f'/etc/docker-compose/config/{db_underscore}/step-01/liquibase-localhost.properties', 
+                               [[f'liquibase-install-db1-', f'liquibase-install-']])
+    utils_file.replace_in_file(_base + f'/etc/docker-compose/config/{db_underscore}/step-02/liquibase-localhost.properties',
+                               [[f'liquibase-install-db1-', f'liquibase-install-']])
+
+    #Dockerfiles
     utils_file.copy_file("C:/GIT/MLFF/mlff-core-analytic-postgredb/etc/release/Dockerfile",
                          _base + '/etc/release/Dockerfile')
     utils_file.copy_file("C:/GIT/MLFF/mlff-core-analytic-postgredb/etc/docker-compose/Dockerfile",
                          _base + '/etc/docker-compose/Dockerfile')
-
-    #properties files
-    utils_file.replace_in_file(
-            _base + f'/etc/docker-compose/config/{db_underscore}/step-01/liquibase-localhost.properties'
-            ,[['liquibase-install-db1-step-01.xml'
-            ,'liquibase-install-step-01.xml']])
-
-    utils_file.replace_in_file(
-            _base + f'/etc/docker-compose/config/{db_underscore}/step-02/liquibase-localhost.properties'
-            , [['liquibase-install-db1-step-02.xml'
-                 , 'liquibase-install-step-02.xml']])
 
     #schema-versions
     utils_file.copy_file("C:/GIT/MLFF/mlff-core-analytic-postgredb/liquibase/core_analytic/analytic/schema-versions.xml",
@@ -164,15 +162,38 @@ def common_egyszerusites(repos):
     <include file="../../_all-modules/schema/tables/debezium_heartbeat/debezium_heartbeat.sql" relativeToChangelogFile="true"/>
     <include file="../../_all-modules/schema/tables/dbz_signal/dbz_signal.sql" relativeToChangelogFile="true"/>
 
-""".replace('\n', '\r\n'), '']])
+""", '']])
 
-  #install-parameters-db1.xml
+    #install-parameters-db1.xml
     os.rename(base + f'{db_underscore}/install-parameters-db1.xml',
-              base + f'{db_underscore}/install-parameters.xml')
+                base + f'{db_underscore}/install-parameters.xml')
+
+    #set common version
+    utils_file.replace_in_file(
+            _base + f'/.env'
+            ,[['MLFF_LIQUIBASE_COMMON_VERSION=0.1.0-SNAPSHOT'
+            ,'MLFF_LIQUIBASE_COMMON_VERSION=0.2.0-SNAPSHOT']])
+
+    #readme files
+    utils_file.copy_file("C:/GIT/MLFF/mlff-core-analytic-postgredb/docs/release_notes.adoc",
+                         _base + '/docs/release_notes.adoc')
+
+    utils_file.replace_in_file(
+            _base + '/README.adoc'
+            ,[['include::docs/release-notes.adoc[leveloffset=+1]\n','']])
+
+    utils_file.append_to_file_after_line_last_occurence(
+            fname=_base + '/README.adoc',
+            after='----',
+            what="""
+include::docs/release_notes.adoc[leveloffset=+1]
+"""
+    )
 
 
 if __name__ == '__main__':
-    repos = Repository.Repository().get_repo_names_exclude(['analytic','inspection'])[1:2]
+    #repos = Repository.Repository().get_repo_names_exclude(['analytic','inspection'])[1:2]
+    repos = [Repository.Repository('customer').name]
     #sema_atszervezes(repos)
     #sema_atszervezes_fix(repos)
     common_egyszerusites(repos)
