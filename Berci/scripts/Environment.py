@@ -31,8 +31,7 @@ class Env:
         'doc':
             'doc_document',
         'core':
-            'core_analytic,core_customer,core_genos,core_notification_dispatcher,core_notification_email,'
-            'core_notification_wa,core_privateuser,core_ticket,core_vehicledoc_document',
+            'core_analytic,core_customer,core_genos,core_privateuser,core_ticket,core_vehicledoc_document',
         'enforcement':
             'enforcement_detection,enforcement_detection_alert,enforcement_detection_image,enforcement_detection_observation,'
             'enforcement_detection_transit_identifier,enforcement_detection_transition,enforcement_eligibility,'
@@ -41,7 +40,7 @@ class Env:
         'eobu':
             'eobu_tariff,eobu_trip',
         'notification':
-            'core_notification_dispatcher,core_notification_email, core_notification_wa',
+            'core_notification_dispatcher,core_notification_email,core_notification_wa,notification_sms,notification_wa_meta',
         'payment':
             'payment_account_info,payment_invoice,payment_psp_proxy,payment_transaction',
         'settlement':
@@ -127,7 +126,7 @@ class Env:
         if not valid:
             print(f"Not valid location: {name}")
             print("Possible locations:")
-            print('  ' + '\n  '.join(get_envs()))
+            print('  ' + '\n  '.join(Env.get_envs()))
         return valid
 
     def __init__(self, name='local'):

@@ -14,10 +14,10 @@ from utils import utils_sec
 @click.command()
 @click.option(
         "--inputfile",
-        help="File generate from", default="qa_write_cantas.sql")
+        help="File generate from", default="databasechangelog_1_4.sql")
 @click.option(
         "--release",
-        help="Release", default="qa_write_cantas")
+        help="Release", default="1.4")
 def gen_plsql_scripts(inputfile, release):
     """
     :param inputfile: Az sql fájl, amiből dolgozik
@@ -25,7 +25,8 @@ def gen_plsql_scripts(inputfile, release):
     :return:
     """
     sql = read_source_sql_file(inputfile)
-    if input("Mehet a törlés? [y/n]") == "y":
+    if True:
+    #if input("Mehet a törlés? [y/n]") == "y":
         create_release_dir(release)
         write_sql_files(release, sql)
         write_psql_calls_to_file(release, sql)
@@ -75,7 +76,8 @@ def get_database_names(sql):
 def filter_domain_from_sql(sql, dbname):
     ret = {}
     for domain, data in sql.items():
-        if dbname.startswith(domain):
+        env_domain = Environment.Env.get_domain_from_dbname(dbname)
+        if domain == env_domain:
             return data
     return ret
 
@@ -99,8 +101,7 @@ def get_db_filtered_commands_for_pdb(filtered_domain: dict, dbname):
     commands = []
     str_commands = convert_to_str_commands(filtered_domain[dbname])
     for command in str_commands:
-        if f'{dbname}/' in command:
-            commands.append(command)
+        commands.append(command)
     return commands
 
 def write_db_commands_to_sql_file(postresdb_commands, pdb_commands, filename, dbname):
@@ -108,10 +109,11 @@ def write_db_commands_to_sql_file(postresdb_commands, pdb_commands, filename, db
         if postresdb_commands:
             f.write('\c postgres\n')
             f.write(';\n'.join(postresdb_commands))
-            f.write('\n\n')
+            f.write(';\n\n')
         f.write(f'\c {dbname}\n')
+        #f.write('\encoding UTF8\n')
         f.write(';\n'.join(pdb_commands))
-        f.write('\n')
+        f.write(';\n')
 
 
 def write_sql_files_bydb(release, sql):

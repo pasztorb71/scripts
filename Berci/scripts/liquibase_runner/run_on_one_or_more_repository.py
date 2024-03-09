@@ -23,8 +23,9 @@ def get_remote_image_tags(repo):
 
 
 if __name__ == '__main__':
-    #repos = [Repository('customer')]
+    repos = [Repository('tro-clearing-')]
     loc = 'local'
-    repos = [Repository(x) for x in Repository.get_repo_names() if '' in x][0:]
-    print(Runner(repos, confirm=True).gen_run_commands(loc=loc, last_ver_from='nexus'))
+    #repos = [Repository(x) for x in Repository.get_repo_names() if '' in x][0:]
+    print(Runner(repos, confirm=True).gen_run_commands(loc=loc, build_command=False, last_ver_from='nexus'))
+    print(Runner(repos, confirm=True).gen_run_commands(loc=loc, build_command=False, last_ver_from='env'))
 

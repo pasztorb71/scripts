@@ -225,9 +225,13 @@ def mproc_get_tables(host, port, db, return_dict):
         user="postgres",
         password=utils_sec.password_from_file('postgres', port))
     cur = conn.cursor()
-    cur.execute("SELECT schemaname, tablename, tableowner FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') AND schemaname NOT IN ('public') and tablename not like '%$hist'")
+    cur.execute("SELECT schemaname, tablename, tableowner FROM pg_tables WHERE tableowner NOT IN ('cloudsqladmin') "
+                "AND schemaname NOT IN ('public', 'ddl_changes', 'partman') "
+                "and tablename not like '%$hist%'"
+                "and tablename not like '%\_p2%'"
+                )
     record = cur.fetchall()
-    return_dict[db] = [[desc[0].upper() for desc in cur.description]] + record
+    return_dict[db+'|'+port] = [[desc[0].upper() for desc in cur.description]] + record
     cur.close()
     conn.commit()
     conn.close()
@@ -536,7 +540,7 @@ def print_dataframe(df):
 
 
 if __name__ == '__main__':
-    envs = ['sandbox']
+    envs = ['tollgo']
     #envs = Environment.get_envs()[1:-1] #local nem kell, mlff_test nem kell
     print(envs)
     #databases = load_from_file('../databases.txt')
@@ -544,10 +548,10 @@ if __name__ == '__main__':
     #envs = ['dev']
     ports_databases = gen_port_databases_from_envs(envs[0:], forced_refresh=True)[0:]
     print(ports_databases)
-    exit(0)
+    #exit(0)
     #ports_databases = [[6041, 'core_customer']]
     #return_dict = parallel_run(ports_databases, truncate_table)
-    return_dict = parallel_run_multiprocess(ports_databases, mproc_count_records)
+    return_dict = parallel_run_multiprocess(ports_databases, mproc_get_tables)
     #return_dict = parallel_run_sql(ports_databases, "SELECT md5(prosrc) FROM pg_proc WHERE proname = 'f_log_ddl'",  mproc_single_sql)
     #df = return_dict_to_dataframe(return_dict)
     #df_sorted = df.sort_values(by='COUNT', ascending=False)

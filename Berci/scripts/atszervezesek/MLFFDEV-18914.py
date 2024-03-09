@@ -49,6 +49,7 @@ a projekt könyvtárban állva
 docker-compose --env-file .env -f etc/docker-compose/docker-compose.yml up --build --force-recreate --scale liquibase-release=0
 ----"""
     )
+
     #release/docker-compose.yml
     utils_file.append_to_file_after_line_last_occurence(
           fname=_base + '/etc/release/docker-compose.yml',
@@ -124,7 +125,7 @@ def sema_atszervezes_fix(repos):
 def common_egyszerusites(repos):
   for repo in repos[0:]:
     # prepare
-    g = Git(repo=repo).init()
+    Git(repo=repo).init()
     _base = 'c:/GIT/MLFF/' + repo
     base = _base +'/liquibase/'
     db_underscore = get_db_name(base)
@@ -154,15 +155,17 @@ def common_egyszerusites(repos):
                          base + f'{db_underscore}/{schema}/schema-versions.xml')
 
     #schema-version-0
-    utils_file.replace_in_file(
-            base + f'{db_underscore}/{schema}/tables/schema-version-0.xml',
-            [["""    <!-- =================================================================================== -->
+    text = """    <!-- =================================================================================== -->
     <!-- A Kafka replikáció működéséhez szükséges debezium segédtáblák létrehozása..         -->
     <!-- =================================================================================== -->
     <include file="../../_all-modules/schema/tables/debezium_heartbeat/debezium_heartbeat.sql" relativeToChangelogFile="true"/>
     <include file="../../_all-modules/schema/tables/dbz_signal/dbz_signal.sql" relativeToChangelogFile="true"/>
 
-""", '']])
+"""
+    file = base + f'{db_underscore}/{schema}/tables/schema-version-0.xml'
+    if utils_file.is_window_type_file(file):
+      text = text.replace('\n', '\r\n')
+    utils_file.replace_in_file(file, [[text, '']])
 
     #install-parameters-db1.xml
     os.rename(base + f'{db_underscore}/install-parameters-db1.xml',
@@ -172,7 +175,11 @@ def common_egyszerusites(repos):
     utils_file.replace_in_file(
             _base + f'/.env'
             ,[['MLFF_LIQUIBASE_COMMON_VERSION=0.1.0-SNAPSHOT'
-            ,'MLFF_LIQUIBASE_COMMON_VERSION=0.2.0-SNAPSHOT']])
+            ,'MLFF_LIQUIBASE_COMMON_VERSION=0.2.1']])
+    utils_file.replace_in_file(
+            _base + f'/.env'
+            ,[['MLFF_LIQUIBASE_COMMON_VERSION=0.1.1'
+            ,'MLFF_LIQUIBASE_COMMON_VERSION=0.2.1']])
 
     #readme files
     utils_file.copy_file("C:/GIT/MLFF/mlff-core-analytic-postgredb/docs/release_notes.adoc",
@@ -190,10 +197,22 @@ include::docs/release_notes.adoc[leveloffset=+1]
 """
     )
 
+    #install-dmls.xml
+    text = """    <!-- =================================================================================== -->
+    <!-- A Kafka replikáció működéséhez..                                                    -->
+    <!-- =================================================================================== -->
+    <include file="../_all-modules/schema/dmls/debezium_heartbeat-DML.sql" relativeToChangelogFile="true"/>
+
+"""
+    file = base + f'{db_underscore}/{schema}/install-dmls.xml'
+    if utils_file.is_window_type_file(file):
+      text = text.replace('\n', '\r\n')
+    utils_file.replace_in_file(file, [[text, '']])
+
 
 if __name__ == '__main__':
-    #repos = Repository.Repository().get_repo_names_exclude(['analytic','inspection'])[1:2]
-    repos = [Repository.Repository('customer').name]
+    repos = Repository.Repository().get_repo_names_exclude(['None'])[28:]
+    #repos = [Repository.Repository('eligibility').name]
     #sema_atszervezes(repos)
     #sema_atszervezes_fix(repos)
     common_egyszerusites(repos)

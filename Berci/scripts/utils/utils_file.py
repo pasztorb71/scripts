@@ -48,6 +48,8 @@ def replace_in_file(fname, from_to):
             text = text.replace(pair[0], pair[1])
             text = text.replace(pair[0].upper(), pair[1].upper())
     with open(fname, 'w', encoding='utf-8',newline='') as f:
+        if '.sh' in fname:
+            text = text.replace('\r\n', '\n')
         f.write(text)
 
 def move_file(src, dst):
@@ -129,16 +131,17 @@ def get_line_from_file_by_linepart(fname:str, linepart:str) -> str:
                 return l
     return None
 
+def is_window_type_file(file):
+    with open(file, 'r', encoding='utf8') as f:
+        c = f.readline()
+        return f.newlines == '\r\n'
 
 def check_window_eol_in_sh_files():
-    windows_eol = '\r\n'
     print('check_window_eol_in_sh_files:', end='')
     exceptions = []
     for file in get_files_from_path_fname_filtered('c:/GIT/MLFF/', '.sh'):
-        with open(file, 'r') as f:
-            c = f.readline()
-            if f.newlines == windows_eol:
-                exceptions.append(file)
+        if is_window_type_file(file):
+            exceptions.append(file)
     if exceptions:
         print('\n\t'+ '\n\t'.join(exceptions))
     else:

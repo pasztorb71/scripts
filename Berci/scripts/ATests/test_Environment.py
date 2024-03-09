@@ -35,3 +35,6 @@ class TestEnv(TestCase):
 
     def test_get_env(self):
         self.assertEqual('cantas_dev', Env.get_env_name_from_port(6041))
+
+    def test_get_domain_from_dbname(self):
+        self.assertEqual('notification', Env.get_domain_from_dbname('core_notification_dispatcher'))
