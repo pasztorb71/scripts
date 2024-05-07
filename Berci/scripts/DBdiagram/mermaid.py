@@ -9,12 +9,9 @@ if __name__ == '__main__':
       if fks:
           d[tab.name] = []
           for fk in fks.values():
-              d[tab.name].append(fk.ref_table)
-  print("""digraph G { 
-  rankdir = TB;
-  subgraph {""")
+              if fk.ref_table not in d[tab.name]:
+                d[tab.name].append(fk.ref_table)
+  print("graph TD;", end='')
   for parent, children in d.items():
       for child in children:
-          print(f'    {child} -> {parent}')
-  print("""  } /* closing subgraph */
-}""")
+          print(f'\n  {parent}-->{child};', end='')
