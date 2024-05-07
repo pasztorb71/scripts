@@ -19,6 +19,7 @@ def print_result(columns):
     print(tabulate(filelist_filtered, headers=header))
 
 def filter_plate_number(line):
+    a = 'plate_number ' in line and not any([x in line for x in ['COMMENT ', 'ALTER ', 'CREATE ']])
     return 'plate_number ' in line and not any([x in line for x in ['COMMENT ', 'ALTER ', 'CREATE ']])
 
 def generator_plate_number(dbname, tablename, col):
@@ -29,5 +30,6 @@ def filter_currency_constraint(line):
 
 
 if __name__ == '__main__':
-    print_result(column_search(filter_currency_constraint))
+    a = column_search(filter_plate_number)
+    print_result(column_search(filter_plate_number))
     #print_result(column_search(filter_plate_number, generator_plate_number))

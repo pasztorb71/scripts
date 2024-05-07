@@ -1,13 +1,8 @@
-from concurrent.futures import ThreadPoolExecutor
+import re
 
-
-def f(n):
-    d[n] = n**2
-    return n  # No need to wrap in list
-
-d = {}
-with ThreadPoolExecutor(max_workers=20) as exec:
-    master_list = list(exec.map(f, range(1, 10)))
-
-print(master_list)
-print(d)
+s = "CHECK (((format)::text = ANY (ARRAY[('PDF'::character varying)::text, ('TEXT'::character varying)::text])))"
+pattern = r"ARRAY\[(.*?)\]"
+array_text = re.search(pattern, s).group(1)
+possible_values = re.findall(r"'(.*?)'", array_text)
+print(possible_values)
+print(array_text)

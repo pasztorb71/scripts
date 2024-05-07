@@ -36,10 +36,10 @@ class Git:
         return self.repo
 
     @classmethod
-    def get_gitlist(cls, exclude=[]):
+    def get_gitlist(cls, exclude=['None'], include=[]):
         repo = Repository.Repository()
         base = repo.get_base()
-        repo_names = repo.get_repo_names_exclude(exclude)
+        repo_names = repo.get_repo_names_exclude_include(exclude, include)
         return [cls(base, name) for name in repo_names[0:]]
 
     @staticmethod
@@ -114,7 +114,7 @@ class Git:
         print(f'{branch} created.')
 
     def _run_command(self, cmd, acceptable_err):
-        proc = subprocess.Popen('cmd /u /c git -C ' + self.base + '/' + self.repo.name + ' ' + cmd,
+        proc = subprocess.Popen('cmd /u /c git -C ' + self.base + '/' + self.repo + ' ' + cmd,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         stdout, stderr = proc.communicate()
         if stderr and not any([x in stderr for x in acceptable_err]):

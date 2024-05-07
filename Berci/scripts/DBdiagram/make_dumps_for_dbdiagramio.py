@@ -1,6 +1,7 @@
 import sql_runner
-from sql_runner.parallel_runner.multiprocess import gen_port_databases_from_envs, parallel_run_multiprocess, \
-    mproc_get_tables
+from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess, \
+    mproc_get_tables, gen_port_databases_from_env_db
+from Environment import gen_port_databases_from_envs
 from utils import utils
 from utils.utils_db import get_sema_from_dbname
 from utils.utils_file import get_files_from_path_ext_filtered
@@ -59,9 +60,15 @@ def make_filetered_dumps(path):
             with open(path + fname, 'w') as outf:
                 outf.writelines(filtered_sql)
 
+
+def make_dumps_for_dbdiagramio(ports_databases):
+    return_dict = sql_runner.parallel_runner.multiprocess.parallel_run_multiprocess(ports_databases, mproc_get_tables)
+    make_dumps(env, path, return_dict)
+
+
 if __name__ == '__main__':
     path = 'c:\\Users\\bertalan.pasztor\\Documents\\MLFF\\Diagrams\\'
     env = 'tollgo'
-    ports_databases = gen_port_databases_from_envs([env], forced_refresh=False)[0:]
-    return_dict = sql_runner.parallel_runner.multiprocess.parallel_run_multiprocess(ports_databases, mproc_get_tables)
-    make_dumps(env, path, return_dict)
+    #ports_databases = gen_port_databases_from_envs([env], forced_refresh=False)[0:1]
+    ports_databases = [['7141', 'core_analytic']]
+    make_dumps_for_dbdiagramio()

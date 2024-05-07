@@ -5,7 +5,8 @@ import Repository
 from utils import utils, utils_sec
 from Database import Database
 from checks.db_changeset_status import get_changeset_ids_from_repos_release
-from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess, gen_port_databases_from_envs
+from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess
+from Environment import gen_port_databases_from_envs
 
 
 def insert_into_local_all_changelogs(to_db, records, env, db):

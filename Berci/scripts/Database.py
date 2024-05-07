@@ -50,6 +50,7 @@ class Database:
             WHERE schemaname not in ('pg_toast', 'information_schema', 'pg_catalog', 'ddl_changes', 'partman', 'public')
               AND relname not like '%\_p2%' AND schemaname not like 'pg\_%'
               AND relname not like '%\_default'
+              AND relname not like '%$hist%'
             ORDER BY schemaname, relname """)
         return dict([rc[1], Table(f'{rc[0]}.{rc[1]}', self.conn)] for rc in res)
 

@@ -7,13 +7,12 @@ import psycopg2
 import yaml
 
 import Repository
+from sql_runner.parallel_runner.multiprocess import is_backup, parallel_run_multiprocess, mproc_get_dabase_names
 from sql_runner.parallel_runner.thread import Querydata, dbcommand_thread_executor
 from utils import utils_db
 from Cluster import Cluster
 import Database
 from utils.utils_sec import password_from_file
-
-PORT_DATABASES_FROM_ENVS = 'c:/Users/bertalan.pasztor/PycharmProjects/liquibase/Berci/scripts/backup/port_databases_from_envs.yaml'
 
 @dataclass
 class Domain:
@@ -27,6 +26,8 @@ class Env_db:
     domains: list[Domain]
 
 class Env:
+    PORT_DATABASES_FROM_ENVS = 'c:/Users/bertalan.pasztor/PycharmProjects/liquibase/Berci/scripts/backup/port_databases_from_envs.yaml'
+
     _domain_databases = {
         'doc':
             'doc_document',
@@ -80,6 +81,26 @@ class Env:
               'pg-notification': 8,
                 }
     list_of_envs = []
+
+    @staticmethod
+    def gen_port_databases(envlist: list[str], forced_refresh=True):
+        if not forced_refresh and is_backup():
+            return ports_databases_from_backup()
+        ports_databases = []
+        a = []
+        for env in envlist:
+            a += Env(env).get_ports()
+        for port in a:
+            ports_databases.append([port, 'postgres'])
+        return_dict = parallel_run_multiprocess(ports_databases, mproc_get_dabase_names)
+        ports_databases = []
+        for db, records in sorted(return_dict.items()):
+            for rec in records:
+                if rec[0] != "Database not exists":
+                    ports_databases.append([db.split('|')[0], rec[0]])
+        with open(Env.PORT_DATABASES_FROM_ENVS, 'w') as b:
+            yaml.dump(ports_databases, b)
+        return ports_databases
 
     @classmethod
     def get_domain_from_dbname(cls, dbname):
@@ -238,7 +259,7 @@ class Env:
         return None
 
     def get_all_databases(self):
-        host, port = 'localhost', self.get_port_from_repo()
+        #host, port = 'localhost', self.get_port_from_repo()
         cluster = Cluster(host=host, port=port, passw=password_from_file('postgres', host, port))
         return cluster.databases
 
@@ -274,13 +295,4 @@ def ports_databases_from_backup():
     with open(PORT_DATABASES_FROM_ENVS, 'r') as b:
         port_databases = yaml.load(b, Loader=yaml.Loader)
     return port_databases
-
-if __name__ == '__main__':
-
-
-    Env.build_list_of_envs_from_databases()
-
-    with open(PORT_DATABASES_FROM_ENVS, 'w') as b:
-        yaml.dump(envs, b, sort_keys=False)
-
 

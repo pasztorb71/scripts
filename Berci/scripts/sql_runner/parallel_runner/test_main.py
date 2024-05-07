@@ -1,6 +1,7 @@
 from operator import itemgetter
 from unittest import TestCase
 
+import Environment
 import sql_runner.parallel_runner.multiprocess
 
 
@@ -21,6 +22,6 @@ class Test(TestCase):
                     ['5432', 'enforcement_sanctioning_sanction'], ['5432', 'eobu_tariff'], ['5432', 'payment_psp_proxy'],
                     ['5432', 'payment_account_info'], ['5432', 'enforcement_eligibility']]
         sorted_expected = sorted(expected, key=itemgetter(0,1))
-        result = sql_runner.parallel_runner.multiprocess.gen_port_databases_from_envs(['local'])
+        result = Environment.gen_port_databases_from_envs(['local'])
         sorted_result = sorted(result, key=itemgetter(0, 1))
         self.assertListEqual(sorted_expected, sorted_result)

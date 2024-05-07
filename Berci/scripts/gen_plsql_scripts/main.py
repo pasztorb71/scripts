@@ -14,10 +14,10 @@ from utils import utils_sec
 @click.command()
 @click.option(
         "--inputfile",
-        help="File generate from", default="databasechangelog_1_4.sql")
+        help="File generate from", default="platenum_check.sql")
 @click.option(
         "--release",
-        help="Release", default="1.4")
+        help="Release", default="platenum_check")
 def gen_plsql_scripts(inputfile, release):
     """
     :param inputfile: Az sql fájl, amiből dolgozik
@@ -25,8 +25,8 @@ def gen_plsql_scripts(inputfile, release):
     :return:
     """
     sql = read_source_sql_file(inputfile)
-    if True:
-    #if input("Mehet a törlés? [y/n]") == "y":
+    #if True:
+    if input("Mehet a törlés? [y/n]") == "y":
         create_release_dir(release)
         write_sql_files(release, sql)
         write_psql_calls_to_file(release, sql)

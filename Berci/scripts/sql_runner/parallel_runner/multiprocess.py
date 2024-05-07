@@ -3,10 +3,8 @@ import os.path
 
 import pandas as pd
 import psycopg2
-import yaml
 
 import Environment
-from Environment import ports_databases_from_backup, PORT_DATABASES_FROM_ENVS
 from utils import utils, utils_sec
 
 
@@ -497,26 +495,6 @@ def is_backup():
     return os.path.isfile(PORT_DATABASES_FROM_ENVS)
 
 
-def gen_port_databases_from_envs(envlist: list[str], forced_refresh=True):
-    if not forced_refresh and is_backup():
-        return ports_databases_from_backup()
-    ports_databases = []
-    a = []
-    for env in envlist:
-        a += Environment.Env(env).get_ports()
-    for port in a:
-        ports_databases.append([port, 'postgres'])
-    return_dict = parallel_run_multiprocess(ports_databases, mproc_get_dabase_names)
-    ports_databases = []
-    for db, records in sorted(return_dict.items()):
-        for rec in records:
-            if rec[0] != "Database not exists":
-                ports_databases.append([db.split('|')[0], rec[0]])
-    with open(PORT_DATABASES_FROM_ENVS, 'w') as b:
-        yaml.dump(ports_databases, b)
-    return ports_databases
-
-
 def return_dict_to_dataframe(dictproxy):
     a = list(dictproxy.keys())
     header = ['ENV', 'DB'] + dictproxy[list(dictproxy.keys())[0]][0]
@@ -540,22 +518,28 @@ def print_dataframe(df):
 
 
 if __name__ == '__main__':
-    envs = ['tollgo']
+    envs = ['sandbox']
     #envs = Environment.get_envs()[1:-1] #local nem kell, mlff_test nem kell
     print(envs)
     #databases = load_from_file('../databases.txt')
     #databases = ['core_customer']
     #envs = ['dev']
-    ports_databases = gen_port_databases_from_envs(envs[0:], forced_refresh=True)[0:]
-    print(ports_databases)
+    ports_databases = Environment.Env.gen_port_databases(envs[0:], forced_refresh=True)[0:]
+    #print(ports_databases)
     #exit(0)
     #ports_databases = [[6041, 'core_customer']]
     #return_dict = parallel_run(ports_databases, truncate_table)
-    return_dict = parallel_run_multiprocess(ports_databases, mproc_get_tables)
-    #return_dict = parallel_run_sql(ports_databases, "SELECT md5(prosrc) FROM pg_proc WHERE proname = 'f_log_ddl'",  mproc_single_sql)
+    #return_dict = parallel_run_multiprocess(ports_databases, mproc_get_tables)
+    return_dict = parallel_run_sql(ports_databases,
+         "SELECT table_schema,table_name,column_name FROM information_schema.COLUMNS WHERE column_name LIKE '%plate\_number' "
+         "and table_name not like '%\_p%' "
+         "and table_name not like '%$hist%' "
+         "and table_name not like '%\_default' "
+         "and table_schema != 'partman'"
+        ,mproc_single_sql)
     #df = return_dict_to_dataframe(return_dict)
     #df_sorted = df.sort_values(by='COUNT', ascending=False)
     #print_dataframe(df_sorted)
-    utils.print_sql_result(return_dict, 50, header=True)
+    utils.print_sql_result(return_dict, maxlength=50, header=True)
     #utils.print_one_result(return_dict, 50)
 

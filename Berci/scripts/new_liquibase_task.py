@@ -3,9 +3,9 @@ from Repository import Repository
 from Ticket import Ticket
 
 
-def read_ticket() -> Ticket:
+def read_ticket(project) -> Ticket:
     nr = input('Number of ticket?:')
-    t = Ticket(f'MLFFSUP-{nr}')
+    t = Ticket(f'{project}-{nr}')
     return t
 
 
@@ -33,11 +33,17 @@ def table_operations():
     pass
 
 
+def check_xml_path():
+    #TODO implementálni
+    pass
+
+
 if __name__ == '__main__':
-    repo = Repository('tariff')
+    repo = Repository('geo-')
     print(repo.name)
-    t = read_ticket()
+    t = read_ticket('pektrmss')
     print_info(t, repo)
     create_branch(t, repo)
+    check_xml_path()
     table_operations()
 

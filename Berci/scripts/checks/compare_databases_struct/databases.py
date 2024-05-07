@@ -4,7 +4,7 @@ from sqlite3 import Error
 
 
 class Metadb(ABC):
-    def __init__(self, file):
+    def __init__(self, file=None):
         self.file = file
         self.conn = self.create_connection()
 

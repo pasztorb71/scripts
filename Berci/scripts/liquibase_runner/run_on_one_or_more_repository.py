@@ -1,5 +1,3 @@
-import Environment
-from Git.Git_class import Git
 from Repository import Repository
 from liquibase_runner.Runner import Runner
 
@@ -23,9 +21,9 @@ def get_remote_image_tags(repo):
 
 
 if __name__ == '__main__':
-    repos = [Repository('tro-clearing-')]
+    repos = [Repository('geo-')]
     loc = 'local'
     #repos = [Repository(x) for x in Repository.get_repo_names() if '' in x][0:]
-    print(Runner(repos, confirm=True).gen_run_commands(loc=loc, build_command=False, last_ver_from='nexus'))
-    print(Runner(repos, confirm=True).gen_run_commands(loc=loc, build_command=False, last_ver_from='env'))
+    #print(Runner(repos, confirm=True).gen_run_commands(loc=loc, build_command=False, last_ver_from='nexus'))
+    print(Runner(repos, confirm=True).gen_run_commands(loc=loc, build_command=True, last_ver_from='env'))
 

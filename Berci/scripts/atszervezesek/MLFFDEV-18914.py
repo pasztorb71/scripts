@@ -211,8 +211,8 @@ include::docs/release_notes.adoc[leveloffset=+1]
 
 
 if __name__ == '__main__':
-    repos = Repository.Repository().get_repo_names_exclude(['None'])[28:]
+    repos = Repository.Repository().get_repo_names_exclude_include(['None'])[28:]
     #repos = [Repository.Repository('eligibility').name]
     #sema_atszervezes(repos)
     #sema_atszervezes_fix(repos)
-    common_egyszerusites(repos)
+    #common_egyszerusites(repos)

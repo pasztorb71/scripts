@@ -1,7 +1,8 @@
 import psycopg2
 
 from utils import utils_sec
-from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess, gen_port_databases_from_envs
+from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess
+from Environment import gen_port_databases_from_envs
 from utils.utils import print_table_level_check, print_one_result
 
 

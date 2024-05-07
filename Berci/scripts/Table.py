@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 import psycopg2
 
+import Constraints
 from Column import Column
 from models import ForeignKey
 
@@ -193,3 +194,24 @@ class Table:
         cur.execute(f"SELECT count(*) FROM pg_catalog.pg_inherits WHERE inhparent = '{self.schema}.{self.name}'::regclass")
         res = cur.fetchone()[0]
         return res > 0
+
+    @property
+    def check_constraints(self):
+        stmt = f"""select pgc.conname as constraint_name,
+       ccu.table_schema as table_schema,
+       ccu.table_name,
+       ccu.column_name,
+       pg_get_constraintdef(pgc.oid) 
+from pg_constraint pgc
+join pg_namespace nsp on nsp.oid = pgc.connamespace
+join pg_class  cls on pgc.conrelid = cls.oid
+left join information_schema.constraint_column_usage ccu
+          on pgc.conname = ccu.constraint_name
+          and nsp.nspname = ccu.constraint_schema
+where contype ='c'
+and ccu.table_name = '{self.name}'"""
+        cur = self.conn.cursor()
+        cur.execute(stmt)
+        res = cur.fetchall()
+        return [Constraints.Constraint('c',cons[0],cons[1],cons[2],cons[3],cons[4]) for cons in res]
+

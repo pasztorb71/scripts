@@ -1,8 +1,16 @@
 class Column():
-    def __init__(self, conn, tablename, column_name):
+    def __init__(self, dbname, tablename, column_name, type=None, conn=None,):
+        self.dbname = dbname
         self.conn = conn
         self.tabname = tablename
         self.name = column_name
+        self.type = type
+
+    def __str__(self):
+        return f'{self.dbname}: {self.tabname}.{self.name}'
+
+    def __eq__(self, other):
+        return (self.dbname, self.tabname, self.name, self.type) == (other.dbname, other.tabname, other.name, other.type)
 
     def get_constraint_name(self):
         stmt = f"SELECT conname " \

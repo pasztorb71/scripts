@@ -6,6 +6,7 @@ from inspect import getfile
 import Database
 import Environment
 from Cluster import Cluster
+from Column import Column
 from utils import utils_file, utils_sec
 from utils.utils_db import get_db_name
 from utils.utils_sec import password_from_file
@@ -103,7 +104,7 @@ class Repository():
         return None
 
     def get_instance_from_repo_full_name(repo):
-        if repo == 'doc-postgredb':
+        if repo == 'doc-db':
             return 'pg-doc'
         elif 'notification' in repo:
             return 'pg-notification'
@@ -146,7 +147,9 @@ class Repository():
         return self.base_path
 
     def find_name(self, name):
-        repos = os.listdir(self.base)
+        if 'doc' in name:
+            return 'doc-db'
+        repos = Repository.get_repo_names()
         a = [repo for repo in repos if name.replace('_', '-') in repo]
         if len(a) > 1:
             print("Nem egyértelmű a repository név!")
@@ -162,8 +165,12 @@ class Repository():
         return os.listdir(__class__.base)
 
     @staticmethod
-    def get_repo_names_exclude(excludelist):
-        return [name for name in os.listdir(__class__.base) if not any (x in name for x in excludelist)]
+    def get_repo_names_exclude_include(excludelist=[], includelist=[]):
+        if includelist:
+            out = [name for name in os.listdir(__class__.base) if name not in excludelist and name in includelist]
+        else:
+            out = [name for name in os.listdir(__class__.base) if name not in excludelist]
+        return out
 
     @classmethod
     def get_repo_names_by_group(cls, groupname):
@@ -347,13 +354,17 @@ class Repository():
 def get_all_repos() -> list[Repository]:
     return [Repository(x) for x in Repository.get_repo_names()]
 
+def get_repos_filtered_by_funct(filterfunc) -> list[Repository]:
+    return [Repository(x) for x in Repository.get_repo_names() if filterfunc(x)]
+
 def column_search(filter_function, generator=None):
     columns = []
+    prev_column = None
     for name in glob.glob('c:/GIT/MLFF/**/*.sql', recursive=True):
         with open(name, 'r') as f:
             for line in f.readlines():
                 if filter_function(line):
-                    print(f.name)
+                    #print(f.name)
                     dbname = get_db_name(name)
                     tablename = name.split('\\tables\\')[1].split('\\')[0]
                     col = line.split()
@@ -361,5 +372,8 @@ def column_search(filter_function, generator=None):
                         command = generator(f.name, line, dbname, tablename, col)
                         columns.append([dbname, tablename, col[0], col[1], command])
                     else:
-                        columns.append([dbname, tablename, col[0], col[1]])
+                        column = Column(dbname, tablename, col[0], col[1])
+                        if not prev_column or column != prev_column:
+                            columns.append(Column(dbname, tablename, col[0], col[1]))
+                            prev_column = column
     return columns
