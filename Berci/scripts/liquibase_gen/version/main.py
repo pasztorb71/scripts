@@ -1,4 +1,4 @@
-from Ticket import Ticket
+from classes.Ticket import Ticket
 
 
 def create_schema_version(repo, version):

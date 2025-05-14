@@ -1,6 +1,6 @@
-import Environment
-from Database import Database
-from Repository import Repository
+from classes import Environment
+from classes.Database import Database
+from classes.Repository import Repository
 
 if __name__ == '__main__':
     repo = Repository()

@@ -1,6 +1,6 @@
-import Environment
-from Cluster import Cluster
-from Gcloud import get_instance_email
+from classes import Environment
+from classes.Cluster import Cluster
+from classes.Gcloud import get_instance_email
 from utils.utils_db import get_sema_from_dbname
 
 

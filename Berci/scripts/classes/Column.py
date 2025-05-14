@@ -1,10 +1,11 @@
 class Column():
-    def __init__(self, dbname, tablename, column_name, type=None, conn=None,):
+    def __init__(self, dbname, tablename, column_name, type=None, conn=None, schema=None):
         self.dbname = dbname
         self.conn = conn
         self.tabname = tablename
         self.name = column_name
         self.type = type
+        self.schema = schema
 
     def __str__(self):
         return f'{self.dbname}: {self.tabname}.{self.name}'
@@ -24,3 +25,23 @@ class Column():
         cur.execute(stmt)
         res = cur.fetchone()
         return res[0]
+
+    @property
+    def nullable(self):
+        stmt = (f"SELECT is_nullable "
+                f"FROM information_schema.COLUMNS "
+                f"WHERE table_name = '{self.tabname}' AND column_name = '{self.name}'")
+        cur = self.conn.cursor()
+        cur.execute(stmt)
+        res = cur.fetchone()
+        return res[0]
+
+    @property
+    def count_values(self):
+        stmt = (f"SELECT {self.name}, count(*) FROM {self.schema}.{self.tabname} group by 1")
+        cur = self.conn.cursor()
+        cur.execute(stmt)
+        res = cur.fetchall()
+        if res:
+            return res
+        return None

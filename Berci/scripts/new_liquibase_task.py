@@ -1,6 +1,7 @@
 from Git.Git_class import Git
-from Repository import Repository
-from Ticket import Ticket
+from classes.Project import choose_project, base_from_project
+from classes.Repository import Repository
+from classes.Ticket import Ticket
 
 
 def read_ticket(project) -> Ticket:
@@ -9,8 +10,8 @@ def read_ticket(project) -> Ticket:
     return t
 
 
-def create_branch(t: Ticket, r: Repository) -> None:
-    git = Git(repo=r.name)
+def create_branch(t: Ticket, r: Repository, base=None) -> None:
+    git = Git(repo=r.name, base=base)
     print(f'Current branch: {git.current_branch}')
     if git.current_branch != 'master':
         print('EXIT')
@@ -39,11 +40,19 @@ def check_xml_path():
 
 
 if __name__ == '__main__':
-    repo = Repository('geo-')
+    #reponame = 'backend' #AKP
+    reponame = 'trino'
+    #reponame = 'meta'
+    #reponame = 'parser'
+    proj = choose_project(reponame)
+    base = base_from_project(proj)
+    repo = Repository(reponame, proj=proj)
     print(repo.name)
-    t = read_ticket('pektrmss')
+    t = read_ticket(proj)
     print_info(t, repo)
-    create_branch(t, repo)
+    create_branch(t, repo, base=base)
+    print("""Confluence-n módosítani
+    Antora-ban módosítani""")
     check_xml_path()
     table_operations()
 

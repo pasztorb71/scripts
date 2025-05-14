@@ -1,4 +1,3 @@
-import Repository
 from Git.Git_class import Git
 from Git.utils_parallel_runner import parallel_run, _mproc_multiple_commands
 

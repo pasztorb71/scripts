@@ -1,18 +1,20 @@
 from __future__ import annotations
 
 import logging
+import os
 from dataclasses import dataclass, asdict, field
 
 import psycopg2
 import yaml
 
-import Repository
-from sql_runner.parallel_runner.multiprocess import is_backup, parallel_run_multiprocess, mproc_get_dabase_names
+import classes.Repository
+from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess, mproc_get_dabase_names
 from sql_runner.parallel_runner.thread import Querydata, dbcommand_thread_executor
 from utils import utils_db
-from Cluster import Cluster
-import Database
+import classes.Cluster
 from utils.utils_sec import password_from_file
+
+PORT_DATABASES_FROM_ENVS = 'c:/Users/bertalan.pasztor/PycharmProjects/liquibase/Berci/scripts/backup/port_databases_from_envs.yaml'
 
 @dataclass
 class Domain:
@@ -26,13 +28,12 @@ class Env_db:
     domains: list[Domain]
 
 class Env:
-    PORT_DATABASES_FROM_ENVS = 'c:/Users/bertalan.pasztor/PycharmProjects/liquibase/Berci/scripts/backup/port_databases_from_envs.yaml'
 
     _domain_databases = {
         'doc':
             'doc_document',
         'core':
-            'core_analytic,core_customer,core_genos,core_privateuser,core_ticket,core_vehicledoc_document',
+            'core_analytic,core_customer,core_genos,core_privateuser,core_ticket,core_vehicle',
         'enforcement':
             'enforcement_detection,enforcement_detection_alert,enforcement_detection_image,enforcement_detection_observation,'
             'enforcement_detection_transit_identifier,enforcement_detection_transition,enforcement_eligibility,'
@@ -98,7 +99,7 @@ class Env:
             for rec in records:
                 if rec[0] != "Database not exists":
                     ports_databases.append([db.split('|')[0], rec[0]])
-        with open(Env.PORT_DATABASES_FROM_ENVS, 'w') as b:
+        with open(PORT_DATABASES_FROM_ENVS, 'w') as b:
             yaml.dump(ports_databases, b)
         return ports_databases
 
@@ -176,10 +177,10 @@ class Env:
         qd_list = []
         for port in self.get_ports():
             qd_list.append(Querydata(port, 'postgres', sql, res_dict))
-        result = dbcommand_thread_executor(qd_list)
-        for db_port in result.keys():
+        dbcommand_thread_executor(qd_list)
+        for db_port in res_dict.keys():
             port = db_port.split('__')[0]
-            dblist += [Database.Database(x[0],port) for x in result[db_port]]
+            dblist += [Database.Database(x[0], port) for x in res_dict[db_port]]
         return dblist
 
     def get_port_from_inst(self, inst):
@@ -213,6 +214,8 @@ class Env:
         return ports
 
     def get_port_from_repo(self, repo_full_name: str) -> int:
+        if self.name == 'sandbox' and 'emap' in repo_full_name:
+            return 5433
         if self.name == 'local':
             return 5432
         elif self.name == 'mlff_test':
@@ -221,35 +224,6 @@ class Env:
             return 5556
         inst = Repository.Repository.get_instance_from_repo_full_name(repo_full_name)
         return self._env_ports[self.name] + self._domains[inst]
-
-    def get_old_port(self, repo_full_name=''):
-        if self.name == 'sandbox':
-            return 5433
-        elif self.name == 'dev':
-            return 5434
-        elif self.name == 'fit':
-            return 5435
-        elif self.name == 'perf':
-            return 5436
-        elif self.name == 'train':
-            return 5437
-        elif self.name == 'test':
-            return 5438
-        elif self.name == 'cron_test':
-            return 5555
-        elif self.name == 'local':
-            return 5432
-        else:
-            print(f"utils.get_port('{self.name}')\n" + """"Nem létező környezet:
-    Lehetséges értékek:
-      sandbox
-      dev
-      fit
-      perf
-      train
-      test
-      new_""")
-            raise Exception("Nem létező környezet")
 
     @staticmethod
     def get_env_name_from_port(port):
@@ -296,3 +270,6 @@ def ports_databases_from_backup():
         port_databases = yaml.load(b, Loader=yaml.Loader)
     return port_databases
 
+
+def is_backup():
+    return os.path.isfile(PORT_DATABASES_FROM_ENVS)

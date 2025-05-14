@@ -1,4 +1,4 @@
-from Cluster import Cluster
+from classes.Cluster import Cluster
 from utils.utils_sec import password_from_file
 
 host, port = 'localhost', 5433

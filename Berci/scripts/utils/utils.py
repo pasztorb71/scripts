@@ -3,9 +3,8 @@ from functools import wraps
 
 from tabulate import tabulate
 
-import Environment
-import Repository
-from Cluster import Cluster
+from classes import Repository, Environment
+import classes.Cluster
 from utils.utils_sec import password_from_file
 
 
@@ -33,14 +32,23 @@ def print_sql_result(d, maxlength, header=False):
                         print('  ' + value[0])
     print(f'Összesen: {len(d)} db repo')
 
-def print_one_result(d, maxlength):
+def print_one_result(d: dict, maxlength=None):
+    if not maxlength:
+        maxlength = max([len(x) for x in d.keys()])
+
     for db, value in sorted(d.items()):
+        if '|' in db:
+            db = db.split('|')[1]
         print(f"{db}:".ljust(maxlength), end='')
         if value:
             print(value)
         else:
             print()
 
+def print_dict_to_file(d, filename):
+    with open(filename, 'w') as f:
+        for key, value in d.items():
+            f.write(f'{key}: {value}\n')
 
 def get_env_old(port):
     if port == 5433:

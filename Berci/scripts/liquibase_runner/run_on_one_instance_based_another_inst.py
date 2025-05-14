@@ -1,4 +1,4 @@
-from Repository import Repository
+from classes.Repository import Repository
 from liquibase_runner.Runner import Runner
 
 if __name__ == '__main__':

@@ -2,10 +2,10 @@ import glob
 import logging
 import os
 
-import Environment
-from Nexus import Nexus
+from classes import Environment
+from classes.Nexus import Nexus
 from utils import utils_sec
-from Repository import Repository
+from classes.Repository import Repository
 from utils.utils import get_ip_address_for_docker
 from utils.utils_db import get_dbname_from_project
 
@@ -13,7 +13,7 @@ from utils.utils_db import get_dbname_from_project
 class Runner:
     repos = []
 
-    def __init__(self, repos=[], confirm=True):
+    def __init__(self, repos:list[Repository]=[], confirm=True):
         self.base = 'c:/GIT/MLFF/'
         self.password = ''
         self.loc = ''
@@ -75,11 +75,6 @@ class Runner:
     def run_for_repo(self, ip_address, repo, delete_changelog_only=False, deleteonly=False):
         print(f"Környezet IP: {ip_address}")
         print(f"Az alábbi repora lesz telepítve: {repo}")
-        if not self.checkonly and not deleteonly:
-            try:
-                print('\n'.join(Repository(repo).get_schema_version_0_lines()[-10:]))
-            except FileNotFoundError:
-                pass
         if self.confirm_one_run == True:
             if input("Mehet a telepítés? [y/n]") != "y":
                 print('Telepítés megszakítva!')
@@ -111,7 +106,7 @@ class Runner:
             self.password = utils_sec.password_from_file('postgres', port)
             self.run_for_repo(get_ip_address_for_docker(repo, loc, port), repo, delete_changelog_only, deleteonly)
 
-    def gen_run_commands(self, loc: str, port: str = None, build_command=False, last_ver_from='env'):
+    def gen_run_commands(self, loc: str, port: str = None, build_command=False, last_ver_from='env', steps='all'):
         """
         :param loc: Environment name, possible values are Env._env_ports.keys()
         :param port: port to run on
@@ -120,21 +115,24 @@ class Runner:
         """
         out = ''
         for repo in self.repos:
+            if repo.is_unix_eol_types == False:
+                pass
+                #exit(0)
             if not port:
                 port = Environment.Env(loc).get_port_from_repo(repo.name)
                 password = utils_sec.password_from_file('postgres', port)
             if build_command == True:
-                out += self.gen_build_command(repo.name) + '\n\n'
-            out += self.gen_run_command(password, port, repo, last_ver_from=last_ver_from) + '\n'
+                out += self.gen_build_command(repo.name, repo.base) + '\n\n'
+            out += self.gen_run_command(password, port, repo, last_ver_from=last_ver_from, steps=steps) + '\n'
         return out
 
     @staticmethod
-    def gen_build_command(repo) -> str:
-        return f'docker-compose --env-file c:/GIT/MLFF/{repo}/.env' \
-               f' -f c:/GIT/MLFF/{repo}/etc/release/docker-compose.yml build'
+    def gen_build_command(repo, base) -> str:
+        return f'docker-compose --env-file {base}{repo}/.env' \
+               f' -f {base}{repo}/etc/release/docker-compose.yml build'
 
     @staticmethod
-    def gen_run_command(password, port, repo: Repository, last_ver_from='env') -> str:
+    def gen_run_command(password, port, repo: Repository, last_ver_from='env', steps='all') -> str:
         """
         :param password: password
         :param port: port
@@ -143,19 +141,42 @@ class Runner:
         :return: run command
         """
 
+        nexuspath = 'dockerhub-mlff.icellmobilsoft.hu/liquibase'
+        rpath = repo.name
+        if 'emap' in repo.name:
+            nexuspath = 'dockerhub.icellmobilsoft.hu'
+            rpath = 'emap-database'
+        # AKP
+        if any(x in repo.name for x in ['backend', 'meta']):
+            nexuspath = 'dockerhub-akp.icellmobilsoft.hu/db'
+            rpath = 'akp-metadata-liquibase'
         if last_ver_from == 'env':
             ver = repo.env_ver
         elif last_ver_from == 'nexus':
             ver = Nexus().get_last_image_ver_of_repo(repo.name)
-        return f"""docker run --rm `
-          -e DB_ADDRESS=gateway.docker.internal `
-          -e DB_PORT={port} `
-          -e POSTGRES_PASSWORD={password} `
-          dockerhub-mlff.icellmobilsoft.hu/liquibase/{repo.name}:{ver}"""
+        if steps == 'all':
+            return f"""docker run --rm `
+              -e DB_ADDRESS=host.docker.internal `
+              -e DB_PORT={port} `
+              -e POSTGRES_PASSWORD={password} `
+              {nexuspath}/{rpath}:{ver}"""
+        elif steps == '1':
+            return f'''docker run --rm --entrypoint "./liquibase" `
+              {nexuspath}/{rpath}:{ver} `
+              --logLevel=info `
+              --liquibase-hub-mode=off `
+              --driver=org.postgresql.Driver `
+              --username=postgres `
+              --password="{password}" `
+              --classpath=./changelog `
+              --url=jdbc:postgresql://gateway.docker.internal:{port}/postgres `
+              --changelogfile={repo.dbname}/liquibase-install-step-01.xml `
+              update
+              '''
+        return None
 
     def kill(self, param):
         pass
-
     def run_additional_script(self):
         pass
 

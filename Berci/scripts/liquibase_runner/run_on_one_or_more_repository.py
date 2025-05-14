@@ -1,8 +1,6 @@
-from Repository import Repository
+from classes import Environment, Project
+from classes.Repository import Repository
 from liquibase_runner.Runner import Runner
-
-repos = [Repository('customer')]
-
 
 def gen_build_and_run_commands(repo):
     out = ''
@@ -21,9 +19,14 @@ def get_remote_image_tags(repo):
 
 
 if __name__ == '__main__':
-    repos = [Repository('geo-')]
+    env = Environment.Env
+    #dbs = env._domain_databases['core'].split(',')
+    proj = Project.choose_project()
+    base = Project.base_from_project(proj)
+#    repos = [Repository(db, proj=proj) for db in dbs]
+    repos = [Repository('emap', proj=proj)]
     loc = 'local'
     #repos = [Repository(x) for x in Repository.get_repo_names() if '' in x][0:]
-    #print(Runner(repos, confirm=True).gen_run_commands(loc=loc, build_command=False, last_ver_from='nexus'))
-    print(Runner(repos, confirm=True).gen_run_commands(loc=loc, build_command=True, last_ver_from='env'))
+#    print(Runner(repos, confirm=True).gen_run_commands(loc=loc, build_command=True, last_ver_from='env'))
+    print(Runner(repos, confirm=True).gen_run_commands(loc=loc, build_command=True, last_ver_from='env', steps='all'))
 

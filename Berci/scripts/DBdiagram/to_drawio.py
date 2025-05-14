@@ -1,6 +1,6 @@
 from graphviz2drawio import graphviz2drawio
 
-from Database import Database
+from classes.Database import Database
 
 
 def gen_dependencies(db):
@@ -49,8 +49,8 @@ if __name__ == '__main__':
   dbname = 'eobu_tariff'
   db = Database(dbname)
   d = gen_dependencies(db)
-  #print_mermaid(d)
-  write2file_graphviz(d, path+dbname)
-  graphviz_to_drawio(path+dbname)
+  print_mermaid(d)
+  #write2file_graphviz(d, path+dbname)
+  #graphviz_to_drawio(path+dbname)
 
 

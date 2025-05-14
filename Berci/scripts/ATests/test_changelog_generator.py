@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from liquibase_gen.changelog_generator.main import is_history_related_command, gen_history_command_from_command
+from liquibase_gen.changelog_generator_törölhető.main import is_history_related_command, gen_history_command_from_command
 
 
 class Test(TestCase):

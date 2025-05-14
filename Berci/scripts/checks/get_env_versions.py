@@ -1,6 +1,6 @@
 from tabulate import tabulate
 
-import Repository
+from classes import Repository
 
 l = []
 for repo in [x for x in Repository.get_all_repos() if '' in x.name]:

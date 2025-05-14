@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from Environment import Env
+from classes.Environment import Env
 
 
 class Test(TestCase):

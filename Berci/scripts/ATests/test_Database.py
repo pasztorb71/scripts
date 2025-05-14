@@ -1,11 +1,11 @@
 from unittest import TestCase
 
-from Database import Database
+from classes.Database import Database
 
 
 class TestDatabase(TestCase):
     def setUp(self) -> None:
-        self.db = Database('enforcement_eligibility', 5442)
+        self.db = Database('enforcement_eligibility', 5432)
 
     def test__get_tables(self):
         tables = self.db.tables

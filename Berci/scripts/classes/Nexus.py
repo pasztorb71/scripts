@@ -3,7 +3,7 @@ import json
 import requests
 from requests.auth import HTTPBasicAuth
 
-from Repository import Repository
+from classes.Repository import Repository
 from utils.utils_sec import get_nexus_login_from_file
 
 

@@ -1,4 +1,4 @@
-import Repository
+from classes import Repository
 
 repos = Repository.get_all_repos()
 for repo in repos:

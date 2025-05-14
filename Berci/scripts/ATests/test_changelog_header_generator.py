@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from liquibase_gen.changelog_generator.changelog_header_generator import Changelog_header_generator
+from liquibase_gen.changelog_generator_törölhető.changelog_header_generator import Changelog_header_generator
 
 
 class TestChangelogHeaderGenerator(TestCase):

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from Ticket import Ticket
+from classes.Ticket import Ticket
 
 
 class TestTicket(TestCase):
@@ -17,6 +17,10 @@ class TestTicket(TestCase):
     def test_branch(self):
         t = Ticket('MLFFDEV-21725')
         self.assertEqual('feature/MLFFDEV-21725_DB_Genos_mustache', t.branch)
+
+    def test_read_ticket_title(self):
+        t = Ticket(f'MLFFDEV-22109')
+        self.assertTrue(':' not in t.branch)
 
     def test_release(self):
         t = Ticket('MLFFDEV-21725')

@@ -1,6 +1,6 @@
 from tabulate import tabulate
 
-from Repository import column_search
+from classes.Repository import column_search
 
 
 def remove_duplicates(filelist):

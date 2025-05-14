@@ -1,5 +1,5 @@
-from Database import Database
-from Environment import Env
+from classes.Database import Database
+from classes.Environment import Env
 from liquibase_runner.Runner import Runner
 
 if __name__ == '__main__':

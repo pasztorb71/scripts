@@ -1,9 +1,9 @@
 import psycopg2
 
+from classes import Environment
 from utils import utils_sec
 from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess
-from Environment import gen_port_databases_from_envs
-from utils.utils import print_table_level_check, print_one_result
+from utils.utils import print_table_level_check
 
 
 def ddl_changes_check_dwh_stream(host, port, db, return_dict):
@@ -81,7 +81,7 @@ def service_user_check(host, port, db, return_dict):
         return
     cur = conn.cursor()
     cur.execute(f"SELECT schema_name FROM information_schema.schemata s WHERE schema_name "
-                f"NOT IN ('pg_catalog', 'information_schema', 'public', 'pg_toast', 'partman', 'airflow_meta')")
+                f"NOT IN ('pg_catalog', 'information_schema', 'public', 'pg_toast', 'partman', 'airflow_meta', 'ddl_changes')")
     try:
         schema = cur.fetchone()[0]
     except Exception as e:
@@ -98,8 +98,11 @@ def service_user_check(host, port, db, return_dict):
         print(f'{port}|{db}: {e}')
         return
     cur = conn.cursor()
-    cur.execute("SELECT schemaname, tablename  FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema', 'public', 'partman')"
-                " and tablename not like '%$hist' and tablename not in ('staging_done', 'staging_in_progress', 'staging_initial')")
+    cur.execute("SELECT schemaname, tablename  FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema', 'public', 'partman', 'ddl_changes')"
+                " and tablename not like '%$hist' "
+                " and tablename not like '%_p2%' "
+                " and tablename not like '%_default' "
+                "and tablename not in ('staging_done', 'staging_in_progress', 'staging_initial')")
     record = cur.fetchall()
     tables = []
     for rec in record:
@@ -115,9 +118,11 @@ def service_user_check(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    envs = ['cantas_prod']
-    ports_databases = gen_port_databases_from_envs(envs, forced_refresh=True)[0:]
-    # ports_databases = [[5741, 'postgres']]
-    return_dict = parallel_run_multiprocess(ports_databases, ddl_changes_check_dwh_stream)
-    #print_table_level_check(return_dict, filtered=True)
-    print_one_result(return_dict, 50)
+    envs = ['dev']
+    ports_databases = Environment.Env.gen_port_databases(envs, forced_refresh=True)[0:]
+    #print(ports_databases)
+    #exit(0)
+    #ports_databases = [[5541, 'core_customer']]
+    return_dict = parallel_run_multiprocess(ports_databases, service_user_check)
+    print_table_level_check(return_dict, filtered=False)
+    #print_one_result(return_dict, 50)

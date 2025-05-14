@@ -1,11 +1,11 @@
 import os
 import shutil
 
-import Repository
+from classes import Repository
 from Git.Git_class import Git
 from utils import utils_file
-from utils.utils_db import get_db_name, get_schema, get_sema_from_dbname
-from utils.utils_file import del_file_ignore_error, convert_file_to_unix
+from utils.utils_db import get_db_name, get_sema_from_dbname
+from utils.utils_file import del_file_ignore_error
 
 env_template = """
 MLFF_LIQUIBASE_COMMON_IMAGE=${DOCKER_REPOSITORY}/liquibase/mlff-liquibase-common-postgredb

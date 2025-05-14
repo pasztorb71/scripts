@@ -1,8 +1,7 @@
 import os
 from datetime import datetime
 
-import Environment
-import Repository
+from classes import Repository, Environment
 from utils import utils_db, utils_sec
 
 

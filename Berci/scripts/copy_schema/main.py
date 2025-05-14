@@ -1,5 +1,4 @@
-import Environment
-from Database import Database
+from classes import Environment
 
 print('Forrás adatbázis megadása')
 env = Environment.environment_selector()

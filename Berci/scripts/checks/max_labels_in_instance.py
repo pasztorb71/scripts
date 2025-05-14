@@ -1,9 +1,8 @@
 import psycopg2
 
-import Environment
-from utils import utils_sec
+from classes import Environment
+from utils import utils_sec, utils
 from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess
-from utils.utils import get_cluster_databases, utils
 
 
 def max_labels(host, port, db, return_dict):
@@ -13,7 +12,7 @@ def max_labels(host, port, db, return_dict):
             port=port,
             database=db,
             user='postgres',
-            password=utils_sec.password_from_file('postgres', host, port))
+            password=utils_sec.password_from_file('postgres', port, host))
     except Exception as e:
         print(f'{port}|{db}: {e}')
         return
@@ -35,11 +34,12 @@ def max_labels(host, port, db, return_dict):
 
 
 if __name__ == '__main__':
-    env = 'test'
-    databases = get_cluster_databases(env)[0:]
+    env = 'cantas_prod'
+    ports_databases = Environment.Env(env).gen_port_databases([env], forced_refresh=True)[0:]
     #databases = Repository.get_db_names_by_group('JAKARTA')
     #databases = ['enforcement_detection']
-    port = Environment.get_port_from_env_repo(env)
-    ports = list(range(port, port+1))
-    return_dict = parallel_run_multiprocess(ports, databases, max_labels)
-    utils.print_one_result(return_dict, len(max(databases, key=len)) + 7)
+    return_dict = parallel_run_multiprocess(ports_databases, max_labels)
+    #utils.print_dict_to_file(return_dict, 'out/max_labels.txt')
+    a = return_dict.keys()
+    le = [len(x) for x in return_dict.keys()]
+    utils.print_one_result(return_dict, (max(le) + 7))

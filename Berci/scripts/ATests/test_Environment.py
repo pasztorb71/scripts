@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from Environment import Env
-from Repository import Repository
+from classes.Environment import Env
+from classes.Repository import Repository
 
 
 class TestEnv(TestCase):
@@ -12,9 +12,8 @@ class TestEnv(TestCase):
         self.assertEqual(5441, Env('sandbox').get_port_from_inst('pg-core'))
 
     def test_build_list_of_envs_from_databases(self):
-        e = Env
         Env.build_list_of_envs_from_databases()
-        self.assertEqual(9, len(e.list_of_envs))
+        self.assertEqual(9, len(Env.list_of_envs))
 
     def test_build_list_of_envs_from_databases_local(self):
         e = Env

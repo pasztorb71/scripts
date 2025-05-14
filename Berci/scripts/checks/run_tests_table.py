@@ -1,9 +1,9 @@
 import logging
 
-from Cluster import Cluster
+from classes.Cluster import Cluster
 from utils.utils_sec import password_from_file
 from utils.utils_db import get_sema_from_dbname
-from Environment import get_conn_from_db_user
+from classes.Environment import get_conn_from_db_user
 
 
 def runteszt(env, db, user, cmd_list):

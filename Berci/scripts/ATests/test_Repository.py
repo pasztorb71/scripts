@@ -1,9 +1,9 @@
 import pathlib
 from unittest import TestCase
 
-import Environment
+from classes import Environment
 from utils import utils_sec
-from Repository import Repository, get_all_repos, rel_to_num
+from classes.Repository import Repository, get_all_repos, rel_to_num
 
 
 class TestRepository(TestCase):
@@ -130,8 +130,8 @@ class TestRepository(TestCase):
 
     def test_get_run_sh_eol_type(self):
         path = str(pathlib.Path().absolute()) + '/'
-        r = Repository('test_repo', base=path)
-        self.assertEqual('unix', r.run_sh_eol_type)
+        r = Repository('test_repo')
+        self.assertEqual('unix', r.run_sh_eol_type())
 
     def test_get_repository_from_dbname(self):
         self.assertEqual(Repository('customer').name, Repository.get_repository_name_from_dbname('core_customer'))

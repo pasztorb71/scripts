@@ -1,6 +1,6 @@
 import psycopg2 as psycopg2
 
-import Environment
+from classes import Environment
 
 
 class Cluster:

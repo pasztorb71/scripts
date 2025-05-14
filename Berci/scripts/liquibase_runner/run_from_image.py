@@ -1,6 +1,6 @@
 import os
 
-from Repository import Repository
+from classes.Repository import Repository
 
 
 def run_images(repos):

@@ -2,8 +2,7 @@ import datetime
 
 from dateutil.utils import today
 
-import Database
-import Environment
+from classes import Database, Environment
 from utils.utils_sec import password_from_file
 
 

@@ -1,4 +1,4 @@
-from Database import Database
+from classes.Database import Database
 from checks.compare_databases_struct.databases import Metadb
 
 

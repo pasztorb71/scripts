@@ -1,6 +1,6 @@
-import Environment
-from Repository import column_search
-from checks.global_column_search import filter_plate_number, print_result
+from classes import Environment
+from classes.Repository import column_search
+from checks.global_column_search import filter_plate_number
 from utils.utils_db import get_sema_from_dbname
 
 if __name__ == '__main__':

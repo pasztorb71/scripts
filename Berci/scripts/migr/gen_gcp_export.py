@@ -1,4 +1,4 @@
-from Gcloud import list_sql_databases, get_instance_email
+from classes.Gcloud import list_sql_databases, get_instance_email
 
 
 def gen_bucket_write_rights(project, instances) -> list:

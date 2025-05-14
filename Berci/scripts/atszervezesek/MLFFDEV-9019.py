@@ -1,7 +1,7 @@
 import os
 
 from utils import utils_file
-from Repository import Repository
+from classes.Repository import Repository
 
 
 def sema_atszervezes(repos):

@@ -3,9 +3,8 @@ import re
 import psycopg2
 from tabulate import tabulate
 
-import Environment
 from utils import utils_sec
-import Repository
+from classes import Repository, Environment
 from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess
 from utils.utils import get_env_old
 

@@ -2,9 +2,9 @@ from dataclasses import dataclass
 
 import psycopg2
 
-import Constraints
-from Column import Column
-from models import ForeignKey
+import classes.Constraints
+from classes.Column import Column
+from classes.models import ForeignKey
 
 @dataclass()
 class ForeignKey:
@@ -16,9 +16,9 @@ class ForeignKey:
     delete: str = None
 
 class Table:
-    def __init__(self, table, connection=None):
+    def __init__(self, tablen, connection=None):
         self.conn = connection
-        self.schema, self.name = table.split('.')
+        self.schema, self.name = tablen.split('.')
         self.foreign_keys: dict[str, ForeignKey] = None
 
     def __str__(self):
@@ -195,6 +195,37 @@ class Table:
         res = cur.fetchone()[0]
         return res > 0
 
+    def get_structure(self):
+        cur = self.conn.cursor()
+        cur.execute(f"""SELECT 	
+'| '||column_name||' | '||column_type||' | '||coalesce(column_default,' ')||' | '||is_nullable||' | '||comment 
+--*
+FROM (
+SELECT
+		column_name,
+    CASE
+        WHEN data_type = 'character varying' THEN 'VARCHAR(' || character_maximum_length || ')'
+        WHEN data_type = 'character' THEN 'CHAR(' || character_maximum_length || ')'
+        WHEN data_type = 'numeric' THEN 'NUMERIC(' || numeric_precision || ', ' || numeric_scale || ')'
+        WHEN data_type = 'timestamp without time zone' THEN 'TIMESTAMP'
+        WHEN data_type = 'timestamp without time zone' THEN 'TIMESTAMP'
+        ELSE UPPER(data_type)
+    END AS column_type,
+    column_default,
+    CASE
+        WHEN is_nullable = 'YES' THEN 'igen'
+        ELSE 'nem'
+    END AS is_nullable,
+    col_description(format('%s.%s', table_schema, table_name)::regclass::oid, ordinal_position) AS comment
+FROM
+    information_schema.columns
+WHERE
+    table_schema = '{self.schema}'
+    AND table_name = '{self.name}'
+) x
+""")
+        return cur.fetchall()
+
     @property
     def check_constraints(self):
         stmt = f"""select pgc.conname as constraint_name,
@@ -213,5 +244,5 @@ and ccu.table_name = '{self.name}'"""
         cur = self.conn.cursor()
         cur.execute(stmt)
         res = cur.fetchall()
-        return [Constraints.Constraint('c',cons[0],cons[1],cons[2],cons[3],cons[4]) for cons in res]
+        return [Constraints.Constraint('c', cons[0], cons[1], cons[2], cons[3], cons[4]) for cons in res]
 

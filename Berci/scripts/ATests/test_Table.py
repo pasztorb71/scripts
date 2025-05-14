@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from Database import Database
-from Table import Table
+from classes.Database import Database
+from classes.Table import Table
 
 
 class Test(TestCase):

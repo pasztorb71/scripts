@@ -1,5 +1,5 @@
 from utils.utils_file import check_window_eol_in_sh_files
-from Environment import gen_port_databases_from_envs
+from classes.Environment import gen_port_databases_from_envs
 
 
 def check_partition_privileges():

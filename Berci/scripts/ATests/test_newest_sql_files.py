@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-import Repository
+from classes import Repository
 
 
 class Test(TestCase):

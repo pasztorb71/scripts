@@ -1,8 +1,7 @@
 import sql_runner
 from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess, \
-    mproc_get_tables, gen_port_databases_from_env_db
-from Environment import gen_port_databases_from_envs
-from utils import utils
+    mproc_get_tables
+from classes.Environment import gen_port_databases_from_envs
 from utils.utils_db import get_sema_from_dbname
 from utils.utils_file import get_files_from_path_ext_filtered
 

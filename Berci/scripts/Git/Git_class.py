@@ -1,11 +1,11 @@
 import os
-import re
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List
 
-import Repository
+from classes import Repository
+
 
 @dataclass
 class Commit:
@@ -104,7 +104,7 @@ class Git:
 
     @property
     def remote_url(self):
-        return os.popen('cmd /u /c git -C ' + self.base + '/' + self.repo.name + ' config --get remote.origin.url ').read().replace('\n','')
+        return os.popen('cmd /u /c git -C ' + self.base + '/' + self.repo + ' config --get remote.origin.url ').read().replace('\n','')
 
     def checkout_branch(self, branch):
         self._run_command('checkout ' + branch, ['Already on', 'Switched to branch'])
@@ -114,7 +114,9 @@ class Git:
         print(f'{branch} created.')
 
     def _run_command(self, cmd, acceptable_err):
-        proc = subprocess.Popen('cmd /u /c git -C ' + self.base + '/' + self.repo + ' ' + cmd,
+        cmd = 'cmd /u /c git -C ' + self.base + '/' + self.repo + ' ' + cmd
+        #print(cmd)
+        proc = subprocess.Popen(cmd,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         stdout, stderr = proc.communicate()
         if stderr and not any([x in stderr for x in acceptable_err]):
@@ -133,6 +135,14 @@ class Git:
         #return str(max(output.split())).strip("'b")[:-2]
         a = [sor.decode().rsplit('-', 1)[1] for sor in output.split() if 'release' in sor.decode()]
         return str(max(a))[:-2]
+
+    def get_remote_releases(self):
+        cmd = "ls-remote " + self.remote_url
+        output = self._run_command(cmd, [''])
+        #A listából a legnagyobb értéket, a .x-et levágjuk a végéről
+        #return str(max(output.split())).strip("'b")[:-2]
+        a = [sor.rsplit('/', 1)[1] for sor in output.split() if 'release' in sor]
+        return a
 
 
 def git_init_from_path(path):

@@ -1,10 +1,9 @@
 import multiprocessing
-import os.path
 
 import pandas as pd
 import psycopg2
 
-import Environment
+from classes import Environment
 from utils import utils, utils_sec
 
 
@@ -489,10 +488,6 @@ def gen_port_databases_from_env_db(env, databases):
     for db in databases:
         out.append([Environment.get_port_from_env_inst(env, utils.get_instance_from_db_name(db)), db])
     return out
-
-
-def is_backup():
-    return os.path.isfile(PORT_DATABASES_FROM_ENVS)
 
 
 def return_dict_to_dataframe(dictproxy):

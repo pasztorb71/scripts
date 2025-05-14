@@ -1,11 +1,9 @@
 import concurrent.futures
 from dataclasses import dataclass
-from pprint import pprint
 
 import psycopg2
-import yaml
 
-import Environment
+from classes import Environment
 from utils import utils_sec, utils
 
 
@@ -45,7 +43,7 @@ def dbcommand_thread_executor(commands: list[Querydata]) -> dict[str, list]:
     """commands = list of Querydata
     Querydata('port', database_name, sql_command, result_dict"""
     with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-        executor.map(run_query_single_result_with_header, commands)
+        executor.map(run_query_single_result_without_header, commands)
 
 
 if __name__ == "__main__":

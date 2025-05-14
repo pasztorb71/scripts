@@ -7,7 +7,7 @@ Az eredmény fájlok ugyanebbe a könyvtárba keletkeznek {domainnév}.sql.out f
 import os
 import shutil
 import click
-import Environment
+from classes import Environment
 from utils import utils_sec
 
 

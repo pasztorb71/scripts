@@ -1,6 +1,6 @@
 from tabulate import tabulate
 
-import Repository
+from classes import Repository
 
 l = []
 max_rel_filter = '0.30'

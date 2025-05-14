@@ -1,10 +1,10 @@
+"""Ez alapján töltöm az Minden amit tudni akartál az mlff táblaváltozásokról oldalt"""
 import os
 import re
 import time
 
-import Repository
-from Git.Git_class import Git
-from utils import utils_file, utils_db
+from classes import Repository
+from utils import utils_file
 from datetime import datetime
 
 
@@ -71,17 +71,18 @@ if __name__ == '__main__':
     prev_db_name = ''
     path = 'c:\\GIT\\MLFF\\'
     #path = path + '\\mlff-enforcement-detection-postgredb\\'
-    modtime = datetime.strptime('24/02/29 10:17:00', '%y/%m/%d %H:%M:%S')
+    #branch = 'master'
+    branch = 'release/mlff-core-genos-postgredb-1.7.x'
+    modtime = datetime.strptime('24/05/13 09:17:00', '%y/%m/%d %H:%M:%S')
     for file in utils_file.get_files_from_path_fname_filtered(path, '.sql'):
         repo = Repository.Repository.get_repo_from_filename(file)
-        git = Git(repo=repo.name)
         if is_file_needed(file, modtime):
             continue
-        a = git.commits_on_file_on_branch(file, after=modtime)
-        if not a.has_commits:
-            continue
-        if a.commitlist_include(message='MLFFSUP-6171'):
-            continue
+        #print(file)
+        #git = Git(repo=repo.name)
+        #a = git.commits_on_file_on_branch(file, after=modtime, branch=branch)
+        #if not a.has_commits and not a.commitlist_include(message='MLFFSUP-6171'):
+        #    continue
         commands = get_important_commands_from_file(file)
         if not commands:
             continue

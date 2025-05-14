@@ -3,10 +3,9 @@ import os
 import re
 from inspect import getfile
 
-import Database
-import Environment
-from Cluster import Cluster
-from Column import Column
+from classes import Project
+from classes.Cluster import Cluster
+from classes.Column import Column
 from utils import utils_file, utils_sec
 from utils.utils_db import get_db_name
 from utils.utils_sec import password_from_file
@@ -29,10 +28,12 @@ class Repository():
         return cls(filename.split('\\liquibase')[0].rsplit('\\', 1)[1])
 
 
-    def __init__(self, name='', schema='', base=base):
-        self.base = base
+    def __init__(self, name='', schema='', proj=None):
+        if proj:
+            self.base = Project.base_from_project(proj)
+        else:
+            self.base = self.__class__.base
         if name:
-            self.name = self.find_name(name)
             if 'doc' not in name:
                 self.name = self.find_name(name)
             else:
@@ -42,9 +43,7 @@ class Repository():
             self.base_path = self.base + self.name + '/liquibase/'
             self.dbname = self.get_db_name()
             self.db_path = self.dbname.replace('-', '_')
-            #self.schema = self.get_schema() if not schema else schema
             self.instance = self._get_instance()
-            pass
 
     def __str__(self):
         return f'Repository({self.name})'
@@ -124,7 +123,7 @@ class Repository():
     def get_repos_from_port(port):
         cluster = Cluster(host='localhost', port=port, passw=password_from_file('postgres', 'localhost', port))
         dbs = cluster.databases
-        return Database.get_repositories_from_dbs(dbs)
+        return get_repositories_from_dbs(dbs)
 
     @staticmethod
     def get_all_repos_by_group(group):
@@ -132,10 +131,12 @@ class Repository():
 
     @property
     def schema(self):
-        if 'doc' not in self.name:
-            return self.get_schema()
-        else:
-            return 'document_meta'
+        if not self._schema:
+            if 'doc' not in self.name:
+                self._schema = self.get_schema()
+            else:
+                self._schema = 'document_meta'
+        return self._schema
 
     def get_name(self):
         return self.name
@@ -149,7 +150,7 @@ class Repository():
     def find_name(self, name):
         if 'doc' in name:
             return 'doc-db'
-        repos = Repository.get_repo_names()
+        repos = self.get_repo_names()
         a = [repo for repo in repos if name.replace('_', '-') in repo]
         if len(a) > 1:
             print("Nem egyértelmű a repository név!")
@@ -160,9 +161,8 @@ class Repository():
             a = [a[i]]
         return a[0]
 
-    @staticmethod
-    def get_repo_names():
-        return os.listdir(__class__.base)
+    def get_repo_names(self):
+        return os.listdir(self.base)
 
     @staticmethod
     def get_repo_names_exclude_include(excludelist=[], includelist=[]):
@@ -204,7 +204,7 @@ class Repository():
         noneed = ['install-parameters-db1.xml', 'liquibase-install-db1-step-01.xml', 'liquibase-install-db1-step-02.xml',
                   'liquibase-install-db-step-01.xml', 'liquibase-install-schema-step-02.xml', 'install-parameters.xml',
                   '_all-modules', '_create_dbs', '__init_dbs', 'init_dbs', '_init_dbs', 'all-modules', 'partman', 'cron_jobs',
-                  'create_publication.sql', 'ddl_changes_module', 'create_extensions.sql']
+                  'create_publication.sql', 'ddl_changes_module', 'create_extensions.sql', 'common']
         return list(set(files) - set(noneed))[0]
 
     @classmethod
@@ -233,7 +233,7 @@ class Repository():
         return f"{self.get_schema_version_dir()}/version-0"
 
     def get_tables_dir(self):
-        return '/'.join([self.base_path[:-1], self.db_path, self.schema, 'tables'])
+        return self.base_path[:-1] + self.db_path + '/' + self.schema + '/' + 'tables'
 
     def get_schema_version_0_lines(self) -> list[str]:
         with open(f'{self.get_tables_dir()}/schema-version-0.xml', 'r', encoding='utf8') as f:
@@ -254,12 +254,12 @@ class Repository():
             return True
         return False
 
-    def create_tablefile(self, tab_name):
+    def create_tablefile(self, tab_name, tabscript, fname):
         dirname = self.get_tables_dir()
         if not os.path.isdir(f"{dirname}/{tab_name}"):
             os.mkdir(f"{dirname}/{tab_name}")
-        fname = f"{dirname}/{tab_name}/{tab_name}-DDL-000.sql"
-        open(fname, 'a').close()
+        with open(fname, 'w', encoding='utf8') as f:
+            f.write(tabscript)
         print(f"{fname} file created.")
 
 
@@ -297,16 +297,16 @@ class Repository():
 
 
     def drop_database(self):
-        clus = Database.Database('postgres', '5432')
+        clus = Database('postgres', '5432')
         clus.sql_exec(f'drop database if exists {self.dbname}')
         print(f'{self.dbname} database dropped.')
 
     def drop_roles(self):
-        clus = Database.Database('postgres', '5432')
+        clus = Database('postgres', '5432')
         clus.drop_roles(self.schema)
 
     def delete_from_main_changelog(self):
-        clus = Database.Database('postgres', '5432')
+        clus = Database('postgres', '5432')
         if self.dbname == 'doc_document':
             clus.sql_exec(f"delete from public.databasechangelog where id like 'document_meta%'")
         else:
@@ -314,7 +314,7 @@ class Repository():
         print(f'{self.dbname}/% deleted from postgres db public.databasechangelog.')
 
     def drop_db_changelog(self):
-        clus = Database.Database(self.dbname, '5432')
+        clus = Database(self.dbname, '5432')
         clus.sql_exec(f'drop table if exists public.databasechangelog')
         print(f'databasechangelog dropped from {self.dbname} database.')
 
@@ -343,13 +343,31 @@ class Repository():
         base_name = self.base.replace('/', '\\') + self.name
         return f"docker-compose --env-file {base_name}\\.env -f {base_name}\etc\\release\\docker-compose.yml build"
 
-    @property
     def run_sh_eol_type(self):
         with open(self.base + self.name + '/run.sh') as f:
             oneline = f.readline()
         if f.newlines == '\r\n':
             return 'windows'
         return 'unix'
+
+    def env_eol_type(self):
+        with open(self.base + self.name + '/.env') as f:
+            oneline = f.readline()
+        if f.newlines == '\r\n':
+            return 'windows'
+        return 'unix'
+
+    @property
+    def is_unix_eol_types(self):
+        ok = True
+        if self.run_sh_eol_type() == 'windows':
+            print('run.sh windows EOL !!!')
+            ok = False
+        if self.env_eol_type() == 'windows':
+            print('.env windows EOL !!!')
+            ok = False
+        return ok
+
 
 def get_all_repos() -> list[Repository]:
     return [Repository(x) for x in Repository.get_repo_names()]

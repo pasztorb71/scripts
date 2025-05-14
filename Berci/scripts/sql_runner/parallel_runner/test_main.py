@@ -1,8 +1,7 @@
 from operator import itemgetter
 from unittest import TestCase
 
-import Environment
-import sql_runner.parallel_runner.multiprocess
+from classes import Environment
 
 
 class Test(TestCase):
