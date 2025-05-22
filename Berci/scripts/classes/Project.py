@@ -3,7 +3,7 @@
 def choose_project(reponame=None):
     if reponame in ('trino', 'backend', 'meta', 'parser'):
         return 'AKP'
-    elif reponame in ('emap'):
+    elif 'emap' in reponame:
         return 'BC'
     x = 3
     out = ''

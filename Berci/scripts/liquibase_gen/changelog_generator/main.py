@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from pprint import pprint
 
 def infinite_counter(start: int = 0):
@@ -17,14 +18,13 @@ def list_tables():
         print(directory)
 
 
-def gen_list():
-    filename = "C:/GIT/AKP/data-backend-database-postgres-liquibase/liquibase/masterdata/versions/schema-version-0.1.0.xml"
+def gen_list_from_version_xml(filename):
     with open(filename, 'r', encoding='utf-8') as f:
         lines = f.readlines()
     started = False
     dir_tables = list()
     for line in lines:
-        if '0033-measurement_class-add-trigger.sql' in line:
+        if '0002-acoustic_vehicle_class-create' in line:
             started = True
         if started and line == '\n':
             started = False
@@ -36,27 +36,26 @@ def gen_list():
     return dir_tables
 
 
-def write_files(lines):
+def write_chengesets(lines, ticket, v_path):
     for l in lines[:]:
         tablename = l[0]
         filename = l[1]
         seq = filename.split('-')[0]
-        path = f"C:/GIT/AKP/data-backend-database-postgres-liquibase/liquibase/masterdata/tables/{tablename}/{filename}"
-        changeset = """--liquibase formatted sql
+        dirname = f"{v_path}/tables/{tablename}"
+        Path(dirname).mkdir(parents=True, exist_ok=True)
+        path = f"{v_path}/tables/{tablename}/{filename}"
+        changeset = ("""--liquibase formatted sql
 --changeset bertalan.pasztor:!seq!
---comment AKP-854 measurement_info trigger létrehozása
-SET search_path = ${schema_name_new};
+--comment !ticket! !table! tábla létrehozása
 
-CALL public.measurement_info_trigger_generator('${schema_name_new}', '!table!');
-
-COMMIT;
-""".replace('!table!', tablename).replace('!seq!', seq)
+""".replace('!table!', tablename).replace('!seq!', seq)).replace('!ticket!', ticket)
         with open(path, 'w', encoding='utf-8') as f:
             f.write(changeset)
 
 
 if __name__ == '__main__':
     #list_tables()
-    l = gen_list()
-    write_files(l)
+    path = "C:/GIT/AKP/data-lakehouse-trino-liquibase/liquibase/akp_masterdata"
+    l = gen_list_from_version_xml(path + "/versions/schema-version-0.1.0.xml")
+    write_chengesets(l, 'AKP-855', path)
 

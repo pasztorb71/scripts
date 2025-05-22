@@ -41,9 +41,11 @@ def check_xml_path():
 
 if __name__ == '__main__':
     #reponame = 'backend' #AKP
-    reponame = 'trino'
+    #reponame = 'trino'
     #reponame = 'meta'
     #reponame = 'parser'
+    #reponame = 'emap'
+    reponame = 'emap-org'
     proj = choose_project(reponame)
     base = base_from_project(proj)
     repo = Repository(reponame, proj=proj)

@@ -1,11 +1,10 @@
 import pandas as pd
 
+from classes.Project import choose_project
 from classes.Repository import Repository
 from classes.Ticket import Ticket
 from liquibase_gen.gen_table.Confluence import Confluence
-from liquibase_gen.gen_table.params import gen_table_params, gen_table_params3, gen_table_params4, gen_table_params5, \
-    gen_table_params6, gen_table_params7, gen_table_params8, gen_table_params9, gen_table_params10, gen_table_params11, \
-    gen_table_params12, measurement_data, measurement_interval, organization_mapping
+from liquibase_gen.gen_table.params import event, event_input, event_validation_result, event_status_process, event_catalog, event_catalog_item
 
 
 def modify_type(col):
@@ -22,9 +21,9 @@ def modify_type(col):
         .replace('int(nan)', 'int')
 
 
-def get_table_from_confluence(table, url):
+def get_table_from_confluence(table, url, start_string=None):
     conf = Confluence()
-    html = conf.get_table_from_url(url)
+    html = conf.get_table_from_url(url, start_string)
     table_comment = conf.get_table_comment()
     tab = pd.read_html(html)
     df = tab[0]
@@ -58,7 +57,7 @@ def gen_table_columns(tab_name, table, tab_short_name, database_type):
         header = "CREATE TABLE " + tab_name + " (" + \
                  "\n\tx__id varchar(30) NOT NULL," \
                  "\n\tx__insdate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP," \
-                 "\n\tx__insuser varchar(30) NOT NULL," \
+                 "\n\tx__insuser varchar(30) NOT NULL DEFAULT '0'," \
                  "\n\tx__moddate timestamp NULL," \
                  "\n\tx__moduser varchar(30) NULL," + \
                  "\n\tx__version int8 NOT NULL DEFAULT 0,"
@@ -103,7 +102,7 @@ def gen_table_columns(tab_name, table, tab_short_name, database_type):
         if col[0].lower().endswith('_id'):
             constraints.append('CONSTRAINT fk_'+tab_short_name+'_'+col[0].lower()+' FOREIGN KEY ('+col[0].lower()+') REFERENCES '+col[0].lower().split('_id')[0]+'(x__id)')
         if 'enum' in col[1].lower():
-            constraints.append('CONSTRAINT ck_'+tab_short_name+'_'+col[0].lower()+f" CHECK ((({col[0].lower()})::text = ANY (ARRAY[('{col[1].split('enum')[1]}'::character varying)::text]))),")
+            constraints.append('CONSTRAINT ck_'+tab_short_name+'_'+col[0].lower()+f" CHECK ((({col[0].lower()})::text = ANY (ARRAY[('{col[1].lower().split('enum')[1]}'::character varying)::text]))),")
         if any([x  in col[1].lower() for x in ('check(','check (')]):
             constraints.append('CONSTRAINT ck_' + tab_short_name + '_' + col[0].lower() + f" CHECK ((({col[0].lower()})::text = ANY (ARRAY[(''::character varying)::text]))),")
     if database_type != 'trino':
@@ -134,10 +133,10 @@ COMMENT ON COLUMN {tab_name}.x__version IS 'Versioning of changes';"""
     if language == 'hu':
         header += f"""COMMENT ON COLUMN {tab_name}.x__id IS 'Elsődleges kulcs';
 COMMENT ON COLUMN {tab_name}.x__insdate IS 'A beszúrás időpontja';
-COMMENT ON COLUMN {tab_name}.x__insuser IS 'A beszúrást végző felhasználó neve';
+COMMENT ON COLUMN {tab_name}.x__insuser IS 'A beszúrást végző felhasználó azonosítója (X__ID)';
 COMMENT ON COLUMN {tab_name}.x__moddate IS 'Az utolsó módosítás időpontja';
-COMMENT ON COLUMN {tab_name}.x__moduser IS 'A módosítást végző felhasználó neve';
-COMMENT ON COLUMN {tab_name}.x__version IS 'Az aktuális verziója a rekordnak';"""
+COMMENT ON COLUMN {tab_name}.x__moduser IS 'A módosítást végző felhasználó azonosítója (X__ID)';
+COMMENT ON COLUMN {tab_name}.x__version IS 'Változás verziózása';"""
     script += header
     for col in [row for row in table if is_row_needed(row[0])][1:]:
         modified_comment = col[comment_col].replace("'", "''")
@@ -156,8 +155,8 @@ CALL public.add_privileges_to_table('${schema_name}', '!table!');
 
 def gen_table_header(sema, tab_name, ticket_name, version, sequence, database_type):
     search_path = 'SET search_path = ${schema_name};\n' if database_type != 'trino' else ''
-    return (f"""--changeset bertalan.pasztor:!schema!-{sequence}
---comment {ticket_name} {tab_name} tábla létrehozása\n""" + search_path).replace('!schema!', '${schema_name}')
+    return ("""--changeset bertalan.pasztor:${schema_name_new}-""" + f"""{sequence}
+--comment {ticket_name} {tab_name.upper()} tábla létrehozása\n""" + search_path).replace('!schema!', '${schema_name}')
 
 
 def gen_table_history(sema, tab_name, ticket_name, version):
@@ -209,24 +208,25 @@ def create_tablefile(repo:Repository, tab_name, sequence, tabscript):
 
 
 if __name__ == '__main__':
-    project = 'AKP'
-    params = organization_mapping
-
-    ticket = Ticket(params['ticket'])
-    repo = Repository(params['repo'], proj=project)
-    base = repo.get_base_path()
-    tab_name = params['tablename'].split('.')[1].lower()
-    schema_name = params['tablename'].split('.')[0].lower()
-    repo._schema = schema_name
-    tab_short_name = params['table_shortname']
-    history = params['history']
-    url = params['url']
-    db = repo.get_db_name()
-    db_path = db.replace('-', '_')
-    #TODO beírni a create-tables.xml-be
-    tab_comment, table = get_table_from_confluence(tab_name, url)
-    database_type = params['database_type'] if 'database_type' in params else 'postgres'
-    tabscript = gen_table_script(tab_comment, schema_name, tab_name, table, history,
-                                 ticket.name, ticket.get_version(), params['language'], params['sequence'], database_type)
-    create_tablefile(repo, tab_name, params['sequence'], tabscript)
+    reponame = 'emap-org'  # AKP
+    params_list = [event, event_input, event_validation_result, event_status_process, event_catalog, event_catalog_item]
+    for params in params_list:
+        ticket = Ticket(params['ticket'])
+        project = choose_project(reponame)
+        repo = Repository(reponame, proj=project)
+        base = repo.get_base_path()
+        tab_name = params['tablename'].split('.')[1].lower()
+        schema_name = params['tablename'].split('.')[0].lower()
+        repo._schema = schema_name
+        tab_short_name = params['table_shortname']
+        history = params['history']
+        url = params['url']
+        db = repo.get_db_name()
+        db_path = db.replace('-', '_')
+        #TODO beírni a create-tables.xml-be
+        tab_comment, table = get_table_from_confluence(tab_name, url, params.get('start_string'))
+        database_type = params['database_type'] if 'database_type' in params else 'postgres'
+        tabscript = gen_table_script(tab_comment, schema_name, tab_name, table, history,
+                                     ticket.name, ticket.get_version(), params['language'], params['sequence'], database_type)
+        create_tablefile(repo, tab_name, params['sequence'], tabscript)
 

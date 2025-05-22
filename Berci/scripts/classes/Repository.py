@@ -256,6 +256,8 @@ class Repository():
 
     def create_tablefile(self, tab_name, tabscript, fname):
         dirname = self.get_tables_dir()
+        if 'akp_masterdata' in dirname:
+            dirname = dirname.replace('akp_masterdata', 'masterdata')
         if not os.path.isdir(f"{dirname}/{tab_name}"):
             os.mkdir(f"{dirname}/{tab_name}")
         with open(fname, 'w', encoding='utf8') as f:

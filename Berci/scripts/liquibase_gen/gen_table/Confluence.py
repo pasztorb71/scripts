@@ -10,7 +10,7 @@ from utils.utils_sec import get_atlassian_login_from_file
 
 
 class Confluence:
-    def get_table_from_url(self, url):
+    def get_table_from_url(self, url, start_string=None):
         user_pass = get_atlassian_login_from_file()
         page = requests.get(url, auth=HTTPBasicAuth(user_pass[0], user_pass[1]))
         cont = page.text
@@ -18,7 +18,11 @@ class Confluence:
         baseurl = 'https://icellmobilsoft-int.atlassian.net'
         url = f'{baseurl}/wiki/rest/api/content/{str(page_id)}?expand=body.storage'
         self.page = requests.get(url, auth=HTTPBasicAuth(user_pass[0], user_pass[1]))
-        return self.page.text.replace('\\"','\"')
+        if start_string:
+            txt = self.page.text.split(start_string,1)[1]
+        else:
+            txt = self.page.text
+        return txt.replace('\\"','\"')
 
     def get_table_comment(self):
         parsed_html = BeautifulSoup(self.page.text, features="lxml")
