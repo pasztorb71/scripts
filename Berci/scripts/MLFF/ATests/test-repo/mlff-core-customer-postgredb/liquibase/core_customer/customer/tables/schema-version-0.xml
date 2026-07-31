@@ -1,0 +1,79 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- =================================================================================== -->
+    <!-- A Kafka replikáció működéséhez szükséges debezium segédtáblák létrehozása..         -->
+    <!-- =================================================================================== -->
+    <include file="../../_all-modules/schema/tables/debezium_heartbeat/debezium_heartbeat.sql" relativeToChangelogFile="true"/>
+    <include file="../../_all-modules/schema/tables/dbz_signal/dbz_signal.sql" relativeToChangelogFile="true"/>
+
+    <!-- ============================================================================== -->
+    <!-- A Schema 0. FŐverziójához tartozó komponens verziók becsatolása..              -->
+    <!-- ============================================================================== -->
+
+    <!-- ============================================================================== -->
+    <!-- A 0.09 komponens verzióhoz tartozó, sql tábla változások..                     -->
+    <!-- ============================================================================== -->
+    <include file="customer/customer-DDL-000.sql" relativeToChangelogFile="true" labels="0.09"/>
+    <include file="security_user/security_user-DDL-000.sql" relativeToChangelogFile="true" labels="0.09"/>
+    <include file="customer_sec_user_relation/customer_sec_user_relation-DDL-000.sql" relativeToChangelogFile="true" labels="0.09"/>
+    <include file="user_session/user_session-DDL-000.sql" relativeToChangelogFile="true" labels="0.09"/>
+    <include file="verification_code/verification_code-DDL-000.sql" relativeToChangelogFile="true" labels="0.09"/>
+    <include file="registration_user_session/registration_user_session-DDL-000.sql" relativeToChangelogFile="true" labels="0.09"/>
+    <include file="customer_media/customer_media-DDL-000.sql" relativeToChangelogFile="true" labels="0.09"/>
+
+    <!-- ============================================================================== -->
+    <!-- A 0.10 komponens verzióhoz tartozó, sql tábla változások..                     -->
+    <!-- ============================================================================== -->
+    <include file="customer/customer-DDL-010.sql" relativeToChangelogFile="true" labels="0.10, R0.10"/>
+    <include file="customer_outbox/customer_outbox-DDL-000.sql" relativeToChangelogFile="true" labels="0.10, R0.10"/>
+    <include file="firebase_token/firebase_token-DDL-000.sql" relativeToChangelogFile="true" labels="0.10, R0.10"/>
+    <include file="verification_code/verification_code-DDL-010.sql" relativeToChangelogFile="true" labels="0.10, R0.10"/>
+    <include file="firebase_token/firebase_token-DDL-010.sql" relativeToChangelogFile="true" labels="0.10, R0.10"/>
+    <include file="security_user/security_user-DDL-010.sql" relativeToChangelogFile="true" labels="0.10, R0.10"/>
+
+    <!-- ============================================================================== -->
+    <!-- A 0.11 komponens verzióhoz tartozó, sql tábla változások..                     -->
+    <!-- ============================================================================== -->
+    <include file="customer_token/customer_token-DDL-000.sql" relativeToChangelogFile="true" labels="0.11, R0.11"/>
+    <include file="firebase_token/firebase_token-DDL-011.sql" relativeToChangelogFile="true" labels="0.11, R0.11"/>
+    <include file="security_user/security_user-DDL-011.sql" relativeToChangelogFile="true" labels="0.11, R0.11"/>
+    <include file="verification_code/verification_code-DDL-011.sql" relativeToChangelogFile="true" labels="0.11, R0.11"/>
+
+    <!-- ============================================================================== -->
+    <!-- A 0.12 komponens verzióhoz tartozó, sql tábla változások..                     -->
+    <!-- ============================================================================== -->
+    <include file="customer_address/customer_address-DDL-000.sql" relativeToChangelogFile="true" labels="0.12, R0.12"/>
+    <include file="phone_number_whitelist/phone_number_whitelist-DDL-000.sql" relativeToChangelogFile="true" labels="0.12, R0.12"/>
+    <include file="customer_address/customer_address-DDL-012.sql" relativeToChangelogFile="true" labels="0.12, R0.12"/>
+    <include file="verification_code/verification_code-DDL-012.sql" relativeToChangelogFile="true" labels="0.12, R0.12"/>
+
+    <!-- ============================================================================== -->
+    <!-- A 0.13 komponens verzióhoz tartozó, sql tábla változások..                     -->
+    <!-- ============================================================================== -->
+    <include file="customer_address/customer_address-DDL-013.sql" relativeToChangelogFile="true" labels="0.13, R0.13"/>
+
+    <!-- ============================================================================== -->
+    <!-- A 0.14 komponens verzióhoz tartozó, sql tábla változások..                     -->
+    <!-- ============================================================================== -->
+    <include file="customer/customer-DDL-014.sql" relativeToChangelogFile="true" labels="0.14, R0.14"/>
+
+    <!-- ============================================================================== -->
+    <!-- A 0.16 komponens verzióhoz tartozó, sql tábla változások..                     -->
+    <!-- ============================================================================== -->
+    <include file="customer_media/customer_media-DDL-016.sql" relativeToChangelogFile="true" labels="0.16, R0.16"/>
+
+    <!-- ============================================================================== -->
+    <!-- A 0.17 komponens verziótól, sql tábla változások..                     -->
+    <!-- ============================================================================== -->
+    <include file="schema-version-017.xml" relativeToChangelogFile="true" labels="0.17, R0.17"/>  
+    <include file="schema-version-018.xml" relativeToChangelogFile="true" labels="0.18, R0.18"/>  
+    <include file="schema-version-020.xml" relativeToChangelogFile="true" labels="0.20, R0.20"/>  
+    <include file="schema-version-022.xml" relativeToChangelogFile="true" labels="0.22, R0.22"/>  
+
+
+    <!-- ============================================================================== -->
+
+</databaseChangeLog>

@@ -1,0 +1,47 @@
+core_genos : genos.document(format) : ['PDF', 'TEXT'] : None
+core_genos : genos.document(status) : ['CREATED', 'PROCESSING', 'SUCCESS', 'FAILED', 'DOWNLOADED'] : None
+core_genos : genos.document(storage_type) : ['DATABASE', 'DOCUMENT_SERVICE'] : None
+core_genos : genos.template(generator_engine) : ['NONE', 'PDF_BOX', 'JASPER'] : [('NONE', 51), ('JASPER', 13)]
+core_genos : genos.template(language) : ['ID', 'EN'] : [('ID', 33), ('EN', 31)]
+core_genos : genos.template(template_engine) : ['NONE', 'HANDLEBARS', 'MUSTACHE', 'JASPER'] : [('MUSTACHE', 51), ('JASPER', 13)]
+core_genos : genos.template_part(generator_engine) : ['NONE', 'PDF_BOX', 'JASPER'] : [('NONE', 51), ('JASPER', 29)]
+core_genos : genos.template_part(template_engine) : ['NONE', 'HANDLEBARS', 'MUSTACHE', 'JASPER'] : [('MUSTACHE', 51), ('JASPER', 29)]
+core_genos : genos.template_part(template_part_type) : ['HEADER', 'CONTENT', 'FOOTER', 'MAIN', 'OTHER'] : [('CONTENT', 16), ('MAIN', 64)]
+core_notification_dispatcher : notification_dispatcher.event(channel) : ['WHATSAPP', 'PUSH_NOTIFICATION', 'EMAIL', 'SMS'] : [('EMAIL', 10), ('PUSH_NOTIFICATION', 16), ('WHATSAPP', 21)]
+core_notification_dispatcher : notification_dispatcher.notification(event_status) : ['SENT_TO_PROVIDER', 'IN_PROGRESS', 'FAILED'] : None
+core_notification_dispatcher : notification_dispatcher.notification(language) : ['EN', 'ID'] : None
+core_notification_email : notification_email.notification_email(language) : ['EN', 'ID'] : None
+core_notification_email : notification_email.notification_email(response_status) : ['INITIAL', 'WAITING_FOR_RETRY', 'FAILED', 'SENT'] : None
+core_notification_wa : notification_wa.notification_wa(language) : ['ID', 'EN'] : None
+core_notification_wa : notification_wa.notification_wa(response_status) : ['READ', 'DELIVERED', 'SENT', 'FAILED', 'DELETED', 'SMS_SUCCESS', 'WAITING_FOR_RETRY', 'SEND_IN_PROGRESS'] : None
+core_notification_wa : notification_wa.template(category) : ['AUTHENTICATION', 'MARKETING', 'UTILITY'] : [('UTILITY', 36), ('MARKETING', 3), ('AUTHENTICATION', 6)]
+core_notification_wa : notification_wa.template(template_language) : ['ID', 'EN'] : [('ID', 23), ('EN', 22)]
+core_notification_wa : notification_wa.webhook(status) : ['CREATED', 'PROCESSED', 'FAILED'] : None
+core_notification_wa : notification_wa.webhook(type) : ['SENT', 'DELIVERED', 'READ', 'ERROR', 'FALLBACK_SUCCESS', 'FALLBACK_FAILED'] : None
+core_privateuser : privateuser.um_group(group_type) : ['LDAP', 'CUSTOM'] : [('LDAP', 11)]
+core_privateuser : privateuser.um_user(status) : ['ACTIVE', 'INACTIVE'] : None
+core_ticket : ticket.location_concerned(location_type) : ['DEPARTURE', 'STOP', 'DESTINATION'] : None
+core_ticket : ticket.payable_segment(segment_enforcement_status) : ['UNSYNCHRONIZED', 'SYNCHRONIZED', 'NULL'] : None
+core_ticket : ticket.ticket(toll_category_type) : ['GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+core_ticket : ticket.ticket(ticket_enforcement_status) : ['UNSYNCHRONIZED', 'PENDING', 'BLUEPAY', 'SYNCHRONIZED', 'EXPIRED', 'FAILED_TO_SYNC_ALL_SEGMENT'] : None
+core_ticket : ticket.ticket(ticket_payment_status) : ['PREPARED_FOR_PAYMENT', 'PAID', 'UNPAID', 'REFUNDED', 'CAPTURED'] : None
+core_ticket : ticket.ticket_plan(toll_category_type) : ['GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+core_vehicle : vehicle.plate_number_change(change_type) : ['CREATE', 'DELETE'] : None
+core_vehicle : vehicle.vehicle(toll_category_type) : ['GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+core_vehicle : vehicle.vehicle_media(media_size) : ['ORIGINAL', 'MEDIUM', 'SMALL'] : None
+core_vehicle : vehicle.vehicle_media(vehicle_document_type) : ['VEHICLE_FRONT_SIDE', 'VEHICLE_BACK_SIDE', 'STNK_DOCUMENT_FRONT_SIDE', 'STNK_DOCUMENT_BACK_SIDE'] : None
+core_vehicle : vehicle.virtual_device_unit(status) : ['OWNED', 'PENDING', 'ACCEPTED', 'DENIED', 'WITHDRAWN', 'VEHICLE_DELETE', 'CUSTOMER_DELETE'] : None
+enforcement_detection_alert : detection_alert.alert_check_data(eligibility_check) : ['UNDEFINED', 'OK', 'WARN'] : None
+enforcement_detection_alert : detection_alert.alert_check_data(event_type) : ['NORMAL', 'TRANSITION'] : None
+enforcement_detection_alert : detection_alert.alert_check_data(exemption_check) : ['UNDEFINED', 'EXEMPTED', 'NOT_EXEMPTED'] : None
+enforcement_detection_alert : detection_alert.alert_check_data(registration_check) : ['UNDEFINED', 'REGISTERED', 'NOT_REGISTERED'] : None
+enforcement_detection_alert : detection_alert.alert_check_data(sanction_check) : ['UNDEFINED', 'OK', 'WARN'] : None
+enforcement_detection_alert : detection_alert.alert_check_data(status) : ['UNDEFINED', 'RECEIVED', 'NO_ALERT', 'ALERTED'] : None
+enforcement_detection_observation : detection_observation.observation_event(toll_category) : ['UNDEFINED', 'GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6', 'NULL'] : None
+enforcement_detection : detection.detection_data(event_type) : ['NORMAL', 'TRANSITION'] : [('TRANSITION', 111), ('NORMAL', 55500)]
+enforcement_detection : detection.detection_data(lane_type) : ['ENTRY', 'ON_ROAD', 'EXIT', 'NULL'] : [('EXIT', 56), ('ENTRY', 2182), ('ON_ROAD', 53373)]
+enforcement_detection : detection.detection_data(provider_on_alert) : ['UNDEFINED', 'ALERTED', 'NOT_ALERTED'] : [('UNDEFINED', 104), ('NOT_ALERTED', 55223), ('ALERTED', 284)]
+enforcement_detection : detection.detection_data(provider_type) : ['MCU', 'GANTRY', 'TRIPOD'] : [('TRIPOD', 26), ('GANTRY', 53545), ('MCU', 2040)]
+enforcement_detection : detection.detection_data(status) : ['RECEIVED', 'IN_PROGRESS', 'IMG_AVAILABLE', 'IMG_ERROR', 'VISUAL_CHECK', 'EVALUATION', 'EXEMPTION_CHECK', 'EXEMPTED', 'ELIGIBILITY', 'SETTLEMENT', 'SEG_ERROR', 'CATEGORY_EXEMPTED', 'FORBIDDEN_SITE_ID', 'PROCESS_END'] : [('FORBIDDEN_SITE_ID', 7), ('IN_PROGRESS', 35), ('RECEIVED', 59), ('EXEMPTED', 11), ('SEG_ERROR', 32), ('IMG_ERROR', 1), ('EXEMPTION_CHECK', 17), ('VISUAL_CHECK', 958), ('ELIGIBILITY', 54485), ('CATEGORY_EXEMPTED', 6)]
+enforcement_detection : detection.detection_data(visual_check_status) : ['ACCEPTED_VALUABLE', 'ACCEPTED_WORTHLESS', 'REJECTED_VALUABLE', 'REJECTED_WORTHLESS', 'VC_ERROR', 'NULL'] : [(None, 55570), ('REJECTED_VALUABLE', 30), ('ACCEPTED_WORTHLESS', 10), ('ACCEPTED_VALUABLE', 1)]
+enforcement_detection : detection.detection_detail(front_plate_status) : ['UNDEFINED', 'NO_PLATE', 'NOT_RECOGNIZED', 'RECOGNIZED', 'NOT_CHECKED'] : None

@@ -7,11 +7,9 @@ from dataclasses import dataclass, asdict, field
 import psycopg2
 import yaml
 
-import classes.Repository
-from sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess, mproc_get_dabase_names
-from sql_runner.parallel_runner.thread import Querydata, dbcommand_thread_executor
+from MLFF.sql_runner.parallel_runner.multiprocess import parallel_run_multiprocess, mproc_get_dabase_names
+from MLFF.sql_runner.parallel_runner.thread import Querydata, dbcommand_thread_executor
 from utils import utils_db
-import classes.Cluster
 from utils.utils_sec import password_from_file
 
 PORT_DATABASES_FROM_ENVS = 'c:/Users/bertalan.pasztor/PycharmProjects/liquibase/Berci/scripts/backup/port_databases_from_envs.yaml'

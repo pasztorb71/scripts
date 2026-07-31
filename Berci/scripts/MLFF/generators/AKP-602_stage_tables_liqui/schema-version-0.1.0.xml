@@ -1,0 +1,24 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- A 0.1.0 komponens verzióhoz tartozó, sql tábla változások.. -->
+    <include file="../tables/stage_xtx_data_description_header/0017-stage_xtx_data_description_header-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_date_time_information_header/0018-stage_xtx_date_time_information_header-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_instrument_description_header/0019-stage_xtx_instrument_description_header-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_lane_configuration_header/0020-stage_xtx_lane_configuration_header-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_lane_definition_header/0021-stage_xtx_lane_definition_header-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_mass_and_axle_spacing_data/0022-stage_xtx_mass_and_axle_spacing_data-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_sensor_description_header/0023-stage_xtx_sensor_description_header-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_site_survey_identification_header/0024-stage_xtx_site_survey_identification_header-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_speed_summary_20_data/0025-stage_xtx_speed_summary_20_data-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_speed_summary_23_data/0026-stage_xtx_speed_summary_23_data-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_start_of_header/0027-stage_xtx_start_of_header-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_status_report_data/0028-stage_xtx_status_report_data-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_summary_data/0029-stage_xtx_summary_data-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_summary_header/0030-stage_xtx_summary_header-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_vehicle_data/0031-stage_xtx_vehicle_data-create.sql" relativeToChangelogFile="true"/>
+    <include file="../tables/stage_xtx_vehicle_header/0032-stage_xtx_vehicle_header-create.sql" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

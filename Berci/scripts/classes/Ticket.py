@@ -28,6 +28,7 @@ class Ticket:
         return '.'.join(tmp)+'.0'
 
     def get_title(self):
+        sum = self.content['fields']['summary']
         return((self.content['fields']['summary'])
                .replace(' ','_')
                .replace('[','')

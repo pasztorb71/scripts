@@ -1,0 +1,16 @@
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_data_description_header;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_date_time_information_header;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_instrument_description_header;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_lane_configuration_header;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_lane_definition_header;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_mass_and_axle_spacing_data;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_sensor_description_header;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_site_survey_identification_header;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_speed_summary_20_data;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_speed_summary_23_data;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_start_of_header;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_status_report_data;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_summary_data;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_summary_header;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_vehicle_data;
+DROP TABLE IF EXISTS lakehouse.prototype_consolidated.stage_xtx_vehicle_header;

@@ -1,5 +1,5 @@
 
-from Git.Git_class import Git
+from classes.Git_class import Git
 from Git.services import delete_branch_multiple_repos
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@
 A program felolvassa a fájlt, majd a fájlban található repository nevek melletti verziószámok szerint
 chckoutolja a megfelelő releae verziókat a megadott repository-kban
 """
-from Git.Git_class import Git
+from classes.Git_class import Git
 
 FILENAME = 'checkout_file.txt'
 

@@ -34,7 +34,7 @@ class Repository():
         else:
             self.base = self.__class__.base
         if name:
-            if 'doc' not in name:
+            if 'doc1' not in name:
                 self.name = self.find_name(name)
             else:
                 if 'test-repo' not in base:
@@ -148,7 +148,7 @@ class Repository():
         return self.base_path
 
     def find_name(self, name):
-        if 'doc' in name:
+        if 'doc1' in name:
             return 'doc-db'
         repos = self.get_repo_names()
         a = [repo for repo in repos if name.replace('_', '-') in repo]
@@ -397,3 +397,33 @@ def column_search(filter_function, generator=None):
                             columns.append(Column(dbname, tablename, col[0], col[1]))
                             prev_column = column
     return columns
+
+def choose_repository() -> str:
+    reponames = {
+        '1': 'backend', # AKP backend
+        '2': 'meta', # AKP meta
+        '3': 'trino', # AKP Trino
+        '4': 'emap-liq', # EMAP liquibase
+        '5': 'emap-org', # EMAP org
+        '6': 'emap-docs', # EMAP docs
+        '7': 'parser', # Parser
+        '8': 'register', # Register
+        '9': 'notifier', # File notifier
+        '10': 'data-migration-hive-init-python', # Data migration hive init python
+    }
+
+    x = '0'
+    while x not in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']:
+        x = input('Válassz repository-t:\n'
+                    '1: AKP backend\n'
+                    '2: AKP meta\n'
+                    '3: AKP Trino\n'
+                    '4: EMAP liquibase\n'
+                    '5: EMAP org\n'
+                    '6: EMAP docs\n'
+                    '7: Parser\n'
+                    '8: Register\n'
+                    '9: File notifier\n'
+                    '10: Data migration hive init python\n'
+             )
+    return reponames[x]

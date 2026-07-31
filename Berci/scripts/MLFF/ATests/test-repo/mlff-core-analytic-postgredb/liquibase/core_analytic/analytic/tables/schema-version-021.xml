@@ -1,0 +1,14 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- ============================================================================== -->
+    <!-- A 0.21 komponens verzióhoz tartozó, sql tábla változások..                     -->
+    <!-- ============================================================================== -->
+    <include file="plate_number_whitelist_package/0001-plate_number_whitelist_package-create.sql" relativeToChangelogFile="true"/>
+    <include file="plate_number_whitelist/0002-plate_number_whitelist-create.sql" relativeToChangelogFile="true"/>
+    
+    <!-- ============================================================================== -->
+
+</databaseChangeLog>   

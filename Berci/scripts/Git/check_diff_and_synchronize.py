@@ -1,4 +1,4 @@
-from Git.Git_class import Git
+from classes.Git_class import Git
 from Git.services import is_branch_synchronized_in_multiple_repos, synchronize_branch_in_multiple_repos
 from utils import utils
 

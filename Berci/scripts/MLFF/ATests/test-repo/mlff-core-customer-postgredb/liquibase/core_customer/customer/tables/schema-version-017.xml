@@ -1,0 +1,25 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- ============================================================================== -->
+    <!-- A 0.17 komponens verzióhoz tartozó, sql tábla változások..                     -->
+    <!-- ============================================================================== -->
+    <include file="firebase_token/0020-firebase_token-DDL.sql" relativeToChangelogFile="true"/>
+    <include file="firebase_token/0021-firebase_token-DDL.sql" relativeToChangelogFile="true"/>
+    <include file="user_session/0022-user_session-DDL.sql" relativeToChangelogFile="true"/>
+    <include file="firebase_token_outbox/0023-firebase_token_outbox-DDL.sql" relativeToChangelogFile="true"/>
+    <include file="user_session/0024-user_session-DDL.sql" relativeToChangelogFile="true"/>
+    <include file="firebase_token/0025-firebase_token-DDL.sql" relativeToChangelogFile="true"/>
+    <include file="verification_code/0026-verification_code-DDL.sql" relativeToChangelogFile="true"/>
+    <include file="verification_code/0027-verification_code-DDL.sql" relativeToChangelogFile="true"/>
+    <include file="verification_code_outbox/0028-verification_code_outbox-DDL.sql" relativeToChangelogFile="true"/>
+    <include file="registration_user_session/0029-registration_user_session-DDL.sql" relativeToChangelogFile="true"/>
+    <include file="customer/0030-customer-DDL.sql" relativeToChangelogFile="true"/>
+    <include file="security_user/0031-security_user-DDL.sql" relativeToChangelogFile="true"/>
+    <include file="user_session/0032-user_session-DDL.sql" relativeToChangelogFile="true"/>
+    
+    <!-- ============================================================================== -->
+
+</databaseChangeLog>    

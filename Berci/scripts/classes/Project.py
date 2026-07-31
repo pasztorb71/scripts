@@ -1,7 +1,8 @@
 
 
 def choose_project(reponame=None):
-    if reponame in ('trino', 'backend', 'meta', 'parser'):
+    #if reponame in ('trino', 'backend', 'meta', 'parser', 'register'):
+    if any(x in reponame for x in ['trino', 'backend', 'meta', 'parser', 'register', 'notifier', 'hive-init']):
         return 'AKP'
     elif 'emap' in reponame:
         return 'BC'

@@ -1,0 +1,200 @@
+core_genos : genos.document(format) : ['PDF', 'TEXT'] : None
+core_genos : genos.document(status) : ['CREATED', 'PROCESSING', 'SUCCESS', 'FAILED', 'DOWNLOADED'] : None
+core_genos : genos.document(storage_type) : ['DATABASE', 'DOCUMENT_SERVICE'] : None
+core_genos : genos.template(generator_engine) : ['NONE', 'PDF_BOX', 'JASPER'] : [('NONE', 51), ('JASPER', 13)]
+core_genos : genos.template(language) : ['ID', 'EN'] : [('ID', 33), ('EN', 31)]
+core_genos : genos.template(template_engine) : ['NONE', 'HANDLEBARS', 'MUSTACHE', 'JASPER'] : [('MUSTACHE', 51), ('JASPER', 13)]
+core_genos : genos.template_part(generator_engine) : ['NONE', 'PDF_BOX', 'JASPER'] : [('NONE', 51), ('JASPER', 29)]
+core_genos : genos.template_part(template_engine) : ['NONE', 'HANDLEBARS', 'MUSTACHE', 'JASPER'] : [('MUSTACHE', 51), ('JASPER', 29)]
+core_genos : genos.template_part(template_part_type) : ['HEADER', 'CONTENT', 'FOOTER', 'MAIN', 'OTHER'] : [('CONTENT', 16), ('MAIN', 64)]
+core_notification_dispatcher : notification_dispatcher.event(channel) : ['WHATSAPP', 'PUSH_NOTIFICATION', 'EMAIL', 'SMS'] : [('EMAIL', 10), ('PUSH_NOTIFICATION', 16), ('WHATSAPP', 21)]
+core_notification_dispatcher : notification_dispatcher.notification(event_status) : ['SENT_TO_PROVIDER', 'IN_PROGRESS', 'FAILED'] : None
+core_notification_dispatcher : notification_dispatcher.notification(language) : ['EN', 'ID'] : None
+core_notification_email : notification_email.notification_email(language) : ['EN', 'ID'] : None
+core_notification_email : notification_email.notification_email(response_status) : ['INITIAL', 'WAITING_FOR_RETRY', 'FAILED', 'SENT'] : None
+core_notification_wa : notification_wa.notification_wa(language) : ['ID', 'EN'] : None
+core_notification_wa : notification_wa.notification_wa(response_status) : ['READ', 'DELIVERED', 'SENT', 'FAILED', 'DELETED', 'SMS_SUCCESS', 'WAITING_FOR_RETRY', 'SEND_IN_PROGRESS'] : None
+core_notification_wa : notification_wa.template(category) : ['AUTHENTICATION', 'MARKETING', 'UTILITY'] : [('UTILITY', 36), ('MARKETING', 3), ('AUTHENTICATION', 6)]
+core_notification_wa : notification_wa.template(template_language) : ['ID', 'EN'] : [('ID', 23), ('EN', 22)]
+core_notification_wa : notification_wa.webhook(status) : ['CREATED', 'PROCESSED', 'FAILED'] : None
+core_notification_wa : notification_wa.webhook(type) : ['SENT', 'DELIVERED', 'READ', 'ERROR', 'FALLBACK_SUCCESS', 'FALLBACK_FAILED'] : None
+core_privateuser : privateuser.um_group(group_type) : ['LDAP', 'CUSTOM'] : [('LDAP', 11)]
+core_privateuser : privateuser.um_user(status) : ['ACTIVE', 'INACTIVE'] : None
+core_ticket : ticket.location_concerned(location_type) : ['DEPARTURE', 'STOP', 'DESTINATION'] : None
+core_ticket : ticket.payable_segment(segment_enforcement_status) : ['UNSYNCHRONIZED', 'SYNCHRONIZED', 'NULL'] : None
+core_ticket : ticket.ticket(toll_category_type) : ['GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+core_ticket : ticket.ticket(ticket_enforcement_status) : ['UNSYNCHRONIZED', 'PENDING', 'BLUEPAY', 'SYNCHRONIZED', 'EXPIRED', 'FAILED_TO_SYNC_ALL_SEGMENT'] : None
+core_ticket : ticket.ticket(ticket_payment_status) : ['PREPARED_FOR_PAYMENT', 'PAID', 'UNPAID', 'REFUNDED', 'CAPTURED'] : None
+core_ticket : ticket.ticket_plan(toll_category_type) : ['GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+core_vehicle : vehicle.plate_number_change(change_type) : ['CREATE', 'DELETE'] : None
+core_vehicle : vehicle.vehicle(toll_category_type) : ['GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+core_vehicle : vehicle.vehicle_media(media_size) : ['ORIGINAL', 'MEDIUM', 'SMALL'] : None
+core_vehicle : vehicle.vehicle_media(vehicle_document_type) : ['VEHICLE_FRONT_SIDE', 'VEHICLE_BACK_SIDE', 'STNK_DOCUMENT_FRONT_SIDE', 'STNK_DOCUMENT_BACK_SIDE'] : None
+core_vehicle : vehicle.virtual_device_unit(status) : ['OWNED', 'PENDING', 'ACCEPTED', 'DENIED', 'WITHDRAWN', 'VEHICLE_DELETE', 'CUSTOMER_DELETE'] : None
+enforcement_detection_alert : detection_alert.alert_check_data(eligibility_check) : ['UNDEFINED', 'OK', 'WARN'] : None
+enforcement_detection_alert : detection_alert.alert_check_data(event_type) : ['NORMAL', 'TRANSITION'] : None
+enforcement_detection_alert : detection_alert.alert_check_data(exemption_check) : ['UNDEFINED', 'EXEMPTED', 'NOT_EXEMPTED'] : None
+enforcement_detection_alert : detection_alert.alert_check_data(registration_check) : ['UNDEFINED', 'REGISTERED', 'NOT_REGISTERED'] : None
+enforcement_detection_alert : detection_alert.alert_check_data(sanction_check) : ['UNDEFINED', 'OK', 'WARN'] : None
+enforcement_detection_alert : detection_alert.alert_check_data(status) : ['UNDEFINED', 'RECEIVED', 'NO_ALERT', 'ALERTED'] : None
+enforcement_detection_observation : detection_observation.observation_event(toll_category) : ['UNDEFINED', 'GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6', 'NULL'] : None
+enforcement_detection : detection.detection_data(event_type) : ['NORMAL', 'TRANSITION'] : [('TRANSITION', 111), ('NORMAL', 55500)]
+enforcement_detection : detection.detection_data(lane_type) : ['ENTRY', 'ON_ROAD', 'EXIT', 'NULL'] : [('EXIT', 56), ('ENTRY', 2182), ('ON_ROAD', 53373)]
+enforcement_detection : detection.detection_data(provider_on_alert) : ['UNDEFINED', 'ALERTED', 'NOT_ALERTED'] : [('UNDEFINED', 104), ('NOT_ALERTED', 55223), ('ALERTED', 284)]
+enforcement_detection : detection.detection_data(provider_type) : ['MCU', 'GANTRY', 'TRIPOD'] : [('TRIPOD', 26), ('GANTRY', 53545), ('MCU', 2040)]
+enforcement_detection : detection.detection_data(status) : ['RECEIVED', 'IN_PROGRESS', 'IMG_AVAILABLE', 'IMG_ERROR', 'VISUAL_CHECK', 'EVALUATION', 'EXEMPTION_CHECK', 'EXEMPTED', 'ELIGIBILITY', 'SETTLEMENT', 'SEG_ERROR', 'CATEGORY_EXEMPTED', 'FORBIDDEN_SITE_ID', 'PROCESS_END'] : [('FORBIDDEN_SITE_ID', 7), ('IN_PROGRESS', 35), ('RECEIVED', 59), ('EXEMPTED', 11), ('SEG_ERROR', 32), ('IMG_ERROR', 1), ('EXEMPTION_CHECK', 17), ('VISUAL_CHECK', 958), ('ELIGIBILITY', 54485), ('CATEGORY_EXEMPTED', 6)]
+enforcement_detection : detection.detection_data(visual_check_status) : ['ACCEPTED_VALUABLE', 'ACCEPTED_WORTHLESS', 'REJECTED_VALUABLE', 'REJECTED_WORTHLESS', 'VC_ERROR', 'NULL'] : [(None, 55570), ('REJECTED_VALUABLE', 30), ('ACCEPTED_WORTHLESS', 10), ('ACCEPTED_VALUABLE', 1)]
+enforcement_detection : detection.detection_detail(front_plate_status) : ['UNDEFINED', 'NO_PLATE', 'NOT_RECOGNIZED', 'RECOGNIZED', 'NOT_CHECKED'] : None
+enforcement_detection : detection.detection_detail(rear_plate_status) : ['UNDEFINED', 'NO_PLATE', 'NOT_RECOGNIZED', 'RECOGNIZED', 'NOT_CHECKED'] : None
+enforcement_detection : detection.detection_detail(section_exemption_check_status) : ['UNDEFINED', 'EXEMPTED', 'NOT_EXEMPTED'] : None
+enforcement_detection : detection.detection_detail(toll_category) : ['UNDEFINED', 'GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+enforcement_detection : detection.detection_detail(toll_category_status) : ['UNDEFINED', 'RECOGNIZED', 'NOT_RECOGNIZED'] : None
+enforcement_detection : detection.detection_detail(vehicle_exemption_check_status) : ['UNDEFINED', 'EXEMPTED', 'NOT_EXEMPTED'] : None
+enforcement_detection : detection.detection_segment(section_exemption_check_segment) : ['UNDEFINED', 'EXEMPTED', 'NOT_EXEMPTED'] : None
+enforcement_detection : detection.detection_segment(segment_type) : ['OPEN', 'CLOSED'] : None
+enforcement_detection : detection.detection_segment(vehicle_exemption_check_segment) : ['UNDEFINED', 'EXEMPTED', 'NOT_EXEMPTED'] : None
+enforcement_detection_transition : detection_transition.detection(lane_type) : ['ENTRY', 'ON_ROAD', 'EXIT', 'NULL'] : None
+enforcement_detection_transition : detection_transition.detection(provider_type) : ['MCU', 'GANTRY', 'TRIPOD'] : None
+enforcement_exemption : exemption.exemption_vehicle_segment(department) : ['FO', 'OTHER'] : None
+enforcement_exemption : exemption.exemption_vehicle_segment(source) : ['POLICE', 'BACK_OFFICE'] : None
+enforcement_exemption : exemption.exemption_vehicle_segment(status) : ['CREATED', 'CLOSED', 'CANCELED'] : None
+enforcement_exemption : exemption.section_exemption(status) : ['ACTIVE', 'CLOSED', 'CANCELED'] : None
+enforcement_visual_check : visual_check.check_package(error_type) : ['FINAL_LIMIT', 'NULL'] : None
+enforcement_visual_check : visual_check.check_package(front_plate_status) : ['UNDEFINED', 'NO_PLATE', 'NOT_RECOGNIZED', 'RECOGNIZED', 'NOT_CHECKED'] : None
+enforcement_visual_check : visual_check.check_package(origin) : ['DETECTION', 'ELIGIBILITY'] : None
+enforcement_visual_check : visual_check.check_package(rear_plate_status) : ['UNDEFINED', 'NO_PLATE', 'NOT_RECOGNIZED', 'RECOGNIZED', 'NOT_CHECKED'] : None
+enforcement_visual_check : visual_check.check_package(result_status) : ['UNDEFINED', 'REJECTED_VALUABLE', 'ACCEPTED_VALUABLE', 'REJECTED_WORTHLESS', 'ACCEPTED_WORTHLESS', 'ERROR'] : None
+enforcement_visual_check : visual_check.check_package(status) : ['SELECTABLE', 'IN_PROGRESS', 'FINISHED'] : None
+enforcement_visual_check : visual_check.check_package(toll_category) : ['UNDEFINED', 'GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+enforcement_visual_check : visual_check.check_package(toll_category_status) : ['UNDEFINED', 'NOT_RECOGNIZED', 'RECOGNIZED'] : None
+enforcement_visual_check : visual_check.task(front_plate_status) : ['UNDEFINED', 'NO_PLATE', 'NOT_RECOGNIZED', 'RECOGNIZED', 'NOT_CHECKED'] : None
+enforcement_visual_check : visual_check.task(rear_plate_status) : ['UNDEFINED', 'NO_PLATE', 'NOT_RECOGNIZED', 'RECOGNIZED', 'NOT_CHECKED'] : None
+enforcement_visual_check : visual_check.task(status) : ['IN_PROGRESS', 'FINISHED', 'STOPPED'] : None
+enforcement_visual_check : visual_check.visual_check_result_outbox(address) : ['DETECTION', 'ELIGIBILITY'] : None
+eobu_tariff : tariff.modified_segment_tariff(operation) : ['INSERT', 'DELETE', 'UPDATE'] : None
+eobu_tariff : tariff.modified_segment_tariff(source) : ['MAP_LOAD', 'BOP', 'IMMEDIATE', 'NULL'] : None
+eobu_tariff : tariff.modified_segment_tariff(status) : ['USED', 'NOT_USED'] : None
+eobu_tariff : tariff.modified_segment_tariff(toll_category) : ['GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6', 'NULL'] : None
+eobu_tariff : tariff.planned_tariff(source) : ['MAP_LOAD', 'BOP', 'IMMEDIATE'] : None
+eobu_tariff : tariff.planned_tariff(status) : ['CREATED', 'REVIEW', 'REJECTED', 'APPROVED', 'CANCELED'] : None
+eobu_tariff : tariff.planned_tariff(toll_category) : ['GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+eobu_tariff : tariff.road_network(road_network_status) : ['UNREVIEWED', 'VALIDATED', 'REJECTED', 'APPROVED'] : [('REJECTED', 2), ('APPROVED', 6)]
+eobu_tariff : tariff.road_network_sync_result(result) : ['SUCCESSFUL', 'UNSUCCESSFUL'] : None
+eobu_tariff : tariff.sanction_multiplier(source) : ['MAP_LOAD', 'BOP'] : [('BOP', 62), ('MAP_LOAD', 246)]
+eobu_tariff : tariff.segment(segment_type) : ['OPEN', 'CLOSED'] : [('CLOSED', 193), ('OPEN', 56)]
+eobu_tariff : tariff.segment_tariff(toll_category) : ['GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+eobu_tariff : tariff.tariff_change(change_status) : ['PENDING', 'APPROVED', 'CANCELED'] : None
+eobu_tariff : tariff.tariff_change(change_type) : ['TEMPORARY', 'PERMANENT'] : None
+eobu_tariff : tariff.tariff_change(source) : ['MAP_LOAD', 'BOP', 'IMMEDIATE'] : None
+eobu_trip : trip.trip(declaration_type) : ['OBU', 'EOBU'] : None
+eobu_trip : trip.trip(obu_device_id) : ['OBU', 'EOBU', 'NULL'] : None
+eobu_trip : trip.trip(obu_provider_id) : ['OBU', 'EOBU', 'NULL'] : None
+eobu_trip : trip.trip(obu_provider_name) : ['OBU', 'EOBU', 'NULL'] : None
+eobu_trip : trip.trip(status) : ['MATCHED', 'CLOSED', 'SENDABLE'] : None
+eobu_trip : trip.trip(toll_category) : ['GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+eobu_trip : trip.trip_location(trip_location_type) : ['START', 'END'] : None
+eobu_trip : trip.trip_segment(segment_type) : ['OPEN', 'CLOSED'] : None
+eobu_trip : trip.trip_segment_affected_section(source) : ['ENTERED_SEGMENT', 'EXITED_SEGMENT'] : None
+eobu_trip : trip.trip_segment_enforcement_metadata(enforcement_process_status) : ['PENDING', 'DONE'] : None
+eobu_trip : trip.trip_segment_payment_metadata(payment_status) : ['PENDING', 'SUCCESS', 'FAILED', 'EXCEEDED_GRACE_PERIOD'] : None
+eobu_trip : trip.trip_segment_section(matched_section_type) : ['ENTRY', 'EXIT'] : None
+eobu_trip : trip.trip_segment_status(matched_segment_status) : ['ENTERED', 'EXITED'] : None
+notification_sms : sms.sms(language) : ['EN'] : None
+notification_sms : sms.sms(status) : ['SEND_IN_PROGRESS', 'WAITING_FOR_RETRY', 'FAILED', 'SENT', 'DELIVERED', 'READ'] : None
+notification_sms : sms.webhook(status) : ['CREATED', 'PROCESSED', 'FAILED'] : None
+notification_sms : sms.webhook(type) : ['SENT', 'DELIVERED', 'READ', 'ERROR'] : None
+notification_wa_meta : wa_meta.notification_wa(language) : ['ID', 'EN'] : None
+notification_wa_meta : wa_meta.notification_wa(status) : ['SEND_IN_PROGRESS', 'WAITING_FOR_RETRY', 'FAILED', 'SENT', 'DELIVERED', 'READ'] : None
+notification_wa_meta : wa_meta.template(category) : ['AUTHENTICATION', 'MARKETING', 'UTILITY'] : None
+notification_wa_meta : wa_meta.template(template_language) : ['ID', 'EN'] : None
+notification_wa_meta : wa_meta.template(template_status) : ['CREATED', 'PROPOSED', 'APPROVED', 'REJECTED', 'PENDING'] : None
+notification_wa_meta : wa_meta.webhook(status) : ['CREATED', 'PROCESSED', 'FAILED'] : None
+notification_wa_meta : wa_meta.webhook(type) : ['SENT', 'DELIVERED', 'READ', 'ERROR'] : None
+obu_obuprovider : obuprovider.customer_obu_binding(binding_status) : ['IN_PROGRESS', 'APPROVED', 'DENIED'] : None
+payment_account_info : account_info.account_info(status) : ['ACTIVE', 'DELETED', 'INACTIVE', 'PENDING', 'SUSPENDED'] : None
+payment_account_info : account_info.payment_method(psp_type) : ['DIGI_ROAD', 'QRIS', 'CREDIT_CARD', 'PAY_LATER', 'OVO', 'GOPAY', 'SHOPEE_PAY', 'DANA'] : [('GOPAY', 1), ('PAY_LATER', 1), ('QRIS', 1), ('SHOPEE_PAY', 1), ('OVO', 1), ('DANA', 1), ('DIGI_ROAD', 1), ('CREDIT_CARD', 1)]
+payment_invoice : invoice.invoice(currency) : ['IDR'] : None
+payment_invoice : invoice.invoice(invoice_state) : ['CAN_NEVER_BE_GENERATED', 'COMPLETED', 'DATA_SOURCING_FAILED', 'DOCUMENT_GENERATION_FAILED', 'DOCUMENT_GENERATION_IN_PROGRESS', 'EXPIRED_DATA_SOURCING', 'EXPIRED_DOCUMENT_GENERATION', 'INITIALIZED', 'IN_PROGRESS', 'READY_TO_GENERATE_DOCUMENT'] : None
+payment_invoice : invoice.invoice(source_type) : ['TRIP', 'TICKET', 'SANCTION'] : None
+payment_invoice : invoice.invoice(toll_category) : ['UNDEFINED', 'GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+payment_invoice : invoice.invoice_segment(segment_type) : ['OPEN', 'CLOSED', 'NULL'] : None
+payment_transaction : payment_transaction.payment_transaction(currency) : ['IDR'] : None
+payment_transaction : payment_transaction.payment_transaction(fine_level) : ['LEVEL_1', 'LEVEL_2', 'LEVEL_3', 'NULL'] : None
+payment_transaction : payment_transaction.payment_transaction(payment_mode) : ['ONE_PHASE', 'TWO_PHASE', 'NULL'] : None
+payment_transaction : payment_transaction.payment_transaction(psp_type) : ['DIGI_ROAD', 'QRIS', 'CREDIT_CARD', 'PAY_LATER', 'OVO', 'GOPAY', 'SHOPEE_PAY', 'DANA', 'UNDEFINED', 'NULL'] : None
+payment_transaction : payment_transaction.payment_transaction(reference_type) : ['TRIP', 'TICKET', 'SANCTION'] : None
+payment_transaction : payment_transaction.payment_transaction(transaction_state) : ['CAPTURE_IN_PROGRESS', 'WAITING_FOR_PROGRESS', 'IN_PROGRESS', 'WAITING_FOR_RETRY', 'FAILED', 'SUCCESS', 'WAITING_FOR_CAPTURE', 'REFUNDED'] : None
+payment_transaction : payment_transaction.payment_transaction(transaction_type) : ['AUTO', 'MANUAL'] : None
+settlement_psp_clearing : psp_clearing.police_share(fine_level) : ['LEVEL_2', 'LEVEL_3'] : [('LEVEL_3', 1), ('LEVEL_2', 1)]
+settlement_psp_clearing : psp_clearing.police_share(state) : ['APPROVED'] : [('APPROVED', 2)]
+settlement_psp_clearing : psp_clearing.psp_clearing(clearing_state) : ['CREATED', 'EXECUTED'] : None
+settlement_psp_clearing : psp_clearing.psp_clearing(currency) : ['IDR', ''] : None
+settlement_psp_clearing : psp_clearing.psp_clearing(fine_level) : ['LEVEL_1', 'LEVEL_2', 'LEVEL_3', 'NULL'] : None
+settlement_psp_clearing : psp_clearing.psp_clearing(psp_settlement_type) : ['TOLL', 'SANCTION'] : None
+settlement_psp_clearing : psp_clearing.psp_clearing(psp_type) : ['DIGI_ROAD', 'QRIS', 'CREDIT_CARD', 'PAY_LATER', 'OVO', 'GOPAY', 'SHOPEE_PAY', 'DANA', 'UNDEFINED'] : None
+settlement_psp_clearing : psp_clearing.psp_clearing(reference_type) : ['TRIP', 'TICKET', 'SANCTION'] : None
+settlement_psp_clearing : psp_clearing.psp_clearing(transaction_state) : ['FAILED', 'REFUNDED', 'SUCCESS'] : None
+settlement_psp_clearing : psp_clearing.psp_correction(currency) : ['IDR'] : None
+settlement_psp_clearing : psp_clearing.psp_correction(state) : ['CREATED', 'EXECUTED', 'DELETED'] : None
+settlement_psp_clearing : psp_clearing.psp_settlement_batch(currency) : ['IDR', ''] : None
+settlement_psp_clearing : psp_clearing.psp_settlement_batch(psp_settlement_type) : ['TOLL', 'SANCTION'] : None
+settlement_psp_clearing : psp_clearing.psp_settlement_batch(psp_type) : ['DIGI_ROAD', 'QRIS', 'CREDIT_CARD', 'PAY_LATER', 'OVO', 'GOPAY', 'SHOPEE_PAY', 'DANA', 'UNDEFINED'] : None
+settlement_psp_clearing : psp_clearing.psp_settlement_batch(source) : ['CLEARING', 'CORRECTION'] : None
+settlement_psp_clearing : psp_clearing.psp_settlement_batch(state) : ['CREATED', 'EXECUTED'] : None
+settlement_psp_clearing : psp_clearing.psp_settlement_document(document_state) : ['INITIALIZED', 'IN_PROGRESS', 'READY_TO_SEND', 'SEND_IN_PROGRESS', 'SUCCESSFUL'] : None
+settlement_psp_clearing : psp_clearing.psp_settlement_document(document_type) : ['PSP_SETTLEMENT_BATCH_CSV_ZIP', 'PSP_SETTLEMENT_PACKAGE_CSVS_ZIP', 'PSP_SETTLEMENT_PACKAGE_SUMMARY_PDF', 'PSP_SETTLEMENT_ORPHAN_CLEARING_CSV_ZIP'] : None
+settlement_psp_clearing : psp_clearing.psp_settlement_package(currency) : ['IDR'] : None
+settlement_psp_clearing : psp_clearing.psp_settlement_package(psp_type) : ['DIGI_ROAD', 'QRIS', 'CREDIT_CARD', 'PAY_LATER', 'OVO', 'GOPAY', 'SHOPEE_PAY', 'DANA', 'UNDEFINED'] : None
+settlement_psp_clearing : psp_clearing.psp_settlement_package(state) : ['CREATED', 'EXECUTED'] : None
+settlement_psp_clearing : psp_clearing.psp_settlement_period(state) : ['CREATED', 'IN_PROGRESS', 'EXECUTED'] : None
+settlement_tro_clearing : tro_clearing.clearing_input_data(fine_level) : ['LEVEL_1', 'LEVEL_2', 'LEVEL_3', 'NULL'] : None
+settlement_tro_clearing : tro_clearing.clearing_input_data(input_type) : ['TOLL', 'SANCTION'] : None
+settlement_tro_clearing : tro_clearing.clearing_input_data(process_state) : ['CREATED', 'COMPLETED', 'PROCESSED', 'FAILED_TO_COMPLETE', 'FAILED_TO_PROCESS'] : None
+settlement_tro_clearing : tro_clearing.clearing_input_data(reference_type) : ['TRIP', 'TICKET', 'SANCTION'] : None
+settlement_tro_clearing : tro_clearing.clearing_input_data(toll_category_declared) : ['UNDEFINED', 'GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6', 'NULL'] : None
+settlement_tro_clearing : tro_clearing.clearing_input_data(toll_category_sanctioned) : ['UNDEFINED', 'GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6', 'NULL'] : None
+settlement_tro_clearing : tro_clearing.road_network(tro_data_versioning_state) : ['INITIALIZED', 'IN_PROGRESS', 'COMPLETED', 'FAILED'] : None
+settlement_tro_clearing : tro_clearing.road_network(tro_revenue_share_versioning_state) : ['INITIALIZED', 'IN_PROGRESS', 'COMPLETED', 'FAILED'] : None
+settlement_tro_clearing : tro_clearing.road_network(tro_service_fee_versioning_state) : ['INITIALIZED', 'IN_PROGRESS', 'COMPLETED', 'FAILED'] : None
+settlement_tro_clearing : tro_clearing.segment_revenue_share(source) : ['BOP', 'MAP_LOAD'] : None
+settlement_tro_clearing : tro_clearing.segment_revenue_share(status) : ['APPROVED', 'CANCELLED'] : None
+settlement_tro_clearing : tro_clearing.tro_clearing(currency) : ['IDR'] : None
+settlement_tro_clearing : tro_clearing.tro_clearing(fine_level) : ['LEVEL_1', 'LEVEL_2', 'LEVEL_3', 'NULL'] : None
+settlement_tro_clearing : tro_clearing.tro_clearing(processing_state) : ['CREATED', 'EXECUTED'] : None
+settlement_tro_clearing : tro_clearing.tro_clearing(reference_type) : ['TRIP', 'TICKET', 'SANCTION'] : None
+settlement_tro_clearing : tro_clearing.tro_clearing(toll_category) : ['UNDEFINED', 'GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+settlement_tro_clearing : tro_clearing.tro_clearing(tro_settlement_type) : ['TOLL', 'SANCTION'] : None
+settlement_tro_clearing : tro_clearing.tro_service_fee(currency) : ['IDR'] : None
+settlement_tro_clearing : tro_clearing.tro_service_fee(source) : ['BOP', 'MAP_LOAD'] : None
+settlement_tro_clearing : tro_clearing.tro_service_fee(status) : ['APPROVED', 'CANCELLED'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_category_summary(currency) : ['IDR'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_category_summary(processing_state) : ['CREATED', 'EXECUTED'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_category_summary(toll_category) : ['UNDEFINED', 'GROUP_1', 'GROUP_2', 'GROUP_3', 'GROUP_4', 'GROUP_5', 'GROUP_6'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_category_summary(tro_settlement_type) : ['TOLL', 'SANCTION'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_correction(correction_type) : ['SANCTION', 'TOLL'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_correction(currency) : ['IDR'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_correction(state) : ['CREATED', 'EXECUTED', 'DELETED'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_document(document_state) : ['INITIALIZED', 'IN_PROGRESS', 'READY_TO_SEND', 'SEND_IN_PROGRESS', 'SUCCESSFUL'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_document(document_type) : ['TRO_SETTLEMENT_PAYABLES_CSV_ZIP', 'TRO_SETTLEMENT_PAYABLES_PDF', 'TRO_SETTLEMENT_SUMMARY_BOOK_PDF', 'TRO_SETTLEMENT_DETAILED_CSV_ZIP', 'TRO_SETTLEMENT_ORPHAN_CLEARING_CSV_ZIP', 'TRO_SETTLEMENT_BAILOUT_GAP_CSV_ZIP'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_package(currency) : ['IDR'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_package(processing_state) : ['CREATED', 'EXECUTED'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_period(settlement_state) : ['PROCESSING', 'CATEGORY_SUMMARY_FAILED', 'SETTLEMENT_GENERATION_FAILED', 'READY_TO_SETTLEMENT', 'SETTLEMENT_COMPLETED'] : None
+settlement_tro_clearing : tro_clearing.tro_settlement_tro_summary(currency) : ['IDR'] : None
+doc_document : document_meta.dm_object_processing(operation) : ['CREATE', 'DELETE', 'ARCHIVE'] : None
+doc_document : document_meta.object_metadata(status) : ['CREATE_PROCESSING', 'ACTIVE', 'DELETE_PROCESSING', 'DELETED', 'ARCHIVE_PROCESSING', 'ARCHIVED'] : None
+doc_document : document_meta.object_metadata(ttl_cycle) : ['ANNUAL', 'MONTHLY', 'DAILY', 'PERSISTENT', 'ARCHIVE'] : None
+core_customer : customer.customer(customer_status) : ['ACTIVE', 'TO_BE_DELETED', 'DELETED'] : None
+core_customer : customer.customer(language) : ['ID', 'EN'] : None
+core_customer : customer.customer_deletion_metadata(customer_deletion_status) : ['PENDING', 'DONE'] : None
+core_customer : customer.customer_media(customer_document_type) : ['PROFILE_PICTURE', 'ID_CARD_FRONT_SIDE', 'ID_CARD_BACK_SIDE'] : None
+core_customer : customer.customer_media(media_size) : ['ORIGINAL', 'MEDIUM', 'SMALL'] : None
+core_customer : customer.customer_token(token_type) : ['FORGOT_PASSWORD'] : None
+core_customer : customer.firebase_token(status) : ['ACTIVE', 'INACTIVE'] : None
+core_customer : customer.verification_code(subject_type) : ['EMAIL', 'PHONE', 'DELETE_CUSTOMER'] : None
+enforcement_detection_image : detection_image.detection_image_frame(status) : ['ERROR', 'DOWNLOADED', 'ARCHIVED', 'NEW', 'NO_URL_PROVIDED', 'URL_AVAILABLE'] : None
+enforcement_detection_image : detection_image.detection_image_frame(photo_type) : ['FRONT', 'REAR', 'OVERVIEW'] : None
+enforcement_detection_image : detection_image.detection_image_request(origin) : ['DETECTION_DECISION', 'OBSERVATION_CHECK', 'ELIGIBILITY', 'PRESUMPTION', 'ALERT', 'DETECTION_QUERY', 'ONSITE_INSPECTION'] : None
+enforcement_detection_image : detection_image.detection_image_request(minimum_image) : ['FRONT', 'REAR', 'OVERVIEW'] : None
+enforcement_detection_image : detection_image.detection_image_request_origin(minimum_image) : ['FRONT', 'REAR', 'OVERVIEW'] : [('OVERVIEW', 4), ('FRONT', 3)]
+enforcement_detection_image : detection_image.detection_image_request_origin(origin) : ['DETECTION_DECISION', 'OBSERVATION_CHECK', 'ELIGIBILITY', 'PRESUMPTION', 'ALERT', 'DETECTION_QUERY', 'ONSITE_INSPECTION'] : [('ALERT', 1), ('DETECTION_QUERY', 1), ('ELIGIBILITY', 1), ('DETECTION_DECISION', 1), ('PRESUMPTION', 1), ('OBSERVATION_CHECK', 1), ('ONSITE_INSPECTION', 1)]
+core_geo_alert : geo_alert.geo_alert(status) : ['ACTIVE', 'CLOSED', 'CANCELED'] : None

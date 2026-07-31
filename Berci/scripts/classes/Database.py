@@ -17,12 +17,15 @@ class Database:
         return repos
 
 
-    def __init__(self, name='postgres', port=5432, host='localhost'):
+    def __init__(self, name='postgres', port=5432, host='localhost', password=None):
         self.name = name
         self.host = host
         self.port = port
         self.user = 'postgres'
-        passw = utils_sec.password_from_file(self.user, port)
+        if password == None:
+            passw = utils_sec.password_from_file(self.user, port)
+        else:
+            passw = password
         self.__connection_string = f"postgres://{self.user}:{passw}@{host}:{port}/{name}"
         self.__conn = None
 
@@ -33,12 +36,7 @@ class Database:
     @property
     def conn(self):
         if not self.__conn:
-            self.__conn = psycopg2.connect(
-                host=self.host,
-                port=self.port,
-                database=self.name,
-                user=self.user,
-                password=utils_sec.password_from_file(self.user, self.port))
+            self.__conn = psycopg2.connect(self.__connection_string)
         return self.__conn
 
     @property

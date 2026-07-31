@@ -1,0 +1,101 @@
+.pbx_customer_data
+|===
+| x__id | VARCHAR(30) |   | nem | PK → egyedi azonosító
+| pbx_transaction_id | VARCHAR(30) |   | nem | FK → PBX_TRANSACTION.X__ID
+| customer_data | TEXT |   | nem | A vásárló adatai JSON formátumban.
+| insdate_month | TIMESTAMP | to_date(to_char(CURRENT_TIMESTAMP, 'YYYY.MM'::text), 'YYYY.MM'::text) | nem | Rekord létrehozásának éve és hónapja - szükséges a Postgresql partícionáláshoz és az integritás fenntartásához
+| x__insdate | TIMESTAMP | now() | nem | Rekord létrehozásának dátuma
+| x__insuser | VARCHAR(30) | '0'::character varying | nem | Rekordot létrehozó felhasználó
+| x__moddate | TIMESTAMP |   | igen | Rekord módosításának dátuma
+| x__moduser | VARCHAR(30) |   | igen | Rekordot módosító felhasználó
+| x__version | INTEGER | 0 | nem | Rekord módosítások száma
+|===
+
+.pbx_payment
+|===
+| x__id | VARCHAR(30) |   | nem | PK → egyedi azonosító
+| pbx_transaction_id | VARCHAR(30) |   | nem | FK → PBX_TRANSACTION.X__ID
+| psp_payment_id | VARCHAR(30) |   | igen | Tranzakció azonosító a fizetési szolgáltató rendszerében.
+| payment_method | VARCHAR(30) |   | nem | Fizetés típusa. Lehet bankkártyás, vagy átutalás alapú (manuális átutalás, QR kód).
+| two_step_payment | BOOLEAN |   | igen | Ha értéke TRUE, akkor kétlépcsős tranzakció, ha pedig FALSE, akkor egylépcsős. Csak kártyás fizetés esetén értelmezett adat.
+| auth_method_for_3ds | VARCHAR(15) |   | igen | A forrásrendszerben a vásárló regisztrációs módja a kétfaktoros autentikációhoz. Csak kártyás fizetés esetén értelmezett adat.
+| insdate_month | TIMESTAMP | to_date(to_char(CURRENT_TIMESTAMP, 'YYYY.MM'::text), 'YYYY.MM'::text) | nem | Rekord létrehozásának éve és hónapja - szükséges a Postgresql partícionáláshoz és az integritás fenntartásához
+| x__insdate | TIMESTAMP | now() | nem | Rekord létrehozásának dátuma
+| x__insuser | VARCHAR(30) | '0'::character varying | nem | Rekordot létrehozó felhasználó
+| x__moddate | TIMESTAMP |   | igen | Rekord módosításának dátuma
+| x__moduser | VARCHAR(30) |   | igen | Rekordot módosító felhasználó
+| x__version | INTEGER | 0 | nem | Rekord módosítások száma
+| final_payment_method | VARCHAR(30) |   | igen | Fizetés típusa, amivel a fizetés ténylegesen megtörtént. Lehet bankkártyás, vagy átutalás alapú (manuális átutalás, QR kód). Egyes fizetési szolgáltatók fizető felületén a vásárló felülbírálhatja az eredetileg megjelölt fizetési módot, emiatt ez az adat különbözhet a PAYMENT_METHOD adattól.
+| start_date | TIMESTAMP |   | igen | A fizetés első lépcsőjének időpontja. Egylépcsős fizetés esetén az összeg terhelésének, kétlépcsős esetén a zárolásának ideje.
+| finish_date | TIMESTAMP |   | igen | A fizetés végleges lezárulásának, azaz minden esetben az összeg terhelésének időpontja.
+|===
+
+.pbx_psp_simplepay
+|===
+| x__id | VARCHAR(30) |   | nem | PK → egyedi azonosító
+| pbx_transaction_id | VARCHAR(30) |   | nem | FK → PBX_TRANSACTION.X__ID
+| psp_status | VARCHAR(15) |   | igen | Tranzakció SimplePay-beli státusza. A lehetséges értékei: INIT,INPAYMENT,INFRAUD,AUTHORIZED,FINISHED,REVERSED,REFUND,FRAUD,NOTAUTHORIZED,TIMEOUT,CANCELLED
+| psp_language | VARCHAR(3) |   | nem | A fizetési oldal nyelve.
+| psp_payment_url | VARCHAR(500) |   | igen | A fizetési szolgáltatótól kapott URL, ahol a felhasználó fizetni tud.
+| redirect_url_success | VARCHAR(500) |   | nem | URL, ahova a forrásrendszer szeretné irányítani a vásárlót sikeres fizetés után.
+| redirect_url_fail | VARCHAR(500) |   | nem | URL, ahova a forrásrendszer szeretné irányítani a vásárlót sikertelen fizetés után.
+| redirect_url_cancel | VARCHAR(500) |   | nem | URL, ahova a forrásrendszer szeretné irányítani a vásárlót abban az esetben, ha a felhasználó megszakítja a fizetést.
+| redirect_url_timeout | VARCHAR(500) |   | nem | URL, ahova a forrásrendszer szeretné irányítani a vásárlót abban az esetben, ha a fizetőoldalon időtúllépés történik.
+| error_code | VARCHAR(500) |   | igen | A hibás tranzakciók esetén kapott hibakód/ok kerül/nek eltárolásra.
+| insdate_month | TIMESTAMP | to_date(to_char(CURRENT_TIMESTAMP, 'YYYY.MM'::text), 'YYYY.MM'::text) | nem | Rekord létrehozásának éve és hónapja - szükséges a Postgresql partícionáláshoz és az integritás fenntartásához
+| x__insdate | TIMESTAMP | now() | nem | Rekord létrehozásának dátuma
+| x__insuser | VARCHAR(30) | '0'::character varying | nem | Rekordot létrehozó felhasználó
+| x__moddate | TIMESTAMP |   | igen | Rekord módosításának dátuma
+| x__moduser | VARCHAR(30) |   | igen | Rekordot módosító felhasználó
+| x__version | INTEGER | 0 | nem | Rekord módosítások száma
+|===
+
+.pbx_transaction
+|===
+| x__id | VARCHAR(30) |   | nem | PK → egyedi azonosító
+| pbx_status | VARCHAR(30) |   | nem | A tranzakció PaiBox-beli státusza. A lehetséges értékei: RECEIVED, SENT_TO_PSP, FIRST_STEP_DONE, FINISHING_IN_PROGRESS, FINISH_FAILED, DONE, FAILED
+| source_payment_id | VARCHAR(30) |   | nem | A forrásrendszerben lévő tranzakció azonosító.
+| psp | VARCHAR(30) |   | nem | A tranzakciót végző fizetési szolgáltató neve. A lehetséges értékei: SIMPLEPAY
+| transaction_type | VARCHAR(15) |   | nem | Tranzakció típusa, lehet fizetés, vagy később visszafizetés.
+| initial_amount | NUMERIC(20, 2) |   | nem | A tranzakció induló összege. Az egylépcsős fizetéseknél és visszafizetésnél megegyezik a tranzakció végleges összegével (AMOUNT). Kétlépcsős fizetésnél az induló összeg a zárolt összeg, ami eltérhet a végleges, terhelt összegtől.
+| currency | VARCHAR(3) |   | nem | A tranzakció devizaneme.
+| insdate_month | TIMESTAMP | to_date(to_char(CURRENT_TIMESTAMP, 'YYYY.MM'::text), 'YYYY.MM'::text) | nem | Rekord létrehozásának éve és hónapja - szükséges a Postgresql partícionáláshoz és az integritás fenntartásához
+| x__insdate | TIMESTAMP | now() | nem | Rekord létrehozásának dátuma
+| x__insuser | VARCHAR(30) | '0'::character varying | nem | Rekordot létrehozó felhasználó
+| x__moddate | TIMESTAMP |   | igen | Rekord módosításának dátuma
+| x__moduser | VARCHAR(30) |   | igen | Rekordot módosító felhasználó
+| x__version | INTEGER | 0 | nem | Rekord módosítások száma
+| amount | NUMERIC(20, 2) |   | igen | A tranzakció végleges összege. Kétlépcsős tranzakciónál eltérhet az induló összegtől (INITIAL_AMOUNT), ha a zárolt összegnek csak egy része kerül terhelésre.
+| source_customer_id | VARCHAR(30) |   | nem | A forrásrendszerben lévő vásárló azonosítója.
+|===
+
+.pbx_transaction_metadata
+|===
+| x__id | VARCHAR(30) |   | nem | PK → egyedi azonosító
+| pbx_transaction_id | VARCHAR(30) |   | nem | FK → PBX_TRANSACTION.X__ID.
+| processing_status | VARCHAR(30) |   | igen | tranzakció paibox státusza a rekord létrejöttének pillanatában. a lehetséges értékei: RECEIVED, SENT_TO_PSP, FIRST_STEP_DONE, FINISHING_IN_PROGRESS, FINISH_FAILED, DONE, FAILED
+| processing_start | TIMESTAMP |   | igen | Művelet kezdete.
+| processing_end | TIMESTAMP |   | igen | Művelet vége.
+| result | BYTEA |   | igen | Státuszváltáshoz kapcsolódó hiba esetén kerül bele a teljes válaszobjektum.
+| insdate_month | TIMESTAMP | to_date(to_char(CURRENT_TIMESTAMP, 'YYYY.MM'::text), 'YYYY.MM'::text) | nem | Rekord létrehozásának éve és hónapja - szükséges a Postgresql partícionáláshoz és az integritás fenntartásához
+| x__insdate | TIMESTAMP | now() | nem | Rekord létrehozásának dátuma
+| x__insuser | VARCHAR(30) | '0'::character varying | nem | Rekordot létrehozó felhasználó
+| x__moddate | TIMESTAMP |   | igen | Rekord módosításának dátuma
+| x__moduser | VARCHAR(30) |   | igen | Rekordot módosító felhasználó
+| x__version | INTEGER | 0 | nem | Rekord módosítások száma
+|===
+
+.pbx_transaction_processing
+|===
+| x__id | VARCHAR(30) |   | nem | PK → egyedi azonosító
+| pbx_transaction_id | VARCHAR(30) |   | nem | FK → PBX_TRANSACTION.X__ID
+| operation | VARCHAR(30) |   | nem | A műveletet leíró utasítás, lehetséges értékei: RECEIVE, FINISH, PAYMENT_IN_PROGRESS, FINISH_FAILED_PROCESSING
+| insdate_month | TIMESTAMP | to_date(to_char(CURRENT_TIMESTAMP, 'YYYY.MM'::text), 'YYYY.MM'::text) | nem | Rekord létrehozásának éve és hónapja - szükséges a Postgresql partícionáláshoz és az integritás fenntartásához
+| x__insdate | TIMESTAMP | now() | nem | Rekord létrehozásának dátuma
+| x__insuser | VARCHAR(30) | '0'::character varying | nem | Rekordot létrehozó felhasználó
+| x__moddate | TIMESTAMP |   | igen | Rekord módosításának dátuma
+| x__moduser | VARCHAR(30) |   | igen | Rekordot módosító felhasználó
+| x__version | INTEGER | 0 | nem | Rekord módosítások száma
+| psp | VARCHAR(30) | 'SIMPLEPAY'::character varying | nem | A tranzakciót végző fizetési szolgáltató neve.
+|===
+
